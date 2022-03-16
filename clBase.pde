@@ -4,7 +4,7 @@ color STDBASECOLOR = #3483FF;
 class Base{
   
   float x, y;                                                                        //Position
-  int resTpAmnt;                                                                     //Amount of resource types
+  int resourceTypeAmount;                                                                     //Amount of resource types
   int[] res;                                                                         //Array for stored resources by type
   color cl = #3483FF;                                                                //Base color
   float size = 30;                                                                   //Base size px
@@ -16,8 +16,8 @@ class Base{
     x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                                     //
     y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                                     //Random position
     
-    resTpAmnt = 1;                                                                   //Single resource type by default
-    res = new int[resTpAmnt];                                                        //Make stored resources by type array
+    resourceTypeAmount = 1;                                                                   //Single resource type by default
+    res = new int[resourceTypeAmount];                                                        //Make stored resources by type array
     
   }
   

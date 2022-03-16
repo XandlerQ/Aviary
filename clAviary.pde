@@ -4,21 +4,21 @@ int WALLTHICKNESS = 20;                                                         
 
 
 
-class Aviary{
+class Aviary {
   
-  int resTpAmnt;                                                                      //Amount of resource types
+  int resourceTypeAmount;                                                                      //Amount of resource types
   
-  int baseAmnt;                                                                       //Amount of bases
-  int resAmnt;                                                                        //Amount of resources TODO: MAKE IT AN ARRAY SIZED resTpAmnt TO KEEP AMOUNTS OF RESOURCES OF EACH TYPE
+  int baseAmount;                                                                       //Amount of bases
+  int resourceAmount;                                                                        //Amount of resources TODO: MAKE IT AN ARRAY SIZED resourceTypeAmount TO KEEP AMOUNTS OF RESOURCES OF EACH TYPE
   
-  int agentCtr;                                                                       //Agent counter
+  int agentCounter;                                                                       //Agent counter
   
   color baseCl = #3483FF;                                                             //Base color (single)
-  color resCl = #FFAA00;                                                              //Resource color TODO: MAKE IT AN ARRAY SIZED resTpAmnt TO KEEP COLORS OF EACH RESOURCE TYPE
+  color resCl = #FFAA00;                                                              //Resource color TODO: MAKE IT AN ARRAY SIZED resourceTypeAmount TO KEEP COLORS OF EACH RESOURCE TYPE
   
-  ArrayList<Base> bsArr;                                                              //
-  ArrayList<Resource> resArr;                                                         //
-  ArrayList<Agent> agentArr;                                                          //ArrayLists TODO: MAKE IT MULTIPLE RESOURCE TYPE COMPATIBLE
+  ArrayList<Base> bases;                                                              //
+  ArrayList<Resource> resourcesList;                                                         //
+  ArrayList<Agent> agents;                                                          //ArrayLists TODO: MAKE IT MULTIPLE RESOURCE TYPE COMPATIBLE
   
 
   //Constructors
@@ -28,26 +28,26 @@ class Aviary{
          int argInitAgentAmnt                                                         //Initial amount of agents
          ){
     
-    resTpAmnt = 1;                                                                    //Single resource type by default
+    resourceTypeAmount = 1;                                                                    //Single resource type by default
     
-    baseAmnt = argBaseAmnt;                                                           //
-    resAmnt = argResAmnt;                                                             //
-    agentCtr = argInitAgentAmnt;                                                      //Set amounts
+    baseAmount = argBaseAmnt;                                                           //
+    resourceAmount = argResAmnt;                                                             //
+    agentCounter = argInitAgentAmnt;                                                      //Set amounts
     
-    bsArr = new ArrayList<Base>(argBaseAmnt);                                         //
-    resArr = new ArrayList<Resource>(argResAmnt);                                     //
-    agentArr = new ArrayList<Agent>(argInitAgentAmnt);                                //Making ArrayLists
+    bases = new ArrayList<Base>(argBaseAmnt);                                         //
+    resourcesList = new ArrayList<Resource>(argResAmnt);                                     //
+    agents = new ArrayList<Agent>(argInitAgentAmnt);                                //Making ArrayLists
     
-    for(int i = 0; i < baseAmnt; i++){                                                //
-      bsArr.add(new Base());                                                          //
+    for(int i = 0; i < baseAmount; i++){                                                //
+      bases.add(new Base());                                                          //
     }                                                                                 //Add bases
     
-    for(int i = 0; i < resAmnt; i++){                                                 //
-      resArr.add(new Resource());                                                     //
+    for(int i = 0; i < resourceAmount; i++){                                                 //
+      resourcesList.add(new Resource());                                                     //
     }                                                                                 //Add resources
     
-    for(int i = 0; i < agentCtr; i++){                                                //
-      agentArr.add(new Agent());                                                      //
+    for(int i = 0; i < agentCounter; i++){                                                //
+      agents.add(new Agent());                                                      //
     }                                                                                 //Add agents 
   }
   
@@ -57,30 +57,28 @@ class Aviary{
   
   //Methods
   
-  void scream(Agent argAg){                                                           //Performs scream of argAg
+  void scream(Agent agent){                                                           //Performs scream of agent
   
-    agentArr.forEach((arg) -> {                                                       //For each agent
+    agents.forEach((ag) -> {                                                       //For each agent
       
-      float distance = arg.getDistTo(argAg.getX(), argAg.getY());                     //Calculate distance to screamer
-      int scrHearDist = arg.getScrHearDist();                                         //Get hearing distance
+      float distance = ag.getDistTo(agent.getX(), agent.getY());                     //Calculate distance to screamer
+      int scrHearDist = ag.getScrHearDist();                                         //Get hearing distance
       
-      if(arg.ifHearFrom(distance)){                                                   //If agent can hear
-        int bsDist = argAg.getBaseDist();                                             //Get screamers supposed base distance
+      if(ag.ifHearFrom(distance)){                                                   //If agent can hear
+        int bsDist = agent.getBaseDist();                                             //Get screamers supposed base distance
         
-        if(bsDist + scrHearDist < arg.getBaseDist()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
-          arg.setBaseDist(bsDist + scrHearDist);                                      //Set new supposed base distance for hearer
-          arg.setBaseDir(arg.dirToFace(argAg.getX(), argAg.getY(), distance));        //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
-          if(arg.getFlag() == 0)                                                      //If hearer is currently seeking base
-            arg.updateDir();                                                          //Update his current direction
+        if(bsDist + scrHearDist < ag.getBaseDist()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
+          ag.setBaseDist(bsDist + scrHearDist);                                      //Set new supposed base distance for hearer
+          ag.setBaseDir(ag.directionToFace(agent.getX(), agent.getY(), distance));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
+          if(ag.getFlag() == 0) ag.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
         }
         
-        for(int i = 0; i < resTpAmnt; i++){                                           //
-          int resDist = argAg.getResDist(i);                                          //
-          if(resDist + scrHearDist < arg.getResDist(i)){                              //
-            arg.setResDist(i, resDist + arg.getScrHearDist());                        //
-            arg.setResDir(i, arg.dirToFace(argAg.getX(), argAg.getY(), distance));    //
-            if(arg.getFlag() == i + 1)                                                //
-              arg.updateDir();                                                        //Do the same for all resource types
+        for(int i = 0; i < resourceTypeAmount; i++){           
+          int resDist = agent.getResDist(i);                            
+          if(resDist + scrHearDist < ag.getResDist(i)){            
+            ag.setResDist(i, resDist + ag.getScrHearDist());
+            ag.setResDir(i, ag.directionToFace(agent.getX(), agent.getY(), distance));
+            if(ag.getFlag() == i + 1)  ag.updateDir();                                                        //Do the same for all resource types
           }
         } 
       }
@@ -88,9 +86,9 @@ class Aviary{
   }
   
   void screams(){                                                                     //Perform screams if ready
-    agentArr.forEach((arg) -> {
-      if(arg.ifReadyToScream())
-        scream(arg);
+    agents.forEach((agent) -> {
+      if(agent.ifReadyToScream())
+        scream(agent);
     });
   }
   
@@ -102,17 +100,17 @@ class Aviary{
     
   
   void tick(){                                                                        //Performes animation tick
-    agentArr.forEach((arg) -> {                                                       //For each agent
-      color curCl = arg.step();                                                       //Perform step, get color from new location
+    agents.forEach((agent) -> {                                                       //For each agent
+      color curCl = agent.step();                                                       //Perform step, get color from new location
       if(curCl == baseCl){                                                            //If found base
-        arg.setFlag(1);                                                               //Set action flag to seek resource
-        arg.setBaseDist(0);                                                           //!!!Set supposed distance to base to 0!!!
-        arg.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
+        agent.setFlag(1);                                                               //Set action flag to seek resource
+        agent.setBaseDist(0);                                                           //!!!Set supposed distance to base to 0!!!
+        agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
       }
       if(curCl == resCl){                                                             //If found resource
-        arg.setFlag(0);                                                               //Set action flag to seek base
-        arg.setResDist(0, 0);                                                         //!!!Set supposed distance to resource to 0!!!
-        arg.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
+        agent.setFlag(0);                                                               //Set action flag to seek base
+        agent.setResDist(0, 0);                                                         //!!!Set supposed distance to resource to 0!!!
+        agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
       }
     });    
     screams();                                                                        //Perform screams
@@ -131,15 +129,15 @@ class Aviary{
 }
 
   void renderBase(){                                                                  //Renders bases
-    bsArr.forEach((arg) -> arg.render());
+    bases.forEach((base) -> base.render());
   }
   
   void renderRes(){                                                                   //Renders resources
-    resArr.forEach((arg) -> arg.render());
+    resourcesList.forEach((res) -> res.render());
   }
   
   void renderAgent(){                                                                 //Renders agents
-    agentArr.forEach((arg) -> arg.render());
+    agents.forEach((agent) -> agent.render());
   }
   
   void render(int defX, int defY){                                                    //Renders aviary

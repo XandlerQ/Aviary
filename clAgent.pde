@@ -5,20 +5,22 @@
 
 class Agent {
   
-  int flag;             //Action flag, determines where to go, e.g. if flag == 0, then seek base
-                        //values: 0 - seek base, 1 -> resTpAmnt - seek resource indexed accordingly
+  int status;             //Action status, determines where to go, e.g. if status == 0, then seek base
+                        //values: 0 - seek base, 1 -> resourceTypeAmount - seek resource indexed accordingly
   
-  float x, y,           //Position 
-    dir, speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
+  float x; 
+  float y;           //Position 
+  float direction;
+  float speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
     
-  int resTpAmnt;
+  int resourceTypeAmount;
   
   int[] resAmount;      //Amount of resources carried, index = type (size = amount of resource types)
   
-  float[] resDir;       //Supposed direction towards resource types, index = type (size = amount of resource types)
+  float[] resDirection;       //Supposed direction towards resource types, index = type (size = amount of resource types)
   int[] resDist;        //Supposed distance to go to reach a resourse type, index = type
   
-  float baseDir;        //Supposed direction towards base
+  float baseDirection;        //Supposed direction towards base
   int baseDist;         //Supposed distance to go to reach base
   
   int scrCtrPeak;       //Predetermined value for scrCtr peak value
@@ -34,26 +36,26 @@ class Agent {
     Random r = new Random();                                //Randomizer
     
     
-    resTpAmnt = 1;                                          //Single resource type by default
-    flag = r.nextInt(resTpAmnt);                            //Initially seek either base or resource
+    resourceTypeAmount = 1;                                          //Single resource type by default
+    status = r.nextInt(resourceTypeAmount);                            //Initially seek either base or resource
     
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
-    dir = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
+    direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
     speed = (float)(0.6 + 0.4 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
     
     
-    resAmount = new int[resTpAmnt];                         //
-    resDir = new float[resTpAmnt];                          //
-    resDist = new int[resTpAmnt];                           //Resource related variables accordingly to the amount of resource types
+    resAmount = new int[resourceTypeAmount];                         //
+    resDirection = new float[resourceTypeAmount];                          //
+    resDist = new int[resourceTypeAmount];                           //Resource related variables accordingly to the amount of resource types
     
-    for(int i = 0; i < resTpAmnt; i++){
+    for(int i = 0; i < resourceTypeAmount; i++){
       resAmount[i] = 0;                                     //Initially no resources carried
-      resDir[i] = (float)(2 * Math.PI * r.nextFloat());     //Random initial supposed direction to all resource types
+      resDirection[i] = (float)(2 * Math.PI * r.nextFloat());     //Random initial supposed direction to all resource types
       resDist[i] = DEFX/5;                                  //SAME(essential) initial supposed distance to all resource types
     }
     
-    baseDir = (float)(2 * Math.PI * r.nextFloat());         //Random initial supposed direction to base
+    baseDirection = (float)(2 * Math.PI * r.nextFloat());         //Random initial supposed direction to base
     baseDist = DEFX/5;                                      //SAME(essential) initial supposed distance to base
     
     scrCtrPeak = 7;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
@@ -97,7 +99,7 @@ class Agent {
   }
   
   int getFlag(){
-    return flag;
+    return status;
   }
   
   //Setters
@@ -119,23 +121,23 @@ class Agent {
   }
   
   void setBaseDir(float argBaseDir){
-    baseDir = argBaseDir;
+    baseDirection = argBaseDir;
   }
   
   void setResDir(float[] argResDir){
-    resDir = argResDir;
+    resDirection = argResDir;
   }
   
   void setResDir(int argIdx, float argDist){
-    resDir[argIdx] = argDist;
+    resDirection[argIdx] = argDist;
   }
   
   void setDir(float argDir){
-    dir = argDir;
+    direction = argDir;
   }
   
   void setFlag(int argFlag){
-    flag = argFlag;
+    status = argFlag;
   }
   
   //Methods
@@ -153,15 +155,15 @@ class Agent {
   }
   
   void fixDir(){                                                    //Fix direction to range [0 ; 2PI)
-    while(dir < 0){
-      dir += 2 * (float)Math.PI;
+    while(direction < 0){
+      direction += 2 * (float)Math.PI;
     }
-    while(dir >= 2 * Math.PI){
-      dir -= 2 * (float)Math.PI;
+    while(direction >= 2 * Math.PI){
+      direction -= 2 * (float)Math.PI;
     }
   }
   
-  float dirToFace(float argX, float argY, float argDist){           //Returns direction (angle in range [0 ; 2PI)) to face point (argX,argY), if distance to it is argDist
+  float directionToFace(float argX, float argY, float argDist){           //Returns direction (angle in range [0 ; 2PI)) to face point (argX,argY), if distance to it is argDist
     
     float direct = acos((argX - x)/argDist);
     if(argY > y) {
@@ -175,18 +177,18 @@ class Agent {
   color step() {                                                    //Make step, returns color of next position
      Random r = new Random();                                       //Randomizer
      
-     for (int i = 0; i < resTpAmnt; i++){                           //
+     for (int i = 0; i < resourceTypeAmount; i++){                           //
        resDist[i]++;                                                //
      }                                                              //Increment supposed distances to all resources by 1 with each step
      
      baseDist++;                                                    //Increment supposed distances to base by 1 with each step
      
-     dir += -0.1 + (0.2) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+     direction += -0.1 + (0.2) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
      
      fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
      
-     float newX = x + speed * cos(dir);                             //
-     float newY = y + speed * sin(dir);                             //Calculate new coordinates
+     float newX = x + speed * cos(direction);                             //
+     float newY = y + speed * sin(direction);                             //Calculate new coordinates
      
      color cl = get(int(newX),int(newY));                           //Get color in new coordinates
      
@@ -194,9 +196,9 @@ class Agent {
          newX < WALLTHICKNESS ||
          newY > DEFY - WALLTHICKNESS ||
          newY < WALLTHICKNESS){                                     //If a wall is hit
-       dir += (float)(Math.PI);                                     //Turn around
-       newX = x + speed * cos(dir);                                 //
-       newY = y + speed * sin(dir);                                 //Set new coordinates according to new direction
+       direction += (float)(Math.PI);                                     //Turn around
+       newX = x + speed * cos(direction);                                 //
+       newY = y + speed * sin(direction);                                 //Set new coordinates according to new direction
      }
      
      x = newX;                                                      //
@@ -211,12 +213,12 @@ class Agent {
      return cl;                                                     //Returns color of new position
   }
   
-  void updateDir(){                                                 //Update direction of movement accordingly to current action flag value
-    if(flag == 0){                                                  //If seeking base
-      dir = baseDir;                                                //Set direction of movement to supposed base direction
+  void updateDir(){                                                 //Update direction of movement accordingly to current action status value
+    if(status == 0){                                                  //If seeking base
+      direction = baseDirection;                                                //Set direction of movement to supposed base direction
     }
     else{                                                           //If seeking resource
-      dir = resDir[flag - 1];                                       //Set direction of movement to supposed resource type direction
+      direction = resDirection[status - 1];                                       //Set direction of movement to supposed resource type direction
     }
   }
   
