@@ -1,4 +1,4 @@
-color WALLCOLOR = #135A00;                                                            //Color of aviary boundaries
+color WALLCOLOR = #023600;                                                            //Color of aviary boundaries
 int WALLTHICKNESS = 20;                                                               //Thickness of aviary boundaries (!!!KEEP MORE THAN MAXIMUM AGENT SPEED!!!)
 
 
@@ -106,11 +106,13 @@ class Aviary {
         agent.setFlag(1);                                                               //Set action flag to seek resource
         agent.setBaseDist(0);                                                           //!!!Set supposed distance to base to 0!!!
         agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
+        agent.peakScreamCounter();                                                    //Get ready to scream
       }
       if(curCl == resCl){                                                             //If found resource
         agent.setFlag(0);                                                               //Set action flag to seek base
         agent.setResDist(0, 0);                                                         //!!!Set supposed distance to resource to 0!!!
         agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
+        agent.peakScreamCounter();                                                    //Get ready to scream
       }
     });    
     screams();                                                                        //Perform screams

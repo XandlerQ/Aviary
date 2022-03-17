@@ -37,7 +37,8 @@ class Agent {
     
     
     resourceTypeAmount = 1;                                          //Single resource type by default
-    status = r.nextInt(resourceTypeAmount);                            //Initially seek either base or resource
+    status = r.nextInt(resourceTypeAmount + 1);                            //Initially seek either base or resource
+    updateColor();                                                 //Update color accordingly
     
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
@@ -61,7 +62,7 @@ class Agent {
     scrCtrPeak = 7;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     scrCtr = r.nextInt(scrCtrPeak);                         //Random initial scream counter value
     
-    scrHearDist = 60;                                       //Fixed perception distance
+    scrHearDist = 45;                                       //Fixed perception distance
   }
   
   //Getters
@@ -136,8 +137,9 @@ class Agent {
     direction = argDir;
   }
   
-  void setFlag(int argFlag){
-    status = argFlag;
+  void setFlag(int argStatus){
+    status = argStatus;
+    updateColor();
   }
   
   //Methods
@@ -152,6 +154,21 @@ class Agent {
   
   boolean ifReadyToScream(){                                        //True if ready to scream
     return scrCtr == scrCtrPeak;
+  }
+  
+  void peakScreamCounter(){                                  //Peaks scream counter
+    scrCtr = scrCtrPeak;
+  }
+  
+  void resetScreamCounter(){                                  //Resets scream counter
+    scrCtr = 0;
+  }
+  
+  void updateColor(){                                        //Updates color accordingly to status
+    if(status == 0)
+      cl = #FF8400;
+    else
+      cl = #000000;
   }
   
   void fixDir(){                                                    //Fix direction to range [0 ; 2PI)
@@ -183,7 +200,7 @@ class Agent {
      
      baseDist++;                                                    //Increment supposed distances to base by 1 with each step
      
-     direction += -0.1 + (0.2) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+     direction += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
      
      fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
      
@@ -207,7 +224,7 @@ class Agent {
      scrCtr += 1;                                                   //Increment scream counter
      
      if(scrCtr > scrCtrPeak){                                       //If screamed previous step
-       scrCtr = 0;                                                  //Reset scream counter
+       resetScreamCounter();                                                  //Reset scream counter
      }
      
      return cl;                                                     //Returns color of new position
@@ -228,13 +245,14 @@ class Agent {
   {
     stroke(#ffffff);  strokeWeight(1);
     fill(cl);
-    ellipse(x, y, 3, 3);
+    circle(x, y, 4);
   }
   
   void render(float sz)
   {
+    stroke(#ffffff);  strokeWeight(1);
     fill(cl);
-    ellipse(x, y, sz, sz);
+    circle(x, y, sz);
   }
   
 }
