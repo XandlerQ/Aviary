@@ -25,6 +25,11 @@ class Base{
   
   //Setters
   
+  void setPos(float argX, float argY){
+    x = argX;
+    y = argY;
+  }
+  
   //Methods
   
   void addRes(int argResTp, int argResAmnt){                                         //Adds resource to storage

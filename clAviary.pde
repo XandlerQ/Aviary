@@ -118,6 +118,10 @@ class Aviary {
     screams();                                                                        //Perform screams
   }
   
+  void moveBase(int baseId, float argX, float argY){
+    bases.get(baseId).setPos(argX, argY);
+  }
+  
   //Renderers
   
   void renderBounds(int defX, int defY){                                              //Renders boundaries of aviary
@@ -147,6 +151,8 @@ class Aviary {
     renderBounds(defX, defY);
     renderBase();
     renderRes();
+    fill(255);  // инструкция
+    text("ЛКМ - перемещение базы", defX / 2 - 40, defY - 6);
   }
   
   
