@@ -6,7 +6,7 @@ int DEFX = 1080;
 int DEFY = 1080;
 
 
-Aviary AV = new Aviary(1, 3, 1000);
+Aviary AV = new Aviary(1, 3, 300);
 
 
 void setup(){

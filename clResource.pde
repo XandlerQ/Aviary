@@ -6,6 +6,7 @@ class Resource{
   int type;                                                              //Type index
   float x, y;                                                            //Position
   int res;                                                               //Amount of resource held
+  float size;
   color cl = #FFAA00;                                                    //Color
   
   //Constructors
@@ -17,18 +18,34 @@ class Resource{
     
     type = 0;                                                            //Type 0 by default
     
-    res = 60;                                                            //Initial resource stored by default
+    res = 200;                                                            //Initial resource stored by default
+    size = 20 + res/10;
     
   }
   
   //Getters
+  
+  float getX(){
+    return x;
+  }
+  
+  float getY(){
+    return y;
+  }
+  
+  float getSize(){
+    return size;
+  }
   
   //Setters
   
   //Methods
   
   boolean lowerRes(){                                                    //Lower stored resource amount
-    return ((res--) == 0);
+    res--;
+    size = 20 + res/10;
+    return (res == 0);
+    
   }
   
   //Renderers
@@ -36,7 +53,7 @@ class Resource{
   void render(){                                                         //Renders resource
     noStroke();
     fill(cl);
-    circle(x, y, res/2);
+    circle(x, y, size);
   }
   
 }

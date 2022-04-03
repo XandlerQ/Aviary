@@ -7,7 +7,7 @@ class Base{
   int resourceTypeAmount;                                                                     //Amount of resource types
   int[] res;                                                                         //Array for stored resources by type
   color cl = #3483FF;                                                                //Base color
-  float size = 30;                                                                   //Base size px
+  float size = 40;                                                                   //Base size px
   
   //Constructors
   

@@ -109,10 +109,23 @@ class Aviary {
         agent.peakScreamCounter();                                                    //Get ready to scream
       }
       if(curCl == resCl){                                                             //If found resource
+      int at = 0;
+      int idx = -1;
+        for (Resource res: resourcesList){
+          if(agent.getDistTo(res.getX(), res.getY()) < res.getSize()){
+            idx = at;
+          }
+          at++;            
+        }
         agent.setFlag(0);                                                               //Set action flag to seek base
         agent.setResDist(0, 0);                                                         //!!!Set supposed distance to resource to 0!!!
         agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
         agent.peakScreamCounter();                                                    //Get ready to scream
+        if(idx != -1)
+          if(resourcesList.get(idx).lowerRes()){
+            resourcesList.remove(idx);
+            resourcesList.add(new Resource());
+          }
       }
     });    
     screams();                                                                        //Perform screams
