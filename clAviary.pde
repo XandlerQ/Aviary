@@ -165,7 +165,7 @@ class Aviary {
     renderBase();
     renderRes();
     fill(255);  // инструкция
-    text("ЛКМ - перемещение базы", defX / 2 - 40, defY - 6);
+    text("ЛКМ - перемещение базы, R - перезапуск, P - пауза", defX / 2 - 100, defY - 6);
   }
   
   
