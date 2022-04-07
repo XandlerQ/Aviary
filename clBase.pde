@@ -19,6 +19,8 @@ class Base{
     resourceTypeAmount = 1;                                                                   //Single resource type by default
     res = new int[resourceTypeAmount];                                                        //Make stored resources by type array
     
+    for(int i = 0; i < resourceTypeAmount; i++)
+      res[i] = 0;
   }
   
   //Getters

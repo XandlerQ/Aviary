@@ -246,6 +246,7 @@ class Agent {
          newY > DEFY - WALLTHICKNESS ||
          newY < WALLTHICKNESS){                                     //If a wall is hit
        direction += (float)(Math.PI);                                     //Turn around
+       fixDir();
        newX = x + speed * cos(direction);                                 //
        newY = y + speed * sin(direction);                                 //Set new coordinates according to new direction
      }
