@@ -16,6 +16,8 @@ class Agent {
   int resourceTypeAmount;
   
   int[] resAmount;      //Amount of resources carried, index = type (size = amount of resource types)
+  int load;
+  int maxLoad;
   
   float[] resDirection;       //Supposed direction towards resource types, index = type (size = amount of resource types)
   int[] resDist;        //Supposed distance to go to reach a resourse type, index = type
@@ -54,6 +56,13 @@ class Agent {
       resAmount[i] = 0;                                     //Initially no resources carried
       resDirection[i] = (float)(2 * Math.PI * r.nextFloat());     //Random initial supposed direction to all resource types
       resDist[i] = DEFX/5;                                  //SAME(essential) initial supposed distance to all resource types
+    }
+    
+    maxLoad = 1;
+    
+    if(status == 0){
+      resAmount[0] = 1;
+      load = maxLoad;
     }
     
     baseDirection = (float)(2 * Math.PI * r.nextFloat());         //Random initial supposed direction to base
@@ -103,6 +112,18 @@ class Agent {
     return status;
   }
   
+  int getRes(int argIdx){
+    return resAmount[argIdx];
+  }
+  
+  int getLoad(){
+    return load;
+  }
+  
+  int getMaxLoad(){
+    return maxLoad;
+  }
+  
   //Setters
   
   void setColor(color argCl){
@@ -140,6 +161,17 @@ class Agent {
   void setFlag(int argStatus){
     status = argStatus;
     updateColor();
+  }
+  
+  void addRes(int argIdx){
+    resAmount[argIdx]++;
+    load++;
+  }
+  
+  void dropResources(){
+    for(int i = 0; i < resourceTypeAmount; i++)
+      resAmount[i] = 0;
+    load = 0;
   }
   
   //Methods

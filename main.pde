@@ -8,7 +8,7 @@ int DEFY = 1080;
 boolean pause = false;
 
 
-Aviary AV = new Aviary(1, 3, 300);
+Aviary AV = new Aviary(1, 3, 500);
 
 
 void setup(){
