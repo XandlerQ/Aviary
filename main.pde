@@ -2,17 +2,17 @@ import java.util.Random;
 import java.util.ArrayList;
 
 
-int DEFX = 1080;
+int DEFX = 1920;
 int DEFY = 1080;
 
 boolean pause = false;
 
 
-Aviary AV = new Aviary(1, 3, 500);
+Aviary AV = new Aviary(1, 2, 300);
 
 
 void setup(){
-   size(1080, 1080); 
+   size(1920, 1080); 
    background(0);
    ellipseMode(CENTER);
  }  

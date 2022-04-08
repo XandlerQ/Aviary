@@ -1,4 +1,4 @@
-color WALLCOLOR = #023600;                                                            //Color of aviary boundaries
+color WALLCOLOR = #000000;                                                            //Color of aviary boundaries
 int WALLTHICKNESS = 20;                                                               //Thickness of aviary boundaries (!!!KEEP MORE THAN MAXIMUM AGENT SPEED!!!)
 
 
@@ -71,7 +71,15 @@ class Aviary {
           ag.setBaseDist(bsDist + scrHearDist);                                      //Set new supposed base distance for hearer
           ag.setBaseDir(ag.directionToFace(agent.getX(), agent.getY(), distance));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
           ag.peakScreamCounter();
-          if(ag.getFlag() == 0) ag.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
+          if(ag.getFlag() == 0){
+            ag.updateDir();           //If hearer is currently seeking base                                                          //Update his current direction
+          //}
+            stroke(#67D8FF,3);   strokeWeight(40);    line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+            stroke(#52D8FF,15);  strokeWeight(20);    line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+            stroke(#36E2FF,50);  strokeWeight(9);     line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+            stroke(#12E5FF,255); strokeWeight(1);     line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+            stroke(255);
+          }
         }
         
         for(int i = 0; i < resourceTypeAmount; i++){           
@@ -80,7 +88,14 @@ class Aviary {
             ag.setResDist(i, resDist + ag.getScrHearDist());
             ag.setResDir(i, ag.directionToFace(agent.getX(), agent.getY(), distance));
             ag.peakScreamCounter();
-            if(ag.getFlag() == i + 1)  ag.updateDir();                                                        //Do the same for all resource types
+            if(ag.getFlag() == i + 1){
+              ag.updateDir();                                                        //Do the same for all resource types
+              //}
+              stroke(#FFA939,3);   strokeWeight(40);    line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+              stroke(#FFA42C,15);  strokeWeight(20);    line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+              stroke(#FF9D1C,50);  strokeWeight(9);     line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+              stroke(#FF921C,255); strokeWeight(1);     line(ag.getX(),ag.getY(),agent.getX(),agent.getY());
+            }
           }
         } 
       }
@@ -172,7 +187,7 @@ class Aviary {
     renderBase();
     renderRes();
     fill(255);  // инструкция
-    text("ЛКМ - перемещение базы, R - перезапуск, P - пауза", defX / 2 - 100, defY - 6);
+    //text("ЛКМ - перемещение базы, R - перезапуск, P - пауза", defX / 2 - 100, defY - 6);
   }
   
   

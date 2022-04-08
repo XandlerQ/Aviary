@@ -45,7 +45,7 @@ class Agent {
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
-    speed = (float)(0.6 + 0.4 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
+    speed = (float)(0.8 + 0.4 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
     
     
     resAmount = new int[resourceTypeAmount];                         //
@@ -71,7 +71,7 @@ class Agent {
     scrCtrPeak = 7;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     scrCtr = r.nextInt(scrCtrPeak);                         //Random initial scream counter value
     
-    scrHearDist = 45;                                       //Fixed perception distance
+    scrHearDist = 110;                                       //Fixed perception distance
   }
   
   //Getters

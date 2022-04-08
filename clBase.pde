@@ -12,9 +12,8 @@ class Base{
   //Constructors
   
   Base(){
-    Random r = new Random();                                                         //Randomizer
-    x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                                     //
-    y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                                     //Random position
+    x = DEFX/2;                                     //
+    y = DEFY/2;                                     //Random position
     
     resourceTypeAmount = 1;                                                                   //Single resource type by default
     res = new int[resourceTypeAmount];                                                        //Make stored resources by type array
