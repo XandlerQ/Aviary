@@ -70,6 +70,7 @@ class Aviary {
         if(bsDist + scrHearDist < ag.getBaseDist()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
           ag.setBaseDist(bsDist + scrHearDist);                                      //Set new supposed base distance for hearer
           ag.setBaseDir(ag.directionToFace(agent.getX(), agent.getY(), distance));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
+          ag.peakScreamCounter();
           if(ag.getFlag() == 0) ag.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
         }
         
@@ -78,6 +79,7 @@ class Aviary {
           if(resDist + scrHearDist < ag.getResDist(i)){            
             ag.setResDist(i, resDist + ag.getScrHearDist());
             ag.setResDir(i, ag.directionToFace(agent.getX(), agent.getY(), distance));
+            ag.peakScreamCounter();
             if(ag.getFlag() == i + 1)  ag.updateDir();                                                        //Do the same for all resource types
           }
         } 
