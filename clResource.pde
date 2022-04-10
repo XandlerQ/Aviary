@@ -57,3 +57,93 @@ class Resource{
   }
   
 }
+
+class ResourceNet{
+  
+  int quadX;
+  int quadY;
+  float[][] resNet;
+  color cl = #FFAA00;
+  float maxRes;
+  float repSpeed;
+  
+  //Constructors
+  
+  ResourceNet(){
+    
+    quadX = QUADX;
+    quadY = QUADY;
+    
+    resNet = new float[quadX][quadY];
+    
+    maxRes = MAXRES;
+    repSpeed = RESREPSPEED;
+    
+    for(int i = 0; i < quadX; i++)
+      for(int j = 0; j < quadY; j++)
+        resNet[i][j] = MAXRES / 2;
+  }
+  
+  //Getters
+  
+  float getMaxRes(){
+    return maxRes;
+  }
+  
+  float getRes(int argI, int argJ){
+    return resNet[argI][argJ];
+  }
+  
+  //Setters
+  
+  void setRepSpeed(float argRepSpeed){
+    repSpeed = argRepSpeed;
+  }
+  
+  //Methods
+  
+  float calculateX(int argI){
+    float h = (DEFX / (quadX - 1));
+    return argI * h;
+  }
+  
+  float calculateY(int argJ){
+    float h = (DEFY / (quadY - 1));
+    return argJ * h;
+  }
+  
+  float lowerRes(int argI, int argJ, float argAm){
+    if(resNet[argI][argJ] < argAm){
+      float retRes = resNet[argI][argJ];
+      resNet[argI][argJ] = 0;
+      return retRes;
+    }
+    else{
+      resNet[argI][argJ] -= argAm;
+      return argAm;
+    }      
+  }
+  
+  void replenish(){
+    for(int i = 0; i < quadX; i++)
+      for(int j = 0; j < quadY; j++){
+        if(resNet[i][j] < maxRes){
+          resNet[i][j] += repSpeed;
+        }
+      }
+  }
+  
+  //Renderers
+  
+  void render()
+  {
+    noStroke();
+    fill(cl, 40);
+    
+    for(int i = 0; i < quadX; i++)
+      for(int j = 0; j < quadY; j++)
+        circle(calculateX(i), calculateY(j), (resNet[i][j] / maxRes) * (DEFX / quadX));
+  }
+    
+  
+}
