@@ -148,6 +148,17 @@ class Pack{
   boolean empty(){
     return agents.size() < 2 || connections.size() == 0;
   }
+  
+  ArrayList<Agent> getConnected(Agent argAg){
+    ArrayList<Agent> conAg = new ArrayList<Agent>();
+    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
+      Connection con = iter.next();
+      if(con.contains(argAg)){
+        conAg.add(con.pairOf(argAg));
+      }
+    }
+    return conAg;
+  }
     
   
   //Renderers

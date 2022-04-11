@@ -43,7 +43,7 @@ class Agent {
     status = 1;
     species = 0;
   
-    age = r.nextFloat() * MAXAGE / 4;
+    age = r.nextFloat() * MAXAGE / 8;
     maxAge = 0.6 * MAXAGE + 0.4 * MAXAGE * r.nextFloat();
     agePerStep = AGEPERSTEP;
       
@@ -59,7 +59,7 @@ class Agent {
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
-    speed = 0.6 + 0.4 * r.nextFloat() - 0.5 * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
+    speed = 0.8 + 0.6 * r.nextFloat() - 0.5 * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
       
     ActCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     actCtr = r.nextInt(ActCtrPeak);                         //Random initial scream counter value
@@ -162,7 +162,10 @@ class Agent {
     float h = (DEFX / (QUADX - 1));
     while(x > h + quadX * h)
       quadX++;
-    return quadX;
+    if(quadX < QUADX)
+      return quadX;
+    else
+      return QUADX - 1;
   }
   
   int getQuadY(){
@@ -170,14 +173,21 @@ class Agent {
     float h = (DEFY / (QUADY - 1));
     while(y > h + quadY * h)
       quadY++;
-    return quadY;
+    if(quadY < QUADY)
+      return quadY;
+    else
+      return QUADY - 1;
+  }
+  
+  float getEnergyLeftover(){
+    return energy - suffEnergy;
   }
   
   boolean ifHearFrom(float argDist){                                //True if hear from distance, false otherwise
     return argDist <= scrHearDist;
   }
   
-  boolean ifReadyToPack(){
+  boolean wellFed(){
     return status == 0;
   }
   
@@ -239,7 +249,7 @@ class Agent {
     }
   }
   
-  float directionToFace(float argX, float argY, float argDist){           //Returns direction (angle in range [0 ; 2PI)) to face point (argX,argY), if distance to it is argDist
+  float dirToFace(float argX, float argY, float argDist){           //Returns direction (angle in range [0 ; 2PI)) to face point (argX,argY), if distance to it is argDist
     
     Random r = new Random();
     
@@ -255,8 +265,8 @@ class Agent {
     }
   }
   
-  float directionToFace(float argX, float argY){
-    return directionToFace(argX, argY, getDistTo(argX, argY));
+  float dirToFace(float argX, float argY){
+    return dirToFace(argX, argY, getDistTo(argX, argY));
   }
   
   void eat(float argRes){
