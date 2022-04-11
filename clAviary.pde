@@ -35,19 +35,52 @@ class AviaryRivalry {
   
   //Methods
   
-  void scream(Agent agent){                                                           //Performs scream of agent
+  int getPack(Agent argAg){
+    int idx = -1;
+    int at = 0;
+    for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+      Pack pck = iter.next();
+      if(pck.contains(argAg))
+        idx = at;
+      at++;
+    }
+    return idx;
+  }
+  
+  void scream(Agent argAg){                                                           //Performs scream of agent
+    
+    
   
     agents.forEach((ag) -> {                                                       //For each agent
+    
+      int argPackIdx = getPack(argAg);
       
-      if(ag != agent){
-        float distance = ag.getDistTo(agent.getX(), agent.getY());                     //Calculate distance to screamer
+      if(ag != argAg){
+        float distance = ag.getDistTo(argAg.getX(), argAg.getY());                     //Calculate distance to screamer
         float scrHearDist = ag.getScrHearDist();                                         //Get hearing distance
+        
+        int packIdx = getPack(ag);
       
-        if(distance <= scrHearDist && agent.getSpecies() == ag.getSpecies()){
-          if(distance >= agent.getComfDist())
-            ag.setDir((ag.directionToFace(agent.getX(), agent.getY(), distance) + ag.getDir()) / 2);
+        if(distance <= scrHearDist && argAg.getSpecies() == ag.getSpecies()){
+          if(distance <= CONNECTDIST){
+            if(argPackIdx == -1 && packIdx == -1){
+              Pack newPack = new Pack();
+              newPack.addAgent(argAg);
+              newPack.addAgent(ag);
+              packs.add(newPack);
+              println("added new pack, current pack count:", packs.size());
+            }
+            else if (argPackIdx == -1){
+              packs.get(packIdx).addAgent(argAg);
+            }
+            else if (packIdx == -1){
+              packs.get(argPackIdx).addAgent(ag);
+            }
+          }
+          if(distance >= argAg.getComfDist())
+            ag.setDir((ag.directionToFace(argAg.getX(), argAg.getY(), distance) + ag.getDir()) / 2);
           else
-            ag.setDir(ag.directionToFace(agent.getX(), agent.getY(), distance) + (float)Math.PI);
+            ag.setDir(ag.directionToFace(argAg.getX(), argAg.getY(), distance) + (float)Math.PI);
         }
       }
     });
@@ -62,8 +95,8 @@ class AviaryRivalry {
   
   
   void run(){                                                       //Main method
-    render();                                                               //Render boundaries, bases and resources
     tick();                                                                           //Perform animation tick
+    render();
     renderAgent();                                                                    //Render agants
   }
   
@@ -93,7 +126,8 @@ class AviaryRivalry {
   
   void tick(){                                                                        //Performes animation tick
     
-    agents.forEach((ag) -> {                                                       //For each agent
+    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
       
       int quadX = ag.getQuadX();
       int quadY = ag.getQuadY();
@@ -134,17 +168,35 @@ class AviaryRivalry {
       ag.step();
       ag.eat(resToEat);
       ag.updateStatus();
-    });
+      if(ag.dead()){
+        removeAgentFromPacks(ag);
+        iter.remove();
+      }
+    }
     net.replenish();
     screams();                                                                        //Perform screams
   }
   
+  void removeAgentFromPacks(Agent argAg){
+      packs.forEach((pack) ->{pack.removeAgent(argAg);});
+      for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+      Pack pack = iter.next();
+      if(pack.empty()){
+        iter.remove();
+        println("removed a pack, current pack count:", packs.size());
+      }
+      }
+  }
   
   
   //Renderers
   
   void renderRes(){                                                                   //Renders resources
     net.render();
+  }
+  
+  void renderPacks(){
+    packs.forEach((pack) -> {pack.render();});
   }
   
   void renderAgent(){                                                                 //Renders agents
@@ -154,6 +206,7 @@ class AviaryRivalry {
   void render(){                                                    //Renders aviary
     background(0);
     renderRes();
+    renderPacks();
     fill(255);  // инструкция
   }
   

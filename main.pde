@@ -5,22 +5,23 @@ import java.util.*;
 int DEFX = 1000;
 int DEFY = 1000;
 
-int QUADX = 11;
-int QUADY = 11;
+int QUADX = 21;
+int QUADY = 21;
 
-int INITAGENTAMOUNT = 20;
+int INITAGENTAMOUNT = 10;
 
-float MAXAGE = 100;
+float MAXAGE = 50;
 float AGEPERSTEP = 0.05;
 float SUFFENERGY = 10;
 float ENERGYPERSTEP = 0.05;
 float RESEATENPERSTEP = 0.08;
 int VALENCE = 3;
-float SCRHEARDIST = 80;
+float SCRHEARDIST = 250;
 int ACTCTRPEAK = 30;
 float COMDIST = 25;
 float MAXRES = 10;
 float RESREPSPEED = 0.025;
+float CONNECTDIST = 250;
 
 
 boolean pause = false;

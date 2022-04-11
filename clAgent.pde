@@ -119,6 +119,10 @@ class Agent {
     return comfDist;
   }
   
+  boolean dead(){
+    return dieFlag;
+  }
+  
   //Setters
   
   void setColor(color argCl){
@@ -130,7 +134,7 @@ class Agent {
     fixDir();
   }
   
-  void setFlag(int argStatus){
+  void setStatus(int argStatus){
     status = argStatus;
     updateColor();
   }
@@ -201,6 +205,10 @@ class Agent {
     conCount++;
   }
   
+  void removeCon(){
+    conCount--;
+  }
+  
   void updateStatus(){
     if(energy > suffEnergy)
       status = 0;
@@ -253,7 +261,6 @@ class Agent {
   
   void eat(float argRes){
     energy += argRes;
-    println(energy);
   }
   
   void step() {                                                    //Make step, returns color of next position
