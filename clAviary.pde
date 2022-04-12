@@ -1,5 +1,5 @@
 color WALLCOLOR = #023600;                                                            //Color of aviary boundaries
-float WALLTHICKNESS = QUADDIM;
+float WALLTHICKNESS = 1;
 
 
 
@@ -57,81 +57,73 @@ class AviaryRivalry {
         }
       }
   }
-  
-  int whichRes(Agent argAg, int argQuadX, int argQuadY){
-    
-    float hx = (DEFX / (QUADX - 1));
-    float hy = (DEFY / (QUADY - 1));
-    
-    float localX = argAg.getX() - argQuadX * hx;
-    float localY = argAg.getY() - argQuadY * hy;
-    
-    if(localX <= hx / 2){
-      if(localY <= hy / 2)
-        return 0;
-      else
-        return 1;
-    }
-    else{
-      if(localY <= hy / 2)
-        return 2;
-      else
-        return 3;
-    }
-  }
     
   void agEat(Agent argAg, int quadX, int quadY){
-    
-    int resToLower = whichRes(argAg, quadX, quadY);
-    float resToEat = 0;
-      
-    switch(resToLower){
-      case 0:
-        resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP * 0.3) + net.lowerRes(quadX, quadY + 1, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX + 1, quadY, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX + 1, quadY + 1, RESEATENPERSTEP * 0.233333);
-        break;
-      case 1:
-        resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX, quadY + 1, RESEATENPERSTEP * 0.3) + net.lowerRes(quadX + 1, quadY, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX + 1, quadY + 1, RESEATENPERSTEP * 0.233333);
-        break;
-      case 2:
-        resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX, quadY + 1, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX + 1, quadY, RESEATENPERSTEP * 0.3) + net.lowerRes(quadX + 1, quadY + 1, RESEATENPERSTEP * 0.233333);
-        break;
-      case 3:
-        resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX, quadY + 1, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX + 1, quadY, RESEATENPERSTEP * 0.233333) + net.lowerRes(quadX + 1, quadY + 1, RESEATENPERSTEP * 0.3);
-        break;
-      default:
-    }
 
+    float resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP);
     argAg.eat(resToEat);
   }
   
   float getGradDir(Agent argAg, int quadX, int quadY){
     
-    float dirX = -(net.getRes(quadX, quadY) + net.getRes(quadX, quadY + 1)) / (2 * net.getMaxRes()) 
-           +(net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY + 1)) / (2 * net.getMaxRes());
-    float dirY = -(net.getRes(quadX, quadY) + net.getRes(quadX + 1, quadY)) / (2 * net.getMaxRes()) 
-           +(net.getRes(quadX, quadY + 1) + net.getRes(quadX + 1, quadY + 1)) / (2 * net.getMaxRes());
-          
-    if (dirX != 0 || dirY != 0){
-      return argAg.dirToFace(argAg.getX() + dirX, argAg.getY() + dirY);
+    float dirX;
+    float dirY;
+    
+    if(quadX == 0){
+      if(quadY == 0){
+        dirX = net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY + 1);
+        dirY = net.getRes(quadX, quadY + 1) + net.getRes(quadX + 1, quadY + 1);
+      }
+      else if(quadY == QUADY - 1){
+        dirX = net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY - 1);
+        dirY = -(net.getRes(quadX, quadY - 1) + net.getRes(quadX + 1, quadY - 1));
+      }
+      else{
+        dirX = net.getRes(quadX + 1, quadY - 1) + net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY + 1);
+        dirY = net.getRes(quadX, quadY + 1) + net.getRes(quadX + 1, quadY + 1) - (net.getRes(quadX, quadY - 1) + net.getRes(quadX + 1, quadY - 1));
+      }
     }
-    else
-      return 0;
+    else if(quadX == QUADX - 1){
+      if(quadY == 0){
+        dirX = -(net.getRes(quadX - 1, quadY) + net.getRes(quadX - 1, quadY + 1));
+        dirY = net.getRes(quadX, quadY + 1) + net.getRes(quadX - 1, quadY + 1);
+      }
+      else if(quadY == QUADY - 1){
+        dirX = -(net.getRes(quadX - 1, quadY) + net.getRes(quadX - 1, quadY - 1));
+        dirY = -(net.getRes(quadX, quadY - 1) + net.getRes(quadX - 1, quadY - 1));
+      }
+      else{
+        dirX = -(net.getRes(quadX - 1, quadY - 1) + net.getRes(quadX - 1, quadY) + net.getRes(quadX - 1, quadY + 1));
+        dirY = net.getRes(quadX, quadY + 1) + net.getRes(quadX - 1, quadY + 1) - (net.getRes(quadX, quadY - 1) + net.getRes(quadX - 1, quadY - 1));
+      }
+    }
+    else{
+      if(quadY == 0){
+        dirX = net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY + 1) - (net.getRes(quadX - 1, quadY) + net.getRes(quadX - 1, quadY + 1));
+        dirY = net.getRes(quadX - 1, quadY + 1) + net.getRes(quadX, quadY + 1) + net.getRes(quadX + 1, quadY + 1);
+      }
+      else if(quadY == QUADY - 1){
+        dirX = net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY - 1) - (net.getRes(quadX - 1, quadY) + net.getRes(quadX - 1, quadY - 1));
+        dirY = -(net.getRes(quadX - 1, quadY - 1) + net.getRes(quadX, quadY - 1) + net.getRes(quadX + 1, quadY - 1));
+      }
+      else{
+        dirX = (net.getRes(quadX + 1, quadY - 1) + net.getRes(quadX + 1, quadY) + net.getRes(quadX + 1, quadY + 1)) 
+             - (net.getRes(quadX - 1, quadY - 1) + net.getRes(quadX - 1, quadY) + net.getRes(quadX - 1, quadY + 1));
+        dirY = (net.getRes(quadX - 1, quadY + 1) + net.getRes(quadX, quadY + 1) + net.getRes(quadX + 1, quadY + 1)) 
+             - (net.getRes(quadX - 1, quadY - 1) + net.getRes(quadX, quadY - 1) + net.getRes(quadX + 1, quadY - 1));
+      }
+    }
+    
+    return argAg.dirToFace(argAg.getX() + dirX, argAg.getY() + dirY);
+        
+    
   }
   
   float getPackDir(Agent argAg){
-    float packDir = 0;
+
     int packIdx = getPack(argAg);
     if(packIdx != -1){
-      ArrayList<Agent> conAg = packs.get(packIdx).getConnected(argAg);
-      for (Iterator<Agent> iter = conAg.iterator(); iter.hasNext();){
-        Agent ag = iter.next();
-        float distance = argAg.getDistTo(ag.getX(), ag.getY());
-        if(distance >= argAg.getComfDist())
-            packDir += argAg.dirToFace(ag.getX(), ag.getY(), distance) / conAg.size();
-          else
-            packDir += (argAg.dirToFace(ag.getX(), ag.getY(), distance) + (float)Math.PI) / conAg.size();
-      }
-      return packDir;
+      return argAg.dirToFace(packs.get(packIdx).getPackCenterX(), packs.get(packIdx).getPackCenterY());
     }
     else
       return 0;
@@ -142,14 +134,18 @@ class AviaryRivalry {
     int packIdx = getPack(argAg);
     if(packIdx != -1){
       ArrayList<Agent> conAg = packs.get(packIdx).getConnected(argAg);
-      float sumDist = 0;
+      float maxDist = 0;
       for (Iterator<Agent> iter = conAg.iterator(); iter.hasNext();){
         Agent ag = iter.next();
-        sumDist += argAg.getDistTo(ag.getX(), ag.getY());
+        float distTo = argAg.getDistTo(ag.getX(), ag.getY());
+        if (maxDist < distTo)
+          maxDist = distTo;
       }
-      return sumDist / conAg.size();
+      return maxDist;
     }
-    return 0;
+    else{
+      return -1;
+    }
   }
   
   void screams(){                                                                     //Perform screams if ready
@@ -159,16 +155,24 @@ class AviaryRivalry {
     });
   }
   
-  float calculateDir(Agent argAg, float gradDir, float packDir, float packDist){
-    float cDC = argAg.getDistTo(DEFX / 2, DEFY / 2) / (DEFX / 10);
-    float pDC = packDist / (SCRHEARDIST * 0.3);
-    float gDC = 0.8 * argAg.getEnergyLeftover();
-    if(gDC < 0){
-      return (cDC * argAg.dirToFace(DEFX / 2, DEFY / 2) + argAg.getDir() - gDC * gradDir) / (cDC + 1 - gDC);
+  float calculateDir(float gradDir, float packDir, float packDist){
+    
+    if(packDist < 0){
+      return gradDir;
     }
     else{
-      return (cDC * argAg.dirToFace(DEFX / 2, DEFY / 2) + argAg.getDir() + (1 / gDC * 0.2) * gradDir + pDC * packDir) / (cDC + 1 + (1 / gDC * 0.2) + pDC);
+      if(packDist < COMDIST){
+        return packDir + (float)Math.PI;
+      }
+      else if (packDist < SCRHEARDIST){
+        return gradDir;
+      }
+      else{
+        println("TO FAR");
+        return packDir;
+      }
     }
+    
   }
   
   void scream(Agent argAg){                                                           //Performs scream of agent                                                     //For each agent
@@ -181,10 +185,10 @@ class AviaryRivalry {
         Pack pack = packs.get(packIdx);
         pack.removeAgent(argAg);
       }
-      argAg.setDir(calculateDir(argAg, 
+      argAg.setDir(calculateDir( 
                                 getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
-                                0,
-                                0
+                                getPackDir(argAg),
+                                getPackDist(argAg)
                                 )
       );
     }
@@ -192,7 +196,7 @@ class AviaryRivalry {
     else{
       
       if(packIdx != -1){
-        argAg.setDir(calculateDir(argAg, 
+        argAg.setDir(calculateDir(
                                   getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
                                   getPackDir(argAg),
                                   getPackDist(argAg)
@@ -227,20 +231,14 @@ class AviaryRivalry {
                   packs.add(newPack);
                 }
               
-                argAg.setDir(calculateDir(argAg, 
-                                  getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
-                                  getPackDir(argAg),
-                                  getPackDist(argAg)
-                                  )
+                argAg.setDir(calculateDir( 
+                                          getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
+                                          getPackDir(argAg),
+                                          getPackDist(argAg)
+                                          )
                 );
               
               }
-            
-              else if(distance <= SCRHEARDIST){
-                argAg.setDir((getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()) + 2 * argAg.dirToFace(ag.getX(), ag.getY(), distance)) / 3);
-              }
-            
-            
             }
           }
         }

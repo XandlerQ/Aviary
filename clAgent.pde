@@ -159,7 +159,7 @@ class Agent {
   
   int getQuadX(){
     int quadX = 0;
-    float h = (DEFX / (QUADX - 1));
+    float h = DEFX / QUADX;
     while(x > h + quadX * h)
       quadX++;
     if(quadX < QUADX)
@@ -170,7 +170,7 @@ class Agent {
   
   int getQuadY(){
     int quadY = 0;
-    float h = (DEFY / (QUADY - 1));
+    float h = DEFY / QUADY;
     while(y > h + quadY * h)
       quadY++;
     if(quadY < QUADY)
@@ -288,7 +288,7 @@ class Agent {
      
      updateStatus();
      
-     direction += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+     direction += -0.16 + (0.32) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
      
      fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
      

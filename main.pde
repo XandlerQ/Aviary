@@ -5,10 +5,10 @@ import java.util.*;
 int DEFX = 1000;
 int DEFY = 1000;
 
-int QUADX = 41;
-int QUADY = 41;
+int QUADX = 100;
+int QUADY = 100;
 
-float QUADDIM = DEFX / (QUADX - 1);
+float QUADDIM = DEFX / QUADX;
 
 int INITAGENTAMOUNT = 20;
 
@@ -18,12 +18,12 @@ float SUFFENERGY = 10;
 float ENERGYPERSTEP = 0.03;
 float RESEATENPERSTEP = 0.08;
 int VALENCE = 3;
-float SCRHEARDIST = 100;
-int ACTCTRPEAK = 60;
+float SCRHEARDIST = 60;
+int ACTCTRPEAK = 10;
 float COMDIST = 25;
-float MAXRES = 20;
-float RESREPSPEED = 0.01;
-float CONNECTDIST = 50;
+float MAXRES = 1.5;
+float RESREPSPEED = 0.005;
+float CONNECTDIST = 200;
 
 
 boolean pause = false;

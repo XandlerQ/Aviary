@@ -67,14 +67,14 @@ class Pack{
     boolean everConnected = false;
     
     if(agents.size() == 0){
-      println("added agent to empty pack");
+      //println("added agent to empty pack");
       agents.add(argAg);
       everConnected = true;
       return everConnected;
     }
     
     if(agents.contains(argAg)){
-      println("tried to enter your own pack");
+      //println("tried to enter your own pack");
       return false;
     }
 
@@ -85,7 +85,7 @@ class Pack{
          && argAg.getDistTo(ag.getX(), ag.getY()) <= CONNECTDIST){
         everConnected = true;
         connections.add(new Connection(argAg, ag));
-        println("added connection, total connection amount for this pack: ", connections.size());
+        //println("added connection, total connection amount for this pack: ", connections.size());
         ag.addCon();
         argAg.addCon();
       }
@@ -99,18 +99,18 @@ class Pack{
   void removeAgent(Agent argAg){
     if(!agents.contains(argAg))
       return;
-    println("removing agent from pack");
+    //println("removing agent from pack");
     ArrayList<Agent> agToConnect = new ArrayList<Agent>();
     for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
       Connection con = iter.next();
       if(con.contains(argAg)){
-        println("found a connection to delete");
+        //println("found a connection to delete");
         agToConnect.add(con.pairOf(argAg));
         con.pairOf(argAg).removeCon();
         iter.remove();
       }
     }
-    println("agToConnect size for this deletion:", agToConnect.size());
+    //println("agToConnect size for this deletion:", agToConnect.size());
     if(agToConnect.size() >= 2)
       reconnect(agToConnect);
     agents.remove(argAg);
@@ -125,17 +125,17 @@ class Pack{
         if(!ag1.isTopCon()
          && !ag2.isTopCon()
          && !connections.contains(newCon)){
-          println("added a reconnection!!!");
+          //println("added a reconnection!!!");
           connections.add(newCon);
           ag1.addCon();
           ag2.addCon();
          }
          else if(ag1.isTopCon()
          || ag2.isTopCon()){
-          println("did not add a reconnection because of TOPCON!!!");
+          //println("did not add a reconnection because of TOPCON!!!");
          }
          else{
-           println("did not add a reconnection because of EXISTING CONNECTION!!!");
+           //println("did not add a reconnection because of EXISTING CONNECTION!!!");
          }
       }
     }
@@ -158,6 +158,24 @@ class Pack{
       }
     }
     return conAg;
+  }
+  
+  float getPackCenterX(){
+    float resX = 0;
+    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      resX += ag.getX() / agents.size();
+    }
+    return resX;
+  }
+  
+  float getPackCenterY(){
+    float resY = 0;
+    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      resY += ag.getY() / agents.size();
+    }
+    return resY;
   }
     
   
