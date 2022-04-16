@@ -168,7 +168,7 @@ class AviaryRivalry {
         return gradDir;
       }
       else{
-        println("TO FAR");
+        //println("TO FAR");
         return packDir;
       }
     }
@@ -182,8 +182,7 @@ class AviaryRivalry {
     if(!argAg.wellFed()){
       
       if(packIdx != -1){
-        Pack pack = packs.get(packIdx);
-        pack.removeAgent(argAg);
+        removeAgentFromPacks(argAg);
       }
       argAg.setDir(calculateDir( 
                                 getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
@@ -229,6 +228,7 @@ class AviaryRivalry {
                   newPack.addAgent(argAg);
                   newPack.addAgent(ag);
                   packs.add(newPack);
+                  println("removed pack, count:", packs.size());
                 }
               
                 argAg.setDir(calculateDir( 
