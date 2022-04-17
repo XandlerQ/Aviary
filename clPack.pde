@@ -160,6 +160,17 @@ class Pack{
     return conAg;
   }
   
+  ArrayList<Agent> getTooClose(Agent argAg){
+    ArrayList<Agent> closeAg = new ArrayList<Agent>();
+    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      if(argAg.getDistTo(ag.getX(), ag.getY()) < COMDIST && argAg != ag){
+        closeAg.add(ag);
+      }
+    }
+    return closeAg;
+  }
+  
   float getPackCenterX(){
     float resX = 0;
     int sz = agents.size();

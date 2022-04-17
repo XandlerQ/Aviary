@@ -137,6 +137,8 @@ class ResourceNet{
       for(int j = 0; j < quadY; j++){
         fill(cl, 50 * (quads[i][j]) / maxRes);
         rect(i * sideX, j * sideY, sideX, sideY);
+        /*fill(cl, 50);
+        circle(i * sideX + sideX/2, j * sideY + sideY/2, sideX * (quads[i][j]) / maxRes);*/
       }
   }
     

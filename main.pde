@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.*;
 
 
@@ -18,9 +17,9 @@ float SUFFENERGY = 10;
 float ENERGYPERSTEP = 0.03;
 float RESEATENPERSTEP = 0.08;
 int VALENCE = 3;
-float SCRHEARDIST = 60;
+float SCRHEARDIST = 150;
 int ACTCTRPEAK = 120;
-float COMDIST = 25;
+float COMDIST = 10;
 float MAXRES = 0.4;
 float RESREPSPEED = 0.001;
 float CONNECTDIST = 200;

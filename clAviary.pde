@@ -62,7 +62,7 @@ class AviaryRivalry {
     }
     println("maybe removed a pack, current pack count:", packs.size());
   }
-  
+  /*
   void fixPacks(){
     for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
         Pack pack = iter.next();
@@ -71,7 +71,7 @@ class AviaryRivalry {
         }
     }
   }
-    
+    */
   void agEat(Agent argAg, int quadX, int quadY){
 
     float resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP);
@@ -199,16 +199,22 @@ class AviaryRivalry {
       return gradDir;
     }
     else{
-      if(packMinDist < COMDIST){
-        return packDir + (float)Math.PI;
-      }
-      else if (packMaxDist < SCRHEARDIST){
-        return gradDir;
-      }
-      else{
-        //println("TOO FAR");
+      if(packMaxDist > SCRHEARDIST){
         return packDir;
       }
+      if(packMinDist < COMDIST){
+        ArrayList<Agent> closeAg = packs.get(getPack(argAg)).getTooClose(argAg);
+        float tooCloseX = 0;
+        float tooCloseY = 0;
+        int tooCloseCount = closeAg.size();
+        for (Iterator<Agent> iter = closeAg.iterator(); iter.hasNext();){
+          Agent ag = iter.next();
+          tooCloseX += ag.getX() / tooCloseCount;
+          tooCloseY += ag.getY() / tooCloseCount;
+        }
+        return (argAg.dirToFace(tooCloseX, tooCloseY) + (float)Math.PI);
+      }
+      return gradDir;
     }
     
   }
