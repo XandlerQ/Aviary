@@ -75,16 +75,19 @@ class Pack{
     
     if(agents.contains(argAg)){
       //println("tried to enter your own pack");
-      return false;
+      everConnected = true;
+      return everConnected;
     }
 
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
       if(!ag.isTopCon()
-         && !argAg.isTopCon()
-         && argAg.getDistTo(ag.getX(), ag.getY()) <= CONNECTDIST){
+         && !argAg.isTopCon() 
+         && argAg.getDistTo(ag.getX(), ag.getY()) <= CONNECTDIST + 10){
         everConnected = true;
-        connections.add(new Connection(argAg, ag));
+        Connection newCon = new Connection(argAg, ag);
+        if(!connections.contains(newCon))
+          connections.add(newCon);
         //println("added connection, total connection amount for this pack: ", connections.size());
         ag.addCon();
         argAg.addCon();
@@ -97,8 +100,10 @@ class Pack{
   }
   
   void removeAgent(Agent argAg){
-    if(!agents.contains(argAg))
+    if(!agents.contains(argAg)){
+      //println("removing agent from pack: THIS AGENT IS NOT IN THIS PACK");
       return;
+    }
     //println("removing agent from pack");
     ArrayList<Agent> agToConnect = new ArrayList<Agent>();
     for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
@@ -110,10 +115,12 @@ class Pack{
         iter.remove();
       }
     }
+    agents.remove(argAg);
+    argAg.resetConCount();
     //println("agToConnect size for this deletion:", agToConnect.size());
     if(agToConnect.size() >= 2)
       reconnect(agToConnect);
-    agents.remove(argAg);
+    
   }
   
   void reconnect(ArrayList<Agent> agToConnect){
@@ -129,13 +136,6 @@ class Pack{
           connections.add(newCon);
           ag1.addCon();
           ag2.addCon();
-         }
-         else if(ag1.isTopCon()
-         || ag2.isTopCon()){
-          //println("did not add a reconnection because of TOPCON!!!");
-         }
-         else{
-           //println("did not add a reconnection because of EXISTING CONNECTION!!!");
          }
       }
     }
@@ -162,18 +162,20 @@ class Pack{
   
   float getPackCenterX(){
     float resX = 0;
+    int sz = agents.size();
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
-      resX += ag.getX() / agents.size();
+      resX += ag.getX() / sz;
     }
     return resX;
   }
   
   float getPackCenterY(){
     float resY = 0;
+    int sz = agents.size();
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
-      resY += ag.getY() / agents.size();
+      resY += ag.getY() / sz;
     }
     return resY;
   }

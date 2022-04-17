@@ -48,14 +48,28 @@ class AviaryRivalry {
   } 
   
   void removeAgentFromPacks(Agent argAg){
-      packs.forEach((pack) ->{pack.removeAgent(argAg);});
-      for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+    int at = 0;
+    for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+      Pack pack = iter.next();
+      if(pack.contains(argAg)){
+        println("PACK IDX", at, "CONTAINED THIS AGENT, REMOVING AGENT FROM THIS PACK");
+        pack.removeAgent(argAg);
+      }
+      if(pack.empty()){
+        println("PACK TURNED OUT TO BE EMPTY, REMOVING THE WHOLE PACK");
+        iter.remove();
+      }
+    }
+    println("maybe removed a pack, current pack count:", packs.size());
+  }
+  
+  void fixPacks(){
+    for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
         Pack pack = iter.next();
         if(pack.empty()){
           iter.remove();
-          println("removed a pack, current pack count:", packs.size());
         }
-      }
+    }
   }
     
   void agEat(Agent argAg, int quadX, int quadY){
@@ -129,7 +143,7 @@ class AviaryRivalry {
       return 0;
   }
   
-  float getPackDist(Agent argAg){
+  float getPackMaxDist(Agent argAg){
     
     int packIdx = getPack(argAg);
     if(packIdx != -1){
@@ -148,6 +162,25 @@ class AviaryRivalry {
     }
   }
   
+  float getPackMinDist(Agent argAg){
+    
+    int packIdx = getPack(argAg);
+    if(packIdx != -1){
+      ArrayList<Agent> conAg = packs.get(packIdx).getConnected(argAg);
+      float minDist = DEFX;
+      for (Iterator<Agent> iter = conAg.iterator(); iter.hasNext();){
+        Agent ag = iter.next();
+        float distTo = argAg.getDistTo(ag.getX(), ag.getY());
+        if (minDist > distTo)
+          minDist = distTo;
+      }
+      return minDist;
+    }
+    else{
+      return -1;
+    }
+  }
+  
   void screams(){                                                                     //Perform screams if ready
     agents.forEach((agent) -> {
       if(agent.ifReadyToAct())
@@ -155,20 +188,25 @@ class AviaryRivalry {
     });
   }
   
-  float calculateDir(float gradDir, float packDir, float packDist){
+  float calculateDir(Agent argAg){
     
-    if(packDist < 0){
+    float packMaxDist = getPackMaxDist(argAg);
+    float packMinDist = getPackMinDist(argAg);
+    float gradDir = getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY());
+    float packDir = getPackDir(argAg);
+    
+    if(packMinDist < 0 || packMaxDist < 0){
       return gradDir;
     }
     else{
-      if(packDist < COMDIST){
+      if(packMinDist < COMDIST){
         return packDir + (float)Math.PI;
       }
-      else if (packDist < SCRHEARDIST){
+      else if (packMaxDist < SCRHEARDIST){
         return gradDir;
       }
       else{
-        //println("TO FAR");
+        //println("TOO FAR");
         return packDir;
       }
     }
@@ -176,76 +214,88 @@ class AviaryRivalry {
   }
   
   void scream(Agent argAg){                                                           //Performs scream of agent                                                     //For each agent
-    
+    //println("START OF AGENT SCREAM //////////////////////////////////");
     int packIdx = getPack(argAg);
+    //println("SCREAMING AGENT IDX:", agents.indexOf(argAg));
+    //println("PACK OF SCREAMER:", packIdx);
+    float dirToSet = 0;
     
     if(!argAg.wellFed()){
-      
+      //println("NOT WELL FED");
       if(packIdx != -1){
+        //println("PACK OF SCREAMER:", packIdx, "REMOVING AGENT FROM PACKS:");
         removeAgentFromPacks(argAg);
       }
-      argAg.setDir(calculateDir( 
-                                getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
-                                getPackDir(argAg),
-                                getPackDist(argAg)
-                                )
-      );
+      dirToSet = calculateDir(argAg);
     }
-    
     else{
-      
+      //println("WELL FED");
       if(packIdx != -1){
-        argAg.setDir(calculateDir(
-                                  getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
-                                  getPackDir(argAg),
-                                  getPackDist(argAg)
-                                  )
-        );
+        //println("ALLREADY IN PACK");
+        dirToSet = calculateDir(argAg);
       }
-      
-      
-      
       else{
-        
+        //println("NOT IN PACK");
         for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-          
           Agent ag = iter.next();
           if(argAg != ag){
+            if(ag.wellFed()){
+              //println("OTHER AGENT IS ALSO WELL FED");
+              float dist = argAg.getDistTo(ag.getX(), ag.getY());
             
-            float distance = argAg.getDistTo(ag.getX(), ag.getY());
-          
-            if(argAg.getSpecies() == ag.getSpecies()){
-            
-              if(distance <= CONNECTDIST){
-                int agPackIdx = getPack(ag);
-              
-                if(agPackIdx != -1){
-                  packs.get(agPackIdx).addAgent(argAg);
+              if(argAg.getSpecies() == ag.getSpecies()){
+                if(dist < CONNECTDIST){
+                  //println("CONNECTION DISTANCE");
+                  int agPackIdx = getPack(ag);
+                  //println("PACK OF OTHER:", agPackIdx);
+                  if(agPackIdx != -1){
+                    //println("PACK EXISTS, ADDING CURRENT AGENT TO PACK:", agPackIdx);
+                    if(packs.get(agPackIdx).addAgent(argAg)){
+                      break;
+                    }
+                  }
+                  else{
+                    //println("PACK DOESN'T EXIST, MAKING NEW PACK");
+                    Pack newPack = new Pack();
+                    newPack.addAgent(argAg);
+                    //println("AGENTS OF INDEXES ENTERED NEW PACK:", agents.indexOf(argAg), agents.indexOf(ag));
+                    if(newPack.addAgent(ag)){
+                      packs.add(newPack);
+                      dirToSet = calculateDir(argAg);
+                      break;
+                    }
+                    //println("added new pack, current pack count:", packs.size());
+                  }
+                  
                 }
-              
+                else if(dist < SCRHEARDIST){
+                  //println("NOT CONNECTION DIST, SCRHEAR");
+                  dirToSet = argAg.dirToFace(ag.getX(), ag.getY());
+                }
                 else{
-                  Pack newPack = new Pack();
-                  newPack.addAgent(argAg);
-                  newPack.addAgent(ag);
-                  packs.add(newPack);
-                  println("removed pack, count:", packs.size());
+                  //println("NOT CONNECTION DIST, TOO FAR");
+                  dirToSet = calculateDir(argAg);
                 }
-              
-                argAg.setDir(calculateDir( 
-                                          getGradDir(argAg, argAg.getQuadX(), argAg.getQuadY()),
-                                          getPackDir(argAg),
-                                          getPackDist(argAg)
-                                          )
-                );
-              
+              }
+              else{
+                dirToSet = calculateDir(argAg);
               }
             }
+            else{
+              //println("OTHER AGENT IS NOT WELL FED");
+            }
+          }
+          else{
+            //println("SAME AGENT FOUND");
+            dirToSet = calculateDir(argAg);
           }
         }
       }
-      
-      
     }
+    
+    argAg.setDir(dirToSet);
+    //println("FINISH //////////////////////////////////\n");
+    println("\n -----------------------------\n PACK COUNT FOR THIS SCREAM:", packs.size(), "\n----------------------------------------\n");
   }
   
   /*void fights(){
@@ -258,7 +308,6 @@ class AviaryRivalry {
   }*/
   
   void tick(){                                                                        //Performes animation tick
-    screams(); 
     net.replenish();
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
@@ -269,11 +318,17 @@ class AviaryRivalry {
       agEat(ag, quadX, quadY);
       ag.step();
       ag.updateStatus();
+      
       if(ag.dead()){
         removeAgentFromPacks(ag);
         iter.remove();
       }
+      else{
+        if(ag.ifReadyToAct())
+        scream(ag);
+      }
     }
+    
                                                                    //Perform screams
   }
   

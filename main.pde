@@ -10,7 +10,7 @@ int QUADY = 100;
 
 float QUADDIM = DEFX / QUADX;
 
-int INITAGENTAMOUNT = 20;
+int INITAGENTAMOUNT = 30;
 
 float MAXAGE = 50000;
 float AGEPERSTEP = 0.05;
@@ -19,10 +19,10 @@ float ENERGYPERSTEP = 0.03;
 float RESEATENPERSTEP = 0.08;
 int VALENCE = 3;
 float SCRHEARDIST = 60;
-int ACTCTRPEAK = 10;
+int ACTCTRPEAK = 120;
 float COMDIST = 25;
-float MAXRES = 1.5;
-float RESREPSPEED = 0.005;
+float MAXRES = 0.4;
+float RESREPSPEED = 0.001;
 float CONNECTDIST = 200;
 
 
