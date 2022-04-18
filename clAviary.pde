@@ -24,9 +24,13 @@ class AviaryRivalry {
     packs = new ArrayList<Pack>();
     
     
-    for(int i = 0; i < agentCounter; i++){                                                //
-      agents.add(new Agent());                                                      //
+    for(int i = 0; i < agentCounter / 2; i++){                                                //
+      agents.add(new Agent(0));                                                      //
     }                                                                                 //Add agents 
+    for(int i = 0; i < agentCounter / 2; i++){                                                //
+      agents.add(new Agent(1));                                                      //
+    }                                                                                 //Add agents 
+    println("INITIAL AGENT COUNT:", argInitAgentAmnt);
   }
   
   //Getters
@@ -40,38 +44,32 @@ class AviaryRivalry {
     int at = 0;
     for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
       Pack pck = iter.next();
-      if(pck.contains(argAg))
+      if(pck.contains(argAg)){
         idx = at;
+        return idx;
+      }
       at++;
     }
     return idx;
   } 
   
   void removeAgentFromPacks(Agent argAg){
-    int at = 0;
+    //int at = 0;
     for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
       Pack pack = iter.next();
       if(pack.contains(argAg)){
-        println("PACK IDX", at, "CONTAINED THIS AGENT, REMOVING AGENT FROM THIS PACK");
+        //println("PACK IDX", at, "CONTAINED THIS AGENT, REMOVING AGENT FROM THIS PACK");
         pack.removeAgent(argAg);
       }
       if(pack.empty()){
-        println("PACK TURNED OUT TO BE EMPTY, REMOVING THE WHOLE PACK");
+        //println("PACK TURNED OUT TO BE EMPTY, REMOVING THE WHOLE PACK");
         iter.remove();
       }
     }
-    println("maybe removed a pack, current pack count:", packs.size());
+    //println("maybe removed a pack, current pack count:", packs.size());
   }
-  /*
-  void fixPacks(){
-    for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
-        Pack pack = iter.next();
-        if(pack.empty()){
-          iter.remove();
-        }
-    }
-  }
-    */
+ 
+ 
   void agEat(Agent argAg, int quadX, int quadY){
 
     float resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP);
@@ -301,19 +299,77 @@ class AviaryRivalry {
     
     argAg.setDir(dirToSet);
     //println("FINISH //////////////////////////////////\n");
-    println("\n -----------------------------\n PACK COUNT FOR THIS SCREAM:", packs.size(), "\n----------------------------------------\n");
+    //println("\n -----------------------------\n PACK COUNT FOR THIS SCREAM:", packs.size(), "\n----------------------------------------\n");
   }
   
-  /*void fights(){
-    agents.forEach((agent) -> {
-        fight(agent);
-    });
+  void fights(){
+    for (Iterator<Agent> iter1 = agents.iterator(); iter1.hasNext();){
+      Agent ag1 = iter1.next();
+      for (Iterator<Agent> iter2 = agents.iterator(); iter2.hasNext();){
+        Agent ag2 = iter2.next();
+        if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
+          fight(ag1, ag2);
+        }
+      }
+    }
   }
   
-  void fight(Agent argAg){
-  }*/
+  void fight(Agent argAg1, Agent argAg2){
+    int packIdx1 = getPack(argAg1);
+    int packIdx2 = getPack(argAg2);
+    int coef1;
+    int coef2;
+    
+    if(packIdx1 != -1){
+      coef1 = packs.get(packIdx1).getConCount(argAg1) + 1;
+    }
+    else{
+      coef1 = 1;
+    }
+    
+    if(packIdx2 != -1){
+      coef2 = packs.get(packIdx2).getConCount(argAg2) + 1;
+    }
+    else{
+      coef2 = 1;
+    }
+        
+    argAg1.addToEnergy(-ENERGYPERFIGHT / coef1);
+    argAg2.addToEnergy(-ENERGYPERFIGHT / coef2);
+    
+    stroke(#CF00FF,100); 
+    strokeWeight(2);     
+    line(argAg1.getX(), argAg1.getY(), argAg2.getX(), argAg2.getY());
+    
+  }
+  
+  void reproduction(Agent argAg){
+    Random r = new Random();
+    
+    float tech = r.nextFloat();
+    if(tech <= REPRODUCTPROB){
+      Agent child = new Agent(argAg.getSpecies(), argAg.getX(), argAg.getY());
+      println("ADDED AGENT CHILD, AGENT COUNT:", agents.size());
+      child.setNewBornEnergy();
+      argAg.addToEnergy(-REPRODUCTCOST);
+      agents.add(child);
+      int parentPackIdx = getPack(argAg);
+      if(parentPackIdx != - 1){
+        packs.get(parentPackIdx).addAgent(child);
+      }
+      else{
+        Pack newPack = new Pack();
+        newPack.addAgent(argAg);
+        if(newPack.addAgent(child)){
+          packs.add(newPack);
+        }
+      }
+    }
+  }
   
   void tick(){                                                                        //Performes animation tick
+  
+    ArrayList<Agent> reproductList = new ArrayList<Agent>();
     net.replenish();
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
@@ -328,19 +384,28 @@ class AviaryRivalry {
       if(ag.dead()){
         removeAgentFromPacks(ag);
         iter.remove();
+        println("REMOVED DEAD AGENT, AGENT COUNT:", agents.size());
       }
       else{
-        if(ag.ifReadyToAct())
-        scream(ag);
+        if(ag.ifReadyToAct()){
+          scream(ag);
+        }
+        if(ag.readyToReproduct()){
+          reproductList.add(ag);
+        }
       }
     }
     
+    reproductList.forEach((ag) -> {reproduction(ag);});
+    
+    packs.forEach((pack) -> {pack.energyBalancing();});
+    fights();
                                                                    //Perform screams
   }
   
   void run(){                                                       //Main method
-    tick();                                                                           //Perform animation tick
     render();
+    tick();                                                                           //Perform animation tick
     renderAgent();                                                                    //Render agants
   }
   

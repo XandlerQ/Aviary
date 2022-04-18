@@ -123,6 +123,29 @@ class Pack{
     
   }
   
+  void energyBalancing(){
+    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
+      Connection con = iter.next();
+      Agent ag1 = con.getFirst();
+      Agent ag2 = con.getSecond();
+      float difference = ag1.getEnergy() - ag2.getEnergy();
+      if(Math.abs(difference) < ENERGYBALANCESPEED){
+          ag1.addToEnergy(-difference / 2);
+          ag2.addToEnergy(difference / 2);
+      }
+      else{
+        if(difference > 0){
+          ag1.addToEnergy(-ENERGYBALANCESPEED);
+          ag2.addToEnergy(ENERGYBALANCESPEED);
+        }
+        else{
+          ag1.addToEnergy(ENERGYBALANCESPEED);
+          ag2.addToEnergy(-ENERGYBALANCESPEED);
+        }
+      }
+    }
+  }
+  
   void reconnect(ArrayList<Agent> agToConnect){
     for(int i = 0; i < agToConnect.size(); i++){
       for(int j = i + 1; j < agToConnect.size(); j++){
@@ -158,6 +181,17 @@ class Pack{
       }
     }
     return conAg;
+  }
+  
+  int getConCount(Agent argAg){
+    int conCount = 0;
+    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
+      Connection con = iter.next();
+      if(con.contains(argAg)){
+        conCount++;
+      }
+    }
+    return conCount;
   }
   
   ArrayList<Agent> getTooClose(Agent argAg){

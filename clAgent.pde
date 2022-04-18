@@ -43,7 +43,7 @@ class Agent {
     status = 1;
     species = 0;
   
-    age = r.nextFloat() * MAXAGE / 8;
+    age = r.nextFloat() * MAXAGE / 4;
     maxAge = 0.6 * MAXAGE + 0.4 * MAXAGE * r.nextFloat();
     agePerStep = AGEPERSTEP;
       
@@ -71,6 +71,13 @@ class Agent {
   Agent(int argSpec){
     this();
     species = argSpec;
+  }
+  
+  Agent(int argSpec, float argX, float argY){
+    this(argSpec);
+    x = argX;
+    y = argY;
+    age = 0;
   }
   
   //Getters
@@ -119,8 +126,20 @@ class Agent {
     return comfDist;
   }
   
+  float getEnergy(){
+    return energy;
+  }
+  
+  float getAge(){
+    return age;
+  }
+  
   boolean dead(){
     return dieFlag;
+  }
+  
+  boolean readyToReproduct(){
+    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy >= SUFFENERGY + REPRODUCTCOST * 2;
   }
   
   //Setters
@@ -137,6 +156,10 @@ class Agent {
   void setStatus(int argStatus){
     status = argStatus;
     updateColor();
+  }
+  
+  void setNewBornEnergy(){
+    energy = SUFFENERGY + SUFFENERGY/4;
   }
   
   //Methods
@@ -181,6 +204,14 @@ class Agent {
   
   float getEnergyLeftover(){
     return energy - suffEnergy;
+  }
+  
+  void addToEnergy(float argAm){
+    energy += argAm;
+    if(energy <= 0){
+       dieFlag = true;
+       return;
+    }
   }
   
   boolean ifHearFrom(float argDist){                                //True if hear from distance, false otherwise
@@ -270,7 +301,9 @@ class Agent {
   }
   
   void eat(float argRes){
-    energy += argRes;
+    if(energy <= MAXENERGY)
+      energy += argRes;
+    updateStatus();
   }
   
   void step() {                                                    //Make step, returns color of next position
