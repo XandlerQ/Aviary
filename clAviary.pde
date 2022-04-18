@@ -186,6 +186,32 @@ class AviaryRivalry {
     });
   }
   
+  Pack getSameSpeciesClosestUncomPack(Agent argAg){
+    Pack packTooClose = null;
+    float minDist = DEFX;
+    int argPackIdx = getPack(argAg);
+    if(argPackIdx == -1)
+      return null;
+    Pack argPack = packs.get(argPackIdx);
+    float argX = argPack.getPackCenterX();
+    float argY = argPack.getPackCenterY();
+    
+    for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+      Pack pack = iter.next();
+      if(!pack.contains(argAg) && pack.getPackSpecies() == argAg.getSpecies()){
+        float x = pack.getPackCenterX();
+        float y = pack.getPackCenterY();
+        float distance = dist(x, y, argX, argY);
+        if (minDist > distance && distance < PACKCOMDIST){
+          minDist = distance;
+          packTooClose = pack;
+        }
+      }
+    }
+    
+    return packTooClose;
+  }
+  
   float calculateDir(Agent argAg){
     
     float packMaxDist = getPackMaxDist(argAg);
@@ -197,6 +223,7 @@ class AviaryRivalry {
       return gradDir;
     }
     else{
+      
       if(packMaxDist > SCRHEARDIST){
         return packDir;
       }
@@ -212,9 +239,14 @@ class AviaryRivalry {
         }
         return (argAg.dirToFace(tooCloseX, tooCloseY) + (float)Math.PI);
       }
-      return gradDir;
+      Pack packTooClose = getSameSpeciesClosestUncomPack(argAg);
+      if(packTooClose != null){
+        //println("\nFOUND PACK TOO CLOSE, TRY TO GO AWAY!!!!!!!\n");
+        return (argAg.dirToFace(packTooClose.getPackCenterX(), packTooClose.getPackCenterY()) + (float)Math.PI); 
+      }
+        
     }
-    
+      return gradDir;
   }
   
   void scream(Agent argAg){                                                           //Performs scream of agent                                                     //For each agent

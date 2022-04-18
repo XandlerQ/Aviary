@@ -9,7 +9,7 @@ int QUADY = 100;
 
 float QUADDIM = DEFX / QUADX;
 
-int INITAGENTAMOUNT = 20;
+int INITAGENTAMOUNT = 100;
 
 float MAXAGE = 3600;
 float REPRODUCTLOW = 1440;
@@ -33,6 +33,7 @@ int ACTCTRPEAK = 30;
 float SCRHEARDIST = 150;
 float CONNECTDIST = 60;
 float COMDIST = 20;
+float PACKCOMDIST = 35;
 float FIGHTDIST = 40;
 
 float MAXRES = 0.4;

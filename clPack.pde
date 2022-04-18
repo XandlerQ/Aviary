@@ -224,6 +224,10 @@ class Pack{
     }
     return resY;
   }
+  
+  int getPackSpecies(){
+    return agents.get(0).getSpecies();
+  }
     
   
   //Renderers
