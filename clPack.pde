@@ -48,16 +48,24 @@ class Pack{
   
   ArrayList<Agent> agents;
   
-  float connectDist;
-  
   ArrayList<Connection> connections;
   
   //Constructors
   
   Pack(){
+    
     agents = new ArrayList<Agent>();
-    connectDist = CONNECTDIST;
+    
     connections = new ArrayList<Connection>();
+  }
+  
+  //Getters
+  
+  Agent getAgent(int argIdx){
+    if(argIdx >= 0 && argIdx < agents.size())
+      return agents.get(argIdx);
+    else
+      return null;
   }
   
   //Methods
@@ -91,6 +99,8 @@ class Pack{
         //println("added connection, total connection amount for this pack: ", connections.size());
         ag.addCon();
         argAg.addCon();
+        if(ag.isTopCon())
+          break;
       }
     }
     if(everConnected){
@@ -104,6 +114,7 @@ class Pack{
       //println("removing agent from pack: THIS AGENT IS NOT IN THIS PACK");
       return;
     }
+    int consFound = 0;
     //println("removing agent from pack");
     ArrayList<Agent> agToConnect = new ArrayList<Agent>();
     for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
@@ -113,6 +124,9 @@ class Pack{
         agToConnect.add(con.pairOf(argAg));
         con.pairOf(argAg).removeCon();
         iter.remove();
+        consFound++;
+        if(consFound == argAg.getConCount())
+          break;
       }
     }
     agents.remove(argAg);
@@ -183,17 +197,6 @@ class Pack{
     return conAg;
   }
   
-  int getConCount(Agent argAg){
-    int conCount = 0;
-    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
-      Connection con = iter.next();
-      if(con.contains(argAg)){
-        conCount++;
-      }
-    }
-    return conCount;
-  }
-  
   ArrayList<Agent> getTooClose(Agent argAg){
     ArrayList<Agent> closeAg = new ArrayList<Agent>();
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
@@ -236,10 +239,19 @@ class Pack{
     connections.forEach((con) -> {
       Agent ag1 = con.getFirst();
       Agent ag2 = con.getSecond();
-      stroke(#12E5FF,150); 
+      if(getPackSpecies() == 0){
+        stroke(#FF8181,100);
+        fill(#FF8181,100);
+      }
+      else{
+        stroke(#81FF94,100);
+        fill(#81FF94,100);
+      }
       strokeWeight(1);     
       line(ag1.getX(), ag1.getY(), ag2.getX(), ag2.getY());
     });
+    
+    circle(getAgent(0).getX(), getAgent(0).getY(), 10);
     
   }
 }

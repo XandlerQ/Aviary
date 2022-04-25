@@ -4,33 +4,81 @@ float WALLTHICKNESS = 1;
 
 
 
-class AviaryRivalry {
-  
-  int agentCounter;                                                                       //Agent counter
+class AviaryRivalry {                                                                       //Agent counter
   
   ResourceNet net;
   ArrayList<Agent> agents;                                                         
   ArrayList<Pack> packs;
   
+  int popSp1Ctr;
+  int popSp2Ctr;
+  
+  Graph grPop;
+  Graph grSp1Pop;
+  Graph grSp2Pop;
+  Graph grPopPack;
+  
+  int infCtr = INFOREPCTRPEAK;
+  
 
   //Constructors
   
-  AviaryRivalry(int argInitAgentAmnt){
-    
-    agentCounter = argInitAgentAmnt;                                                      //Set amounts
+  AviaryRivalry(int argInitAgentAmnt){                                           
     
     net = new ResourceNet();
     agents = new ArrayList<Agent>(argInitAgentAmnt);                                //Making ArrayLists
     packs = new ArrayList<Pack>();
     
+    popSp1Ctr = argInitAgentAmnt / 2;
+    popSp2Ctr = argInitAgentAmnt / 2;
     
-    for(int i = 0; i < agentCounter / 2; i++){                                                //
+    for(int i = 0; i < argInitAgentAmnt / 2; i++){                                                //
       agents.add(new Agent(0));                                                      //
     }                                                                                 //Add agents 
-    for(int i = 0; i < agentCounter / 2; i++){                                                //
+    for(int i = 0; i < argInitAgentAmnt / 2; i++){                                                //
       agents.add(new Agent(1));                                                      //
     }                                                                                 //Add agents 
     println("INITIAL AGENT COUNT:", argInitAgentAmnt);
+    
+    grPop = new Graph(DEFX, 0);
+    grPop.setType(1);
+    
+    /*
+    void setgraphBordColor(color argCl){
+    graphBordColor = argCl;
+  }
+  
+  void setgraphColor(color argCl){
+    graphColor = argCl;
+  }
+  
+  void setgraphLineColor(color argCl){
+    graphLineColor = argCl;
+  }
+  
+  void setgraphTextColor(color argCl){
+    graphTextColor = argCl;
+  }
+  */
+    
+    grSp1Pop = new Graph(DEFX, 200);
+    grSp1Pop.setType(1);
+    grSp1Pop.setgraphBordColor(#AF0000);
+    grSp1Pop.setgraphColor(#FF2E2E);
+    grSp1Pop.setgraphLineColor(#FF8B8B);
+    grSp1Pop.setgraphTextColor(#FF9203);
+    
+    grSp2Pop = new Graph(DEFX, 400);
+    grSp2Pop.setType(1);
+    grSp2Pop.setgraphBordColor(#0AAA00);
+    grSp2Pop.setgraphColor(#10FF00);
+    grSp2Pop.setgraphLineColor(#53FF48);
+    grSp2Pop.setgraphTextColor(#03FFCA);
+    
+    grPopPack = new Graph(DEFX, 600);
+    grPopPack.setSize(400, 400);
+    grPopPack.setType(0);
+    grPopPack.setXAmnt(400);
   }
   
   //Getters
@@ -60,13 +108,26 @@ class AviaryRivalry {
       if(pack.contains(argAg)){
         //println("PACK IDX", at, "CONTAINED THIS AGENT, REMOVING AGENT FROM THIS PACK");
         pack.removeAgent(argAg);
-      }
-      if(pack.empty()){
+        if(pack.empty()){
         //println("PACK TURNED OUT TO BE EMPTY, REMOVING THE WHOLE PACK");
-        iter.remove();
+          iter.remove();
+        }
+        break;
       }
+      
     }
     //println("maybe removed a pack, current pack count:", packs.size());
+  }
+  
+  int countLoneAgent(){
+    int Ctr = 0;
+    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      int packIdx = getPack(ag);
+      if(packIdx == -1)
+        Ctr++;
+    }
+    return Ctr;
   }
  
  
@@ -127,18 +188,22 @@ class AviaryRivalry {
     }
     
     return argAg.dirToFace(argAg.getX() + dirX, argAg.getY() + dirY);
-        
-    
   }
   
   float getPackDir(Agent argAg){
 
     int packIdx = getPack(argAg);
+    
     if(packIdx != -1){
       return argAg.dirToFace(packs.get(packIdx).getPackCenterX(), packs.get(packIdx).getPackCenterY());
     }
     else
       return 0;
+      
+    /*if(packIdx != -1 && packs.get(packIdx).getAgent(0) != argAg)
+      return argAg.dirToFace(packs.get(packIdx).getAgent(0).getX(), packs.get(packIdx).getAgent(0).getY());
+    else
+      return 0;*/
   }
   
   float getPackMaxDist(Agent argAg){
@@ -179,12 +244,12 @@ class AviaryRivalry {
     }
   }
   
-  void screams(){                                                                     //Perform screams if ready
+  /*void screams(){                                                                     //Perform screams if ready
     agents.forEach((agent) -> {
       if(agent.ifReadyToAct())
         scream(agent);
     });
-  }
+  }*/
   
   Pack getSameSpeciesClosestUncomPack(Agent argAg){
     Pack packTooClose = null;
@@ -353,14 +418,14 @@ class AviaryRivalry {
     int coef2;
     
     if(packIdx1 != -1){
-      coef1 = packs.get(packIdx1).getConCount(argAg1) + 1;
+      coef1 = argAg1.getConCount() + 1;
     }
     else{
       coef1 = 1;
     }
     
     if(packIdx2 != -1){
-      coef2 = packs.get(packIdx2).getConCount(argAg2) + 1;
+      coef2 = argAg2.getConCount() + 1;
     }
     else{
       coef2 = 1;
@@ -381,7 +446,11 @@ class AviaryRivalry {
     float tech = r.nextFloat();
     if(tech <= REPRODUCTPROB){
       Agent child = new Agent(argAg.getSpecies(), argAg.getX(), argAg.getY());
-      println("ADDED AGENT CHILD, AGENT COUNT:", agents.size());
+      if(argAg.getSpecies() == 0)
+        popSp1Ctr++;
+      else
+        popSp2Ctr++;
+      //println("ADDED AGENT CHILD, AGENT COUNT:", agents.size());
       child.setNewBornEnergy();
       argAg.addToEnergy(-REPRODUCTCOST);
       agents.add(child);
@@ -410,15 +479,20 @@ class AviaryRivalry {
       int quadY = ag.getQuadY();
       
       agEat(ag, quadX, quadY);
-      ag.step();
-      ag.updateStatus();
       
       if(ag.dead()){
         removeAgentFromPacks(ag);
+        if(ag.getSpecies() == 0)
+          popSp1Ctr--;
+        else
+          popSp2Ctr--;
+          
         iter.remove();
-        println("REMOVED DEAD AGENT, AGENT COUNT:", agents.size());
-      }
+        //println("REMOVED DEAD AGENT, AGENT COUNT:", agents.size());
+      }      
       else{
+        ag.step();
+        
         if(ag.ifReadyToAct()){
           scream(ag);
         }
@@ -433,12 +507,23 @@ class AviaryRivalry {
     packs.forEach((pack) -> {pack.energyBalancing();});
     fights();
                                                                    //Perform screams
+    if(infCtr == INFOREPCTRPEAK){
+      grPop.addTimePoint(agents.size());
+      grSp1Pop.addTimePoint(popSp1Ctr);
+      grSp2Pop.addTimePoint(popSp2Ctr);
+      grPopPack.addPoint(packs.size(), countLoneAgent());
+    }
+    
+    infCtr++;
+    
+    if(infCtr > INFOREPCTRPEAK){
+      infCtr = 0;
+    }
   }
   
-  void run(){                                                       //Main method
+  void run(){                                                       //Main method                                                                           //Perform animation tick
     render();
-    tick();                                                                           //Perform animation tick
-    renderAgent();                                                                    //Render agants
+    tick();
   }
   
   
@@ -456,11 +541,19 @@ class AviaryRivalry {
     agents.forEach((agent) -> agent.render());
   }
   
+  void renderGraphs(){
+    grPop.render();
+    grSp1Pop.render();
+    grSp2Pop.render();
+    grPopPack.render();
+  }
+  
   void render(){                                                    //Renders aviary
     background(0);
     renderRes();
     renderPacks();
-    fill(255);  // инструкция
+    renderAgent();
+    renderGraphs();
   }
   
   

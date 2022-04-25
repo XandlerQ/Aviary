@@ -51,7 +51,7 @@ class Agent {
     suffEnergy = SUFFENERGY;
     energyPerStep = ENERGYPERSTEP;
       
-    valence = VALENCE;
+    valence = VALENCE1;
     conCount = 0;
     
     dieFlag = false;
@@ -71,6 +71,10 @@ class Agent {
   Agent(int argSpec){
     this();
     species = argSpec;
+    if(species == 0)
+      valence = VALENCE1;
+    else
+      valence = VALENCE2;
   }
   
   Agent(int argSpec, float argX, float argY){

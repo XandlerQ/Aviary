@@ -1,8 +1,8 @@
 import java.util.*;
 
 
-int DEFX = 1000;
-int DEFY = 1000;
+int DEFX = 800;
+int DEFY = 800;
 
 int QUADX = 100;
 int QUADY = 100;
@@ -25,19 +25,22 @@ float ENERGYPERSTEP = 0.03;
 float RESEATENPERSTEP = 0.08;
 float ENERGYPERFIGHT = 0.1;
 
-int VALENCE = 3;
-float ENERGYBALANCESPEED = 0.005;
+int VALENCE1 = 3;
+int VALENCE2 = 3;
+float ENERGYBALANCESPEED = 0.002;
 
-int ACTCTRPEAK = 30;
+int ACTCTRPEAK = 15;
 
 float SCRHEARDIST = 150;
 float CONNECTDIST = 60;
 float COMDIST = 20;
-float PACKCOMDIST = 35;
+float PACKCOMDIST = 80;
 float FIGHTDIST = 40;
 
-float MAXRES = 0.4;
+float MAXRES = 0.3;
 float RESREPSPEED = 0.002;
+
+int INFOREPCTRPEAK = 60;
 
 
 
@@ -48,7 +51,7 @@ AviaryRivalry AV = new AviaryRivalry(INITAGENTAMOUNT);
 
 
 void setup(){
-   size(1000, 1000); 
+   size(1200, 1002); 
    background(0);
    ellipseMode(CENTER);
  }  
@@ -57,7 +60,9 @@ void setup(){
 void draw(){
   if(!pause){
     AV.run();
-    fill(#5555ff); text(int(frameRate),5,10);
+    fill(#5555ff); 
+    textSize(10);
+    text(int(frameRate),5,10);
   }
 }
 
