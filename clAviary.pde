@@ -75,8 +75,8 @@ class AviaryRivalry {                                                           
     grSp2Pop.setgraphLineColor(#53FF48);
     grSp2Pop.setgraphTextColor(#03FFCA);
     
-    grPopPack = new Graph(DEFX, 600);
-    grPopPack.setSize(400, 400);
+    grPopPack = new Graph(0, 600);
+    grPopPack.setSize(1000,200);
     grPopPack.setType(0);
     grPopPack.setXAmnt(400);
   }
@@ -404,8 +404,18 @@ class AviaryRivalry {                                                           
       Agent ag1 = iter1.next();
       for (Iterator<Agent> iter2 = agents.iterator(); iter2.hasNext();){
         Agent ag2 = iter2.next();
-        if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
-          fight(ag1, ag2);
+        if(LONEFIGHTERS != true){
+          int packIdx1 = getPack(ag1);
+          int packIdx2 = getPack(ag2);
+          if(packIdx1 != -1 || packIdx2 != -1)
+            if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
+            fight(ag1, ag2);
+          }
+        }
+        else{
+          if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
+            fight(ag1, ag2);
+          }
         }
       }
     }
@@ -511,7 +521,7 @@ class AviaryRivalry {                                                           
       grPop.addTimePoint(agents.size());
       grSp1Pop.addTimePoint(popSp1Ctr);
       grSp2Pop.addTimePoint(popSp2Ctr);
-      grPopPack.addPoint(packs.size(), countLoneAgent());
+      grPopPack.addPoint(countLoneAgent(), packs.size());
     }
     
     infCtr++;

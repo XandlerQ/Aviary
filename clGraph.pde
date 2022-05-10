@@ -139,9 +139,12 @@ class Graph{
   
   void addPoint(Point argPt){
     
-    if(arrPt.size() != 0)
-      if(argPt == arrPt.get(arrPt.size() - 1))
+    if(arrPt.size() != 0){
+      if(argPt.getX() == arrPt.get(arrPt.size() - 1).getX() && argPt.getY() == arrPt.get(arrPt.size() - 1).getY()){
+        println("returned");
         return;
+      }
+    }
     
     if(arrPt.size() <= xAmnt){
       arrPt.add(argPt);
@@ -210,13 +213,13 @@ class Graph{
         float Y = origY + dimY * (1 - arrPt.get(i).getY() * 0.8 / maxY);
         
         if(i == 0){
-          circle(X, Y, 3);
+          circle(X, Y, 2);
         }
         else{        
           float Xprev = origX + curShift - step;
           float Yprev = origY + dimY * (1 - arrPt.get(i - 1).getY() * 0.8 / maxY);
           
-          circle(X, Y, 3);
+          circle(X, Y, 2);
           line(Xprev, Yprev, X, Y);
         }
         if(i == arrPt.size() - 1){
@@ -224,13 +227,13 @@ class Graph{
           line(X, Y, origX, Y);
           fill(graphTextColor);
           textSize(11);
-          text(arrPt.get(i).getY(), origX + 5, Y - 7);
+          text(int(arrPt.get(i).getY()), origX + 5, Y - 7);
         }
         curShift += step;
       }
       
       text(int(millis()/1000), origX + dimX - 20, origY + dimY - 7);
-      text(maxY * 1.25, origX + 5, origY + 10);
+      text(int(maxY * 1.25), origX + 5, origY + 10);
     }
     else{
       
@@ -252,12 +255,12 @@ class Graph{
         float X = origX + dimX * arrPt.get(i).getX() * 0.8 / maxX;
         float Y = origY + dimY * (1 - arrPt.get(i).getY() * 0.8 / maxY);
         if(i == 0){
-          circle(X, Y, 3);
+          circle(X, Y, 2);
         }
         else{
           float Xprev = origX + dimX * arrPt.get(i - 1).getX() * 0.8 /maxX;
           float Yprev = origY + dimY * (1 - arrPt.get(i - 1).getY() * 0.8 / maxY);
-          circle(X, Y, 3);
+          circle(X, Y, 2);
           line(Xprev, Yprev, X, Y);
         }
         if(i == arrPt.size() - 1){
@@ -266,8 +269,8 @@ class Graph{
           line(X, Y, X, origY + dimY);
           fill(graphTextColor);
           textSize(11);
-          text(arrPt.get(i).getY(), origX + 5, Y - 7);
-          text(arrPt.get(i).getX(), X + 3, origY + dimY - 7);
+          text(int(arrPt.get(i).getY()), origX + 5, Y - 7);
+          text(int(arrPt.get(i).getX()), X + 3, origY + dimY - 7);
         }
       }
       

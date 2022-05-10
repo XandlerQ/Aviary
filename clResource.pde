@@ -60,18 +60,22 @@ color STDRESOURCECOLOR = #FFAA00;
 
 class ResourceNet{
   
+  int type;
+  
   int quadX;
   int quadY;
   float sideX;
   float sideY;
   float[][] quads;
   color cl = #FFFFFF;
-  float maxRes;
+  float[][] maxRes;
   float repSpeed;
   
   //Constructors
   
   ResourceNet(){
+    
+    type = RESTYPE;
     
     quadX = QUADX;
     quadY = QUADY;
@@ -80,19 +84,49 @@ class ResourceNet{
     sideY = DEFY / QUADY;
     
     quads = new float[quadX][quadY];
+    maxRes = new float[quadX][quadY];
     
-    maxRes = MAXRES;
     repSpeed = RESREPSPEED;
     
-    for(int i = 0; i < quadX; i++)
-      for(int j = 0; j < quadY; j++)
-          quads[i][j] = MAXRES / 2;
+    if(type == 0){
+      for(int i = 0; i < quadX; i++)
+        for(int j = 0; j < quadY; j++){
+            quads[i][j] = BASERES / 2;
+            maxRes[i][j] = BASERES;
+        }  
+    }
+    if(type == 1){
+      
+      for(int i = 0; i < quadX; i++){
+        for(int j = 0; j < quadY; j++){
+            quads[i][j] = BASERES / 2 - BASERES * (Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) / 2;
+            maxRes[i][j] = BASERES - BASERES * (Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1));
+        }
+      }
+    }
+    if(type == 2){
+      for(int i = 0; i < quadX; i++){
+        for(int j = 0; j < quadY; j++){
+            quads[i][j] = BASERES / 2 - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 2;
+            maxRes[i][j] = BASERES - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1)));
+        }
+      }
+    }
+    else{
+      Random r = new Random();
+      for(int i = 0; i < quadX; i++){
+        for(int j = 0; j < quadY; j++){
+            quads[i][j] = BASERES * r.nextFloat() / 1.5;
+            maxRes[i][j] = BASERES - BASERES * r.nextFloat() / 1.5;
+        }
+      }
+    }
   }
   
   //Getters
   
-  float getMaxRes(){
-    return maxRes;
+  float getMaxRes(int argI, int argJ){
+    return maxRes[argI][argJ];
   }
   
   float getRes(int argI, int argJ){
@@ -122,7 +156,7 @@ class ResourceNet{
   void replenish(){
     for(int i = 0; i < quadX; i++)
       for(int j = 0; j < quadY; j++){
-        if(quads[i][j] < maxRes){
+        if(quads[i][j] < maxRes[i][j]){
           quads[i][j] += repSpeed;
         }
       }
@@ -135,7 +169,7 @@ class ResourceNet{
     noStroke();
     for(int i = 0; i < quadX; i++)
       for(int j = 0; j < quadY; j++){
-        fill(cl, 50 * (quads[i][j]) / maxRes);
+        fill(cl, 50 * (quads[i][j]) / BASERES);
         rect(i * sideX, j * sideY, sideX, sideY);
         /*fill(cl, 50);
         circle(i * sideX + sideX/2, j * sideY + sideY/2, sideX * (quads[i][j]) / maxRes);*/

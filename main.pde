@@ -1,8 +1,8 @@
 import java.util.*;
 
 
-int DEFX = 800;
-int DEFY = 800;
+int DEFX = 600;
+int DEFY = 600;
 
 int QUADX = 100;
 int QUADY = 100;
@@ -37,7 +37,10 @@ float COMDIST = 20;
 float PACKCOMDIST = 80;
 float FIGHTDIST = 40;
 
-float MAXRES = 0.3;
+boolean LONEFIGHTERS = false;
+
+int RESTYPE = 2; //0 -- regular, 1 -- linear, 2 -- two-linear, 3 -- random
+float BASERES = 0.3;
 float RESREPSPEED = 0.002;
 
 int INFOREPCTRPEAK = 60;
@@ -51,7 +54,7 @@ AviaryRivalry AV = new AviaryRivalry(INITAGENTAMOUNT);
 
 
 void setup(){
-   size(1200, 1002); 
+   size(1000, 802); 
    background(0);
    ellipseMode(CENTER);
  }  
