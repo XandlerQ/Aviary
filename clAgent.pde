@@ -49,7 +49,7 @@ class Agent {
       
     energy = SUFFENERGY / 2 + SUFFENERGY * r.nextFloat();
     suffEnergy = SUFFENERGY;
-    energyPerStep = ENERGYPERSTEP;
+    energyPerStep = NRGPERSTEP;
       
     valence = VALENCE1;
     conCount = 0;
@@ -71,10 +71,22 @@ class Agent {
   Agent(int argSpec){
     this();
     species = argSpec;
-    if(species == 0)
+    if(species == 0){
       valence = VALENCE1;
-    else
+      if(SYSSPAWN){
+        Random r = new Random();
+        x = DEFX/10 + (2 * DEFX / 5) * r.nextFloat();
+        y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();
+      }
+    }
+    else{
       valence = VALENCE2;
+      if(SYSSPAWN){
+        Random r = new Random();
+        x = 9 * DEFX/10 - (2 * DEFX / 5) * r.nextFloat();
+        y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();
+      }
+    }
   }
   
   Agent(int argSpec, float argX, float argY){
@@ -160,6 +172,10 @@ class Agent {
   void setStatus(int argStatus){
     status = argStatus;
     updateColor();
+  }
+  
+  void setEnergy(float argNrg){
+    energy = argNrg;
   }
   
   void setNewBornEnergy(){

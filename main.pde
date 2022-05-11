@@ -10,6 +10,7 @@ int QUADY = 100;
 float QUADDIM = DEFX / QUADX;
 
 int INITAGENTAMOUNT = 100;
+boolean SYSSPAWN = true;
 
 float MAXAGE = 3600;
 float REPRODUCTLOW = 1440;
@@ -21,25 +22,39 @@ float REPRODUCTCOST = 0.32;
 float AGEPERSTEP = 0.5;
 float SUFFENERGY = 10;
 float MAXENERGY = 20;
-float ENERGYPERSTEP = 0.03;
+float NRGPERSTEP = 0.03;
 float RESEATENPERSTEP = 0.08;
-float ENERGYPERFIGHT = 0.1;
+
+
+float NRGPERFIGHT = 0.1;
+int NRGFIGHTSCHEME = 1; //0 -- both lose energy, 1 -- energy gets stolen
+float NRGSTEALCOEFF = 1.0; //energy steal coefficiency
+boolean IFFIGHTENERGYDEPONCONS = true;
+int FIGHTSCHEME = 1; //0 -- everyone diff species, 1 -- two lones don't fight (PACKFIGHTPEAK has to be defined), 2 -- lones never fight (PACKFIGHTPEAK has to be defined)
+int PACKFIGHTPEAK = 3;  //Pack size to be hostile
+
 
 int VALENCE1 = 3;
 int VALENCE2 = 3;
-float ENERGYBALANCESPEED = 0.002;
+int NRGBALANCINGTYPE = 2; //0 -- no balancing, 1 -- gradual balancing, 2 -- immediate balancing
+int BALANCINGCTRPEAK = 5;
+
+float NRGBALANCESPEED = 0.002;
+
+boolean NRGFORCONDEPLETING = false;
+float NRGFORCONPERSTEP = 0.05;
 
 int ACTCTRPEAK = 15;
 
-float SCRHEARDIST = 150;
+float SCRHEARDIST = 100;
 float CONNECTDIST = 60;
 float COMDIST = 20;
 float PACKCOMDIST = 80;
 float FIGHTDIST = 40;
 
-boolean LONEFIGHTERS = false;
 
-int RESTYPE = 2; //0 -- regular, 1 -- linear, 2 -- two-linear, 3 -- random
+
+int RESTYPE = 0; //0 -- regular, 1 -- linear, 2 -- two-linear, 3 -- random
 float BASERES = 0.3;
 float RESREPSPEED = 0.002;
 

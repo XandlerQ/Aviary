@@ -50,13 +50,14 @@ class Pack{
   
   ArrayList<Connection> connections;
   
+  int balancingCtr;
+  
   //Constructors
   
   Pack(){
-    
     agents = new ArrayList<Agent>();
-    
     connections = new ArrayList<Connection>();
+    balancingCtr = 0;
   }
   
   //Getters
@@ -66,6 +67,27 @@ class Pack{
       return agents.get(argIdx);
     else
       return null;
+  }
+  
+  int getPackSize(){
+    return agents.size();
+  }
+  
+  int getConnectionsCount(){
+    return connections.size();
+  }
+  
+  //Setters
+  
+  void resetImmCtr(){
+    balancingCtr = 0;
+  }
+  
+  void incCtr(){
+    balancingCtr++;
+    if(balancingCtr > BALANCINGCTRPEAK){
+      resetImmCtr();
+    }
   }
   
   //Methods
@@ -138,25 +160,54 @@ class Pack{
   }
   
   void energyBalancing(){
+    if(balancingCtr == BALANCINGCTRPEAK){
+      if(NRGBALANCINGTYPE == 1){
+        for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
+          Connection con = iter.next();
+          Agent ag1 = con.getFirst();
+          Agent ag2 = con.getSecond();
+          float difference = ag1.getEnergy() - ag2.getEnergy();
+          if(Math.abs(difference) < NRGBALANCESPEED){
+              ag1.addToEnergy(-difference / 2);
+              ag2.addToEnergy(difference / 2);
+          }
+          else{
+            if(difference > 0){
+              ag1.addToEnergy(-NRGBALANCESPEED);
+              ag2.addToEnergy(NRGBALANCESPEED);
+            }
+            else{
+              ag1.addToEnergy(NRGBALANCESPEED);
+              ag2.addToEnergy(-NRGBALANCESPEED);
+            }
+          }
+        }
+      }
+      else if(NRGBALANCINGTYPE == 2){
+        float packEnergy = 0;
+        float packSize = agents.size();
+        for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+          Agent ag = iter.next();
+          packEnergy += ag.getEnergy() / packSize;
+        }
+        for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+          Agent ag = iter.next();
+          ag.setEnergy(packEnergy);
+        }
+      }
+      else
+        return;
+    }
+    incCtr();
+  }
+  
+  void energyDepletion(){
     for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
       Connection con = iter.next();
       Agent ag1 = con.getFirst();
       Agent ag2 = con.getSecond();
-      float difference = ag1.getEnergy() - ag2.getEnergy();
-      if(Math.abs(difference) < ENERGYBALANCESPEED){
-          ag1.addToEnergy(-difference / 2);
-          ag2.addToEnergy(difference / 2);
-      }
-      else{
-        if(difference > 0){
-          ag1.addToEnergy(-ENERGYBALANCESPEED);
-          ag2.addToEnergy(ENERGYBALANCESPEED);
-        }
-        else{
-          ag1.addToEnergy(ENERGYBALANCESPEED);
-          ag2.addToEnergy(-ENERGYBALANCESPEED);
-        }
-      }
+      ag1.addToEnergy(-NRGFORCONPERSTEP);
+      ag2.addToEnergy(-NRGFORCONPERSTEP);
     }
   }
   

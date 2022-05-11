@@ -112,7 +112,7 @@ class ResourceNet{
         }
       }
     }
-    else{
+    else if (type == 3){
       Random r = new Random();
       for(int i = 0; i < quadX; i++){
         for(int j = 0; j < quadY; j++){

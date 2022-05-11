@@ -404,45 +404,101 @@ class AviaryRivalry {                                                           
       Agent ag1 = iter1.next();
       for (Iterator<Agent> iter2 = agents.iterator(); iter2.hasNext();){
         Agent ag2 = iter2.next();
-        if(LONEFIGHTERS != true){
+        
+        if(FIGHTSCHEME == 0){
+          if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST)
+            fight(ag1, ag2);
+        }
+        
+        else if (FIGHTSCHEME == 1){
           int packIdx1 = getPack(ag1);
           int packIdx2 = getPack(ag2);
-          if(packIdx1 != -1 || packIdx2 != -1)
-            if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
-            fight(ag1, ag2);
+          if(packIdx1 != -1 && packIdx2 != -1){
+            if(packs.get(packIdx1).getConnectionsCount() >= PACKFIGHTPEAK || packs.get(packIdx2).getConnectionsCount() >= PACKFIGHTPEAK)
+              if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST)
+                fight(ag1, ag2);
+          }
+          else if (packIdx1 != -1 || packIdx2 != -1){
+            if(packIdx1 != -1){
+              if(packs.get(packIdx1).getConnectionsCount() >= PACKFIGHTPEAK)
+                if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST)
+                  fight(ag1, ag2);
+            }
+            else{
+              if(packs.get(packIdx2).getConnectionsCount() >= PACKFIGHTPEAK)
+                if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST)
+                  fight(ag1, ag2);
+            }
           }
         }
-        else{
-          if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
-            fight(ag1, ag2);
+        
+        else if (FIGHTSCHEME == 2){
+          int packIdx1 = getPack(ag1);
+          int packIdx2 = getPack(ag2);
+          if(packIdx1 != -1 && packIdx2 != -1){
+            if(packs.get(packIdx1).getConnectionsCount() >= PACKFIGHTPEAK || packs.get(packIdx2).getConnectionsCount() >= PACKFIGHTPEAK)
+              if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST)
+                fight(ag1, ag2);
           }
         }
+        
       }
     }
   }
   
   void fight(Agent argAg1, Agent argAg2){
+    
     int packIdx1 = getPack(argAg1);
     int packIdx2 = getPack(argAg2);
-    int coef1;
-    int coef2;
+    float coef1;
+    float coef2;
     
-    if(packIdx1 != -1){
-      coef1 = argAg1.getConCount() + 1;
+    if(IFFIGHTENERGYDEPONCONS){
+      
+      if(packIdx1 != -1){
+        coef1 = argAg1.getConCount() + 1;
+      }
+      else{
+        coef1 = 1;
+      }
+    
+      if(packIdx2 != -1){
+        coef2 = argAg2.getConCount() + 1;
+      }
+      else{
+        coef2 = 1;
+      }
     }
+    
     else{
       coef1 = 1;
-    }
-    
-    if(packIdx2 != -1){
-      coef2 = argAg2.getConCount() + 1;
-    }
-    else{
       coef2 = 1;
     }
-        
-    argAg1.addToEnergy(-ENERGYPERFIGHT / coef1);
-    argAg2.addToEnergy(-ENERGYPERFIGHT / coef2);
+    
+    if(NRGFIGHTSCHEME == 0){
+      argAg1.addToEnergy(-NRGPERFIGHT / coef1);
+      argAg2.addToEnergy(-NRGPERFIGHT / coef2);
+    }
+    else if (NRGFIGHTSCHEME == 1){
+      int conCount1 = 0;
+      int conCount2 = 0;
+      if(packIdx1 != -1)
+        conCount1 = packs.get(packIdx1).getConnectionsCount();
+      if(packIdx2 != -1)
+        conCount2 = packs.get(packIdx2).getConnectionsCount();
+      if(conCount1 > conCount2){
+        argAg1.addToEnergy(NRGPERFIGHT * NRGSTEALCOEFF);
+        argAg2.addToEnergy(-NRGPERFIGHT);
+      }
+      else if (conCount1 < conCount2){
+        argAg1.addToEnergy(-NRGPERFIGHT);
+        argAg2.addToEnergy(NRGPERFIGHT * NRGSTEALCOEFF);
+      }
+      else{
+        argAg1.addToEnergy(-NRGPERFIGHT / coef1);
+        argAg2.addToEnergy(-NRGPERFIGHT / coef2);
+      }
+    }
     
     stroke(#CF00FF,100); 
     strokeWeight(2);     
@@ -514,7 +570,11 @@ class AviaryRivalry {                                                           
     
     reproductList.forEach((ag) -> {reproduction(ag);});
     
-    packs.forEach((pack) -> {pack.energyBalancing();});
+    if(NRGBALANCINGTYPE != 0)
+      packs.forEach((pack) -> {pack.energyBalancing();});
+    if(NRGFORCONDEPLETING)
+      packs.forEach((pack) -> {pack.energyDepletion();});
+      
     fights();
                                                                    //Perform screams
     if(infCtr == INFOREPCTRPEAK){
