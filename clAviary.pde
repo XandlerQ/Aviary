@@ -132,8 +132,12 @@ class AviaryRivalry {                                                           
  
  
   void agEat(Agent argAg, int quadX, int quadY){
-
-    float resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP);
+    float hunger = argAg.howHungry();
+    float resToEat;
+    if(hunger > RESEATENPERSTEP)
+      resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP);
+    else
+      resToEat = net.lowerRes(quadX, quadY, hunger);
     argAg.eat(resToEat);
   }
   
@@ -456,14 +460,20 @@ class AviaryRivalry {                                                           
     if(IFFIGHTENERGYDEPONCONS){
       
       if(packIdx1 != -1){
-        coef1 = argAg1.getConCount() + 1;
+        if (COEFSCHEME == 0)
+          coef1 = packs.get(packIdx1).getConnectionsCount() + 1;
+        else
+          coef1 = argAg1.getConCount() + 1;
       }
       else{
         coef1 = 1;
       }
     
       if(packIdx2 != -1){
-        coef2 = argAg2.getConCount() + 1;
+        if (COEFSCHEME == 0)
+          coef2 = packs.get(packIdx2).getConnectionsCount() + 1;
+        else
+          coef2 = argAg2.getConCount() + 1;
       }
       else{
         coef2 = 1;

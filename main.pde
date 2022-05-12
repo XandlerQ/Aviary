@@ -16,18 +16,23 @@ float MAXAGE = 3600;
 float REPRODUCTLOW = 1440;
 float REPRODUCTHIGH = 3000;
 float REPRODUCTPROB = 0.001;
-float REPRODUCTCOST = 0.32;
+float REPRODUCTCOST = 0.60;
 
+float BASESPEED = 2.0;
+float SPEEDRANDOMNESS = 0.4;
+float SPEEDAGECOEFF = 0.5;
 
 float AGEPERSTEP = 0.5;
 float SUFFENERGY = 10;
 float MAXENERGY = 20;
 float NRGPERSTEP = 0.03;
-float RESEATENPERSTEP = 0.08;
+float RESEATENPERSTEP = 0.06;
+float RESEATENPERSTEPAGECOEFF = 0;
 
 
 float NRGPERFIGHT = 0.1;
 int NRGFIGHTSCHEME = 1; //0 -- both lose energy, 1 -- energy gets stolen
+int COEFSCHEME = 0; //0 -- energy depends on amount of cons in the whole pack, 1 -- energy depends on the amount of cons for this particular agent
 float NRGSTEALCOEFF = 1.0; //energy steal coefficiency
 boolean IFFIGHTENERGYDEPONCONS = true;
 int FIGHTSCHEME = 1; //0 -- everyone diff species, 1 -- two lones don't fight (PACKFIGHTPEAK has to be defined), 2 -- lones never fight (PACKFIGHTPEAK has to be defined)

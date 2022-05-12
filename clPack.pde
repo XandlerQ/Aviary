@@ -69,6 +69,10 @@ class Pack{
       return null;
   }
   
+  ArrayList<Agent> getAgents(){
+    return agents;
+  }
+  
   int getPackSize(){
     return agents.size();
   }

@@ -67,7 +67,7 @@ class ResourceNet{
   float sideX;
   float sideY;
   float[][] quads;
-  color cl = #FFFFFF;
+  color cl = #03FFF9;
   float[][] maxRes;
   float repSpeed;
   

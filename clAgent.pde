@@ -59,7 +59,7 @@ class Agent {
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
-    speed = 0.8 + 0.6 * r.nextFloat() - 0.5 * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
+    speed = BASESPEED + SPEEDRANDOMNESS * r.nextFloat() - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
       
     ActCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     actCtr = r.nextInt(ActCtrPeak);                         //Random initial scream counter value
@@ -155,7 +155,15 @@ class Agent {
   }
   
   boolean readyToReproduct(){
-    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy >= SUFFENERGY + REPRODUCTCOST * 2;
+    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy >= SUFFENERGY + REPRODUCTCOST * 2 && conCount > 0;
+  }
+  
+  float howHungry(){
+    float hunger = MAXENERGY - energy;
+    if(hunger < 0)
+      return 0;
+    else
+      return hunger;
   }
   
   //Setters
@@ -176,10 +184,12 @@ class Agent {
   
   void setEnergy(float argNrg){
     energy = argNrg;
+    updateStatus();
   }
   
   void setNewBornEnergy(){
     energy = SUFFENERGY + SUFFENERGY/4;
+    updateStatus();
   }
   
   //Methods
@@ -203,8 +213,7 @@ class Agent {
   int getQuadX(){
     int quadX = 0;
     float h = DEFX / QUADX;
-    while(x > h + quadX * h)
-      quadX++;
+    quadX = (int)((x - (x % h)) / h);
     if(quadX < QUADX)
       return quadX;
     else
@@ -214,8 +223,7 @@ class Agent {
   int getQuadY(){
     int quadY = 0;
     float h = DEFY / QUADY;
-    while(y > h + quadY * h)
-      quadY++;
+    quadY = (int)((y - (y % h)) / h);
     if(quadY < QUADY)
       return quadY;
     else
@@ -232,6 +240,7 @@ class Agent {
        dieFlag = true;
        return;
     }
+    updateStatus();
   }
   
   boolean ifHearFrom(float argDist){                                //True if hear from distance, false otherwise
@@ -287,8 +296,8 @@ class Agent {
   
   void updateSpeed(){
     speed = speed 
-            + (0.5 * (age - agePerStep - maxAge/2) * (age - agePerStep - maxAge/2) / (maxAge * maxAge)) 
-            - (0.5 * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge));
+            + (SPEEDAGECOEFF * (age - agePerStep - maxAge/2) * (age - agePerStep - maxAge/2) / (maxAge * maxAge)) 
+            - (SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge));
   }
   
   void fixDir(){                                                    //Fix direction to range [0 ; 2PI)
@@ -322,7 +331,7 @@ class Agent {
   
   void eat(float argRes){
     if(energy <= MAXENERGY)
-      energy += argRes;
+      energy += argRes - argRes * (age / maxAge) * RESEATENPERSTEPAGECOEFF;
     updateStatus();
   }
   
@@ -332,7 +341,7 @@ class Agent {
      age += agePerStep;
      updateSpeed();
      
-     energy -= energyPerStep;
+     energy -= energyPerStep - (0.85 - speed/BASESPEED) * energyPerStep;
      
      if(energy <= 0 || age > maxAge){
        dieFlag = true;
