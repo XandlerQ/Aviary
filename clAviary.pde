@@ -36,7 +36,7 @@ class AviaryRivalry {                                                           
       agents.add(new Agent(0));                                                      //
     }                                                                                 //Add agents 
     for(int i = 0; i < argInitAgentAmnt / 2; i++){                                                //
-      agents.add(new Agent(1));                                                      //
+      agents.add(new Agent(0));                                                      //
     }                                                                                 //Add agents 
     println("INITIAL AGENT COUNT:", argInitAgentAmnt);
     
@@ -134,6 +134,9 @@ class AviaryRivalry {                                                           
   void agEat(Agent argAg, int quadX, int quadY){
     float hunger = argAg.howHungry();
     float resToEat;
+    if(hunger == 0)
+      return;
+    
     if(hunger > RESEATENPERSTEP)
       resToEat = net.lowerRes(quadX, quadY, RESEATENPERSTEP);
     else
@@ -545,7 +548,10 @@ class AviaryRivalry {                                                           
   }
   
   void tick(){                                                                        //Performes animation tick
-  
+    
+    if(NRGFORCONDEPLETING)
+      packs.forEach((pack) -> {pack.energyDepletion();});
+    
     ArrayList<Agent> reproductList = new ArrayList<Agent>();
     net.replenish();
     for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
@@ -582,8 +588,7 @@ class AviaryRivalry {                                                           
     
     if(NRGBALANCINGTYPE != 0)
       packs.forEach((pack) -> {pack.energyBalancing();});
-    if(NRGFORCONDEPLETING)
-      packs.forEach((pack) -> {pack.energyDepletion();});
+    
       
     fights();
                                                                    //Perform screams

@@ -158,8 +158,10 @@ class Pack{
     agents.remove(argAg);
     argAg.resetConCount();
     //println("agToConnect size for this deletion:", agToConnect.size());
-    if(agToConnect.size() >= 2)
+    if(agToConnect.size() >= 2){
       reconnect(agToConnect);
+    }
+    
     
   }
   
@@ -229,6 +231,24 @@ class Pack{
           ag1.addCon();
           ag2.addCon();
          }
+      }
+    }
+    fixCutOff(agToConnect);
+  }
+  
+  void fixCutOff(ArrayList<Agent> agToConnect){
+    for (Iterator<Agent> iter = agToConnect.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      boolean isCutOff = true;
+      for (Iterator<Connection> iterCon = connections.iterator(); iterCon.hasNext();){
+        Connection con = iterCon.next();
+        if(con.contains(ag)){
+          isCutOff = false;
+          break;
+        }
+      }
+      if(isCutOff){
+        agents.remove(ag);
       }
     }
   }

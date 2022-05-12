@@ -107,8 +107,8 @@ class ResourceNet{
     if(type == 2){
       for(int i = 0; i < quadX; i++){
         for(int j = 0; j < quadY; j++){
-            quads[i][j] = BASERES / 2 - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 2;
-            maxRes[i][j] = BASERES - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1)));
+            quads[i][j] = BASERES / 2 - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 4;
+            maxRes[i][j] = BASERES - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 2;
         }
       }
     }

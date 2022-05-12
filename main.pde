@@ -9,7 +9,7 @@ int QUADY = 100;
 
 float QUADDIM = DEFX / QUADX;
 
-int INITAGENTAMOUNT = 100;
+int INITAGENTAMOUNT = 10;
 boolean SYSSPAWN = true;
 
 float MAXAGE = 3600;
@@ -18,7 +18,7 @@ float REPRODUCTHIGH = 3000;
 float REPRODUCTPROB = 0.001;
 float REPRODUCTCOST = 0.60;
 
-float BASESPEED = 2.0;
+float BASESPEED = 1.4;
 float SPEEDRANDOMNESS = 0.4;
 float SPEEDAGECOEFF = 0.5;
 
@@ -59,7 +59,7 @@ float FIGHTDIST = 40;
 
 
 
-int RESTYPE = 0; //0 -- regular, 1 -- linear, 2 -- two-linear, 3 -- random
+int RESTYPE = 2; //0 -- regular, 1 -- linear, 2 -- bilinear, 3 -- random
 float BASERES = 0.3;
 float RESREPSPEED = 0.002;
 
