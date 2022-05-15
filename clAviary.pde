@@ -36,7 +36,7 @@ class AviaryRivalry {                                                           
       agents.add(new Agent(0));                                                      //
     }                                                                                 //Add agents 
     for(int i = 0; i < argInitAgentAmnt / 2; i++){                                                //
-      agents.add(new Agent(0));                                                      //
+      agents.add(new Agent(1));                                                      //
     }                                                                                 //Add agents 
     println("INITIAL AGENT COUNT:", argInitAgentAmnt);
     
@@ -296,7 +296,7 @@ class AviaryRivalry {                                                           
     }
     else{
       
-      if(packMaxDist > SCRHEARDIST){
+      if(packMaxDist > PACKDIST){
         return packDir;
       }
       if(packMinDist < COMDIST){
@@ -595,6 +595,7 @@ class AviaryRivalry {                                                           
     if(infCtr == INFOREPCTRPEAK){
       grPop.addTimePoint(agents.size());
       grSp1Pop.addTimePoint(popSp1Ctr);
+      //grSp1Pop.addTimePoint(agents.get(0).getSpeed());
       grSp2Pop.addTimePoint(popSp2Ctr);
       grPopPack.addPoint(countLoneAgent(), packs.size());
     }

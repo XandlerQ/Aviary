@@ -11,26 +11,24 @@ class Agent {
   float y;           //Position 
   float direction;
   float speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
+  float delta;
   
   float age;
   float maxAge;
+  float agePerStep;
+  
   float energy;
   float suffEnergy;
+  float energyPerStep;
+  float maxEnergy;
   
   int valence;
   int conCount;
   
   boolean dieFlag;
   
-  float agePerStep;
-  float energyPerStep;
-  
-  
   int ActCtrPeak;       //Predetermined value for scrCtr peak value
   int actCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
-  
-  float scrHearDist;      //Perception distance: if scream produced closer than scrHearDist, then change Dir and Dist variables accordingly
-  float comfDist;
   
   color cl = #000000;   //Inner render color
   
@@ -43,13 +41,14 @@ class Agent {
     status = 1;
     species = 0;
   
-    age = r.nextFloat() * MAXAGE / 4;
-    maxAge = 0.6 * MAXAGE + 0.4 * MAXAGE * r.nextFloat();
+    age = r.nextFloat() * BASEMAXAGE / 4;
+    maxAge = 0.8 * BASEMAXAGE + 0.4 * BASEMAXAGE * r.nextFloat();
     agePerStep = AGEPERSTEP;
       
     energy = SUFFENERGY / 2 + SUFFENERGY * r.nextFloat();
     suffEnergy = SUFFENERGY;
     energyPerStep = NRGPERSTEP;
+    maxEnergy = MAXENERGY;
       
     valence = VALENCE1;
     conCount = 0;
@@ -59,13 +58,12 @@ class Agent {
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
-    speed = BASESPEED + SPEEDRANDOMNESS * r.nextFloat() - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
+    delta = r.nextFloat();
+    speed = BASESPEED + SPEEDRANDOMNESS * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
       
     ActCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     actCtr = r.nextInt(ActCtrPeak);                         //Random initial scream counter value
-      
-    scrHearDist = SCRHEARDIST;                                       //Fixed perception distance
-    comfDist = COMDIST;
+    
   }
   
   Agent(int argSpec){
@@ -122,10 +120,6 @@ class Agent {
     return ActCtrPeak;
   }
   
-  float getScrHearDist(){
-    return scrHearDist;
-  }
-  
   int getStatus(){
     return status;
   }
@@ -136,10 +130,6 @@ class Agent {
   
   int getSpecies(){
     return species;
-  }
-  
-  float getComfDist(){
-    return comfDist;
   }
   
   float getEnergy(){
@@ -159,7 +149,7 @@ class Agent {
   }
   
   float howHungry(){
-    float hunger = MAXENERGY - energy;
+    float hunger = maxEnergy - energy;
     if(hunger < 0)
       return 0;
     else
@@ -244,7 +234,7 @@ class Agent {
   }
   
   boolean ifHearFrom(float argDist){                                //True if hear from distance, false otherwise
-    return argDist <= scrHearDist;
+    return argDist <= SCRHEARDIST;
   }
   
   boolean wellFed(){
@@ -295,9 +285,7 @@ class Agent {
   }
   
   void updateSpeed(){
-    speed = speed 
-            + (SPEEDAGECOEFF * (age - agePerStep - maxAge/2) * (age - agePerStep - maxAge/2) / (maxAge * maxAge)) 
-            - (SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge));
+    speed = BASESPEED + SPEEDRANDOMNESS * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);
   }
   
   void fixDir(){                                                    //Fix direction to range [0 ; 2PI)
@@ -330,7 +318,7 @@ class Agent {
   }
   
   void eat(float argRes){
-    if(energy <= MAXENERGY)
+    if(energy <= maxEnergy)
       energy += argRes - argRes * (age / maxAge) * RESEATENPERSTEPAGECOEFF;
     updateStatus();
   }
@@ -341,7 +329,7 @@ class Agent {
      age += agePerStep;
      updateSpeed();
      
-     energy -= energyPerStep - (0.85 - speed/BASESPEED) * energyPerStep;
+     energy -= energyPerStep + (speed * speed/(BASESPEED * BASESPEED) - 1) * energyPerStep;
      
      if(energy <= 0 || age > maxAge){
        dieFlag = true;
