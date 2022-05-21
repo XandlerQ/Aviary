@@ -61,6 +61,7 @@ class Graph{
   color graphColor = #FFFFFF;
   color graphLineColor = #00A8FF;
   color graphTextColor = #00A8FF;
+  color graphBackgroundColor = #000000;
   
   ArrayList<Point> arrPt;
   
@@ -119,20 +120,24 @@ class Graph{
   }
   
   
-  void setgraphBordColor(color argCl){
+  void setBordColor(color argCl){
     graphBordColor = argCl;
   }
   
-  void setgraphColor(color argCl){
+  void setColor(color argCl){
     graphColor = argCl;
   }
   
-  void setgraphLineColor(color argCl){
+  void setLineColor(color argCl){
     graphLineColor = argCl;
   }
   
-  void setgraphTextColor(color argCl){
+  void setTextColor(color argCl){
     graphTextColor = argCl;
+  }
+  
+  void setBackgroundColor(color argCl){
+    graphBackgroundColor = argCl;
   }
   
   //Methods
@@ -190,7 +195,7 @@ class Graph{
     
     strokeWeight(1);
     stroke(graphBordColor);
-    fill(0);
+    fill(graphBackgroundColor);
     rect(origX, origY, dimX, dimY);
     
     if(arrPt.size() == 0)

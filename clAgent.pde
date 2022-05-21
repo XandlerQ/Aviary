@@ -41,7 +41,7 @@ class Agent {
     status = 1;
     species = 0;
   
-    age = r.nextFloat() * BASEMAXAGE / 4;
+    age = r.nextFloat() * BASEMAXAGE;
     maxAge = 0.8 * BASEMAXAGE + 0.4 * BASEMAXAGE * r.nextFloat();
     agePerStep = AGEPERSTEP;
       
@@ -145,7 +145,7 @@ class Agent {
   }
   
   boolean readyToReproduct(){
-    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy >= SUFFENERGY + REPRODUCTCOST * 2 && conCount > 0;
+    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy >= SUFFENERGY + REPRODUCTCOST * 1.5; //&& conCount > 0;
   }
   
   float howHungry(){

@@ -36,52 +36,46 @@ class AviaryRivalry {                                                           
       agents.add(new Agent(0));                                                      //
     }                                                                                 //Add agents 
     for(int i = 0; i < argInitAgentAmnt / 2; i++){                                                //
-      agents.add(new Agent(1));                                                      //
+      //agents.add(new Agent(1));                                                      //
     }                                                                                 //Add agents 
     println("INITIAL AGENT COUNT:", argInitAgentAmnt);
     
-    grPop = new Graph(DEFX, 0);
+    grPop = new Graph(DEFX + 3, 0);
     grPop.setType(1);
+    grPop.setBackgroundColor(#FFFFFF);
+    grPop.setBordColor(#111111);
+    grPop.setColor(#000000);
     
-    /*
-    void setgraphBordColor(color argCl){
-    graphBordColor = argCl;
-  }
-  
-  void setgraphColor(color argCl){
-    graphColor = argCl;
-  }
-  
-  void setgraphLineColor(color argCl){
-    graphLineColor = argCl;
-  }
-  
-  void setgraphTextColor(color argCl){
-    graphTextColor = argCl;
-  }
-  */
-    
-    grSp1Pop = new Graph(DEFX, 200);
+    grSp1Pop = new Graph(DEFX + 3, 200 + 2);
     grSp1Pop.setType(1);
-    grSp1Pop.setgraphBordColor(#AF0000);
-    grSp1Pop.setgraphColor(#FF2E2E);
-    grSp1Pop.setgraphLineColor(#FF8B8B);
-    grSp1Pop.setgraphTextColor(#FF9203);
+    grSp1Pop.setBordColor(#580000);
+    grSp1Pop.setColor(#9D0000);
+    grSp1Pop.setLineColor(#000000);
+    grSp1Pop.setTextColor(#310000);
+    grSp1Pop.setBackgroundColor(#FFFFFF);
     
-    grSp2Pop = new Graph(DEFX, 400);
+    grSp2Pop = new Graph(DEFX + 3, 400 + 4);
     grSp2Pop.setType(1);
-    grSp2Pop.setgraphBordColor(#0AAA00);
-    grSp2Pop.setgraphColor(#10FF00);
-    grSp2Pop.setgraphLineColor(#53FF48);
-    grSp2Pop.setgraphTextColor(#03FFCA);
+    grSp2Pop.setBordColor(#095200);
+    grSp2Pop.setColor(#13AA00);
+    grSp2Pop.setLineColor(#000000);
+    grSp2Pop.setTextColor(#063400);
+    grSp2Pop.setBackgroundColor(#FFFFFF);
     
-    grPopPack = new Graph(0, 600);
+    grPopPack = new Graph(3, DEFY + 6);
     grPopPack.setSize(1000,200);
     grPopPack.setType(0);
     grPopPack.setXAmnt(400);
+    grPopPack.setBackgroundColor(#FFFFFF);
+    grPopPack.setBordColor(#111111);
+    grPopPack.setColor(#000000);
   }
   
   //Getters
+  
+  ResourceNet getNet(){
+    return net;
+  }
   
   //Setters
   
@@ -635,7 +629,11 @@ class AviaryRivalry {                                                           
   }
   
   void render(){                                                    //Renders aviary
-    background(0);
+    background(#FFFFFF);
+    strokeWeight(3);
+    stroke(#585858);
+    fill(0);
+    rect(0, 0, DEFX, DEFY);
     renderRes();
     renderPacks();
     renderAgent();
