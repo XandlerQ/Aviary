@@ -19,7 +19,6 @@ class Agent {
   
   float energy;
   float suffEnergy;
-  float energyPerStep;
   float maxEnergy;
   
   int valence;
@@ -47,7 +46,6 @@ class Agent {
       
     energy = SUFFENERGY / 2 + SUFFENERGY * r.nextFloat();
     suffEnergy = SUFFENERGY;
-    energyPerStep = NRGPERSTEP;
     maxEnergy = MAXENERGY;
       
     valence = VALENCE1;
@@ -59,7 +57,7 @@ class Agent {
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
     delta = r.nextFloat();
-    speed = BASESPEED + SPEEDRANDOMNESS * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
+    speed = BASESPEED1 + SPEEDRANDOMNESS1 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
       
     ActCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     actCtr = r.nextInt(ActCtrPeak);                         //Random initial scream counter value
@@ -76,6 +74,7 @@ class Agent {
         x = DEFX/10 + (2 * DEFX / 5) * r.nextFloat();
         y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();
       }
+      speed = BASESPEED1 + SPEEDRANDOMNESS1 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);
     }
     else{
       valence = VALENCE2;
@@ -84,6 +83,7 @@ class Agent {
         x = 9 * DEFX/10 - (2 * DEFX / 5) * r.nextFloat();
         y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();
       }
+      speed = BASESPEED2 + SPEEDRANDOMNESS2 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);
     }
   }
   
@@ -180,6 +180,15 @@ class Agent {
   void setNewBornEnergy(){
     energy = SUFFENERGY + SUFFENERGY/4;
     updateStatus();
+  }
+  
+  void updateValence(){
+    if(species == 0){
+      valence = VALENCE1;
+    }
+    else{
+      valence = VALENCE2;
+    }
   }
   
   //Methods
@@ -285,7 +294,12 @@ class Agent {
   }
   
   void updateSpeed(){
-    speed = BASESPEED + SPEEDRANDOMNESS * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);
+    if(species == 0){
+        speed = BASESPEED1 + SPEEDRANDOMNESS1 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);
+    }
+    else{
+        speed = BASESPEED2 + SPEEDRANDOMNESS2 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);
+    }
   }
   
   void fixDir(){                                                    //Fix direction to range [0 ; 2PI)
@@ -329,7 +343,13 @@ class Agent {
      age += agePerStep;
      updateSpeed();
      
-     energy -= energyPerStep + (speed * speed/(BASESPEED * BASESPEED) - 1) * energyPerStep;
+     if(species == 0){
+        energy -= NRGPERSTEP1 * (speed * speed/(BASESPEED1 * BASESPEED1));
+    }
+    else{
+        energy -= NRGPERSTEP2 * (speed * speed/(BASESPEED2 * BASESPEED2));
+    }
+     
      
      if(energy <= 0 || age > maxAge){
        dieFlag = true;
@@ -377,7 +397,7 @@ class Agent {
       stroke(SPEC2CL);
     strokeWeight(1);
     fill(cl);
-    circle(x, y, 4);
+    circle(ORIGINX + x, ORIGINY + y, 4);
   }
   
   void render(float sz)
@@ -388,7 +408,7 @@ class Agent {
       stroke(SPEC2CL);
     strokeWeight(1);
     fill(cl);
-    circle(x, y, sz);
+    circle(ORIGINX + x, ORIGINY + y, sz);
   }
   
 }

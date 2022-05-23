@@ -63,6 +63,8 @@ class Graph{
   color graphTextColor = #00A8FF;
   color graphBackgroundColor = #000000;
   
+  String graphTitle = "Graph";
+  
   ArrayList<Point> arrPt;
   
   Graph(){
@@ -119,6 +121,10 @@ class Graph{
     xAmnt = argXAmnt;
   }
   
+  void setGraphTitle(String argGrTtl){
+    graphTitle = argGrTtl;
+  }
+  
   
   void setBordColor(color argCl){
     graphBordColor = argCl;
@@ -146,7 +152,6 @@ class Graph{
     
     if(arrPt.size() != 0){
       if(argPt.getX() == arrPt.get(arrPt.size() - 1).getX() && argPt.getY() == arrPt.get(arrPt.size() - 1).getY()){
-        println("returned");
         return;
       }
     }
@@ -231,7 +236,7 @@ class Graph{
           stroke(graphLineColor, 100);
           line(X, Y, origX, Y);
           fill(graphTextColor);
-          textSize(11);
+          textSize(8);
           text(int(arrPt.get(i).getY()), origX + 5, Y - 7);
         }
         curShift += step;
@@ -242,8 +247,8 @@ class Graph{
     }
     else{
       
-      stroke(graphColor, 80);
-      fill(graphColor, 50);
+      stroke(graphColor, 150);
+      fill(graphColor, 75);
       
       float maxX = 0;
       for (Iterator<Point> iter = arrPt.iterator(); iter.hasNext();){
@@ -273,7 +278,7 @@ class Graph{
           line(X, Y, origX, Y);
           line(X, Y, X, origY + dimY);
           fill(graphTextColor);
-          textSize(11);
+          textSize(8);
           text(int(arrPt.get(i).getY()), origX + 5, Y - 7);
           text(int(arrPt.get(i).getX()), X + 3, origY + dimY - 7);
         }
@@ -283,6 +288,18 @@ class Graph{
       text(int(maxY * 1.25), origX + 5, origY + 10);
       
     }
+    
+    strokeWeight(1);
+    stroke(graphBordColor);
+    fill(graphBordColor);
+    rect(origX + dimX - 200, origY, 200, 30);
+    
+    textSize(8);
+    fill(graphTextColor);
+    text(graphTitle, origX + dimX - 190, origY + 20);
+    
   }
+  
+  
   
 }

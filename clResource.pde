@@ -60,8 +60,6 @@ color STDRESOURCECOLOR = #FFAA00;
 
 class ResourceNet{
   
-  int type;
-  
   int quadX;
   int quadY;
   float sideX;
@@ -75,8 +73,6 @@ class ResourceNet{
   
   ResourceNet(){
     
-    type = RESTYPE;
-    
     quadX = QUADX;
     quadY = QUADY;
     
@@ -88,14 +84,14 @@ class ResourceNet{
     
     repSpeed = RESREPSPEED;
     
-    if(type == 0){
+    if(RESTYPE == 0){
       for(int i = 0; i < quadX; i++)
         for(int j = 0; j < quadY; j++){
             quads[i][j] = BASERES / 2;
             maxRes[i][j] = BASERES;
         }  
     }
-    if(type == 1){
+    if(RESTYPE == 1){
       
       for(int i = 0; i < quadX; i++){
         for(int j = 0; j < quadY; j++){
@@ -104,7 +100,7 @@ class ResourceNet{
         }
       }
     }
-    if(type == 2){
+    if(RESTYPE == 2){
       for(int i = 0; i < quadX; i++){
         for(int j = 0; j < quadY; j++){
             quads[i][j] = BASERES / 2 - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 4;
@@ -112,7 +108,7 @@ class ResourceNet{
         }
       }
     }
-    else if (type == 3){
+    else if (RESTYPE == 3){
       Random r = new Random();
       for(int i = 0; i < quadX; i++){
         for(int j = 0; j < quadY; j++){
@@ -141,6 +137,43 @@ class ResourceNet{
   
   //Methods
   
+  void updateMaxRes(){
+    if(RESTYPE == 0){
+      for(int i = 0; i < quadX; i++)
+        for(int j = 0; j < quadY; j++){
+            maxRes[i][j] = BASERES;
+        }  
+    }
+    if(RESTYPE == 1){
+      
+      for(int i = 0; i < quadX; i++){
+        for(int j = 0; j < quadY; j++){
+            maxRes[i][j] = BASERES - BASERES * (Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1));
+        }
+      }
+    }
+    if(RESTYPE == 2){
+      for(int i = 0; i < quadX; i++){
+        for(int j = 0; j < quadY; j++){
+            maxRes[i][j] = BASERES - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 2;
+        }
+      }
+    }
+    else if (RESTYPE == 3){
+      Random r = new Random();
+      for(int i = 0; i < quadX; i++){
+        for(int j = 0; j < quadY; j++){
+            maxRes[i][j] = BASERES - BASERES * r.nextFloat() / 1.5;
+        }
+      }
+    }
+  }
+  
+  void updateResRepSpeed(){
+    repSpeed = RESREPSPEED;
+  }
+    
+  
   float lowerRes(int argI, int argJ, float argAm){
     if(quads[argI][argJ] < argAm){
       float retRes = quads[argI][argJ];
@@ -159,6 +192,10 @@ class ResourceNet{
         if(quads[i][j] < maxRes[i][j]){
           quads[i][j] += repSpeed;
         }
+        else
+        {
+          quads[i][j] = maxRes[i][j];
+        }
       }
   }
   
@@ -170,7 +207,7 @@ class ResourceNet{
     for(int i = 0; i < quadX; i++)
       for(int j = 0; j < quadY; j++){
         fill(cl, 50 * (quads[i][j]) / BASERES);
-        rect(i * sideX, j * sideY, sideX, sideY);
+        rect(ORIGINX + i * sideX, ORIGINY + j * sideY, sideX, sideY);
         /*fill(cl, 50);
         circle(i * sideX + sideX/2, j * sideY + sideY/2, sideX * (quads[i][j]) / maxRes);*/
       }

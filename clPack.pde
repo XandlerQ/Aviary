@@ -323,10 +323,10 @@ class Pack{
         fill(#81FF94,100);
       }
       strokeWeight(1);     
-      line(ag1.getX(), ag1.getY(), ag2.getX(), ag2.getY());
+      line(ORIGINX + ag1.getX(), ORIGINY + ag1.getY(), ORIGINX + ag2.getX(), ORIGINY + ag2.getY());
     });
     
-    circle(getAgent(0).getX(), getAgent(0).getY(), 10);
+    circle(ORIGINX + getAgent(0).getX(), ORIGINY + getAgent(0).getY(), 10);
     
   }
 }
