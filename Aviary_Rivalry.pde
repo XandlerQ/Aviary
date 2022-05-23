@@ -241,6 +241,7 @@ void setup(){
       .setRange(0,500)
       .setValue(100)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(agentGroup);
       
    cp5.addSlider("Initial_agent_amount_2")
@@ -250,6 +251,7 @@ void setup(){
       .setRange(0,500)
       .setValue(100)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(agentGroup);
       
    cp5.addSlider("Reproduction_rate_1")
@@ -324,6 +326,7 @@ float NRGBALANCESPEED = 0.002;
       .setValue(0)
       .setNumberOfTickMarks(2)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup);
    
       
@@ -334,6 +337,7 @@ float NRGBALANCESPEED = 0.002;
       .setValue(1)
       .setNumberOfTickMarks(3)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup);
    
    
@@ -345,6 +349,7 @@ float NRGBALANCESPEED = 0.002;
       .setValue(3)
       .setNumberOfTickMarks(16)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup)
       .hide();
       
@@ -355,6 +360,7 @@ float NRGBALANCESPEED = 0.002;
       .setValue(0)
       .setNumberOfTickMarks(3)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup);
       
    cp5.addSlider("Energy_balancing_speed")
@@ -373,6 +379,7 @@ float NRGBALANCESPEED = 0.002;
       .setValue(2)
       .setNumberOfTickMarks(3)
       .setDecimalPrecision(0)
+      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup);
    
    
