@@ -241,7 +241,6 @@ void setup(){
       .setRange(0,500)
       .setValue(100)
       .setDecimalPrecision(0)
-      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(agentGroup);
       
    cp5.addSlider("Initial_agent_amount_2")
@@ -251,7 +250,6 @@ void setup(){
       .setRange(0,500)
       .setValue(100)
       .setDecimalPrecision(0)
-      .setSliderMode(Slider.FLEXIBLE)
       .moveTo(agentGroup);
       
    cp5.addSlider("Reproduction_rate_1")
