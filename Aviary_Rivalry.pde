@@ -97,7 +97,7 @@ ControlP5 cp5;
 
 
 void setup(){
-   size(1200, 970); 
+   size(1200, 950); 
    background(0);
    ellipseMode(CENTER);
    
@@ -386,7 +386,6 @@ float NRGBALANCESPEED = 0.002;
 }
 
 void Resource(float bsRes){
-  println("BASERES is set to " + bsRes);
   BASERES = bsRes;
   RESREPSPEED = BASERES/60;
   if(AV != null){
@@ -582,8 +581,6 @@ void draw(){
   if(!pause){
     if(AV != null)
       AV.run();
-    textSize(10);
-    fill(#5555ff); text(int(frameRate),5,10);
   }
   
   popMatrix();
@@ -637,6 +634,12 @@ void keyPressed(){
           textSize(20);
           text("PAUSE", DEFX/2 - 40, DEFY/2);
           pause = true;
+        }
+        else{
+          firstRun = false;
+          background(0);
+          AV = new AviaryRivalry();
+          pause = false;
         }
       }
     break;

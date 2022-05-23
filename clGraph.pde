@@ -242,7 +242,7 @@ class Graph{
         curShift += step;
       }
       
-      text(int(millis()/1000), origX + dimX - 20, origY + dimY - 7);
+      text(int(millis()/1000), origX + dimX - 30, origY + dimY - 4);
       text(int(maxY * 1.25), origX + 5, origY + 10);
     }
     else{
@@ -284,7 +284,7 @@ class Graph{
         }
       }
       
-      text(int(maxX * 1.25), origX + dimX - 20, origY + dimY - 7);
+      text(int(maxX * 1.25), origX + dimX - 30, origY + dimY - 4);
       text(int(maxY * 1.25), origX + 5, origY + 10);
       
     }
