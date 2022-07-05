@@ -6,11 +6,11 @@ import controlP5.*;
 int ORIGINX = 3;
 int ORIGINY = 3;
 
-int DEFX = 600;
-int DEFY = 600;
+int DEFX = 500;
+int DEFY = 500;
 
-int QUADX = 150;
-int QUADY = 150;
+int QUADX = 100;
+int QUADY = 100;
 
 int INITAGENTAMOUNT1 = 100;
 int INITAGENTAMOUNT2 = 100;
@@ -90,6 +90,9 @@ boolean firstRun = true;
 
 boolean Fixed = true;
 
+int screenshotNum = 1;
+int scrShCounter = 0;
+
 //AviaryRivalry(int argInitAgentAmnt, int argQuadX, int argQuadY, float argRes)
 
 
@@ -97,27 +100,31 @@ ControlP5 cp5;
 
 
 void setup(){
-   size(1200, 950); 
+   size(1200, 720); 
    background(0);
    ellipseMode(CENTER);
    
    int bSSX = 250;
    int bSSX2 = 250;
-   int bSSY = 15;
+   int bSSY = 10;
+   int bGap = 23;
    
    int sSSX = 200;
-   int sSSY = 15;
+   int sSSY = 8;
+   int sGap = 18;
    
    cp5 = new ControlP5(this);
    
    Group resGroup = cp5.addGroup("Resource_settings")
+                       //.setLabel("Настройки ресурса")
                        .setBackgroundColor(color(#003D7C, 100))
-                       .setBackgroundHeight(80)
+                       .setBackgroundHeight(60)
                        .setPosition(ORIGINX, ORIGINY + DEFY + 20)
                        .setWidth(380)
                        ;
    
    cp5.addSlider("Resource")
+      //.setLabel("Пл-ть ресурса")
       .setPosition(10,5)
       .setSize(bSSX,bSSY)
       .setRange(0,3)
@@ -126,7 +133,8 @@ void setup(){
    
    
    cp5.addSlider("Resource_type")
-      .setPosition(10, 45)
+      //.setLabel("Распределение ресурса")
+      .setPosition(10, 5 + bGap)
       .setSize(bSSX,bSSY)
       .setRange(0,3)
       .setNumberOfTickMarks(4)
@@ -137,13 +145,15 @@ void setup(){
       
    
    Group distGroup = cp5.addGroup("Distances_settings")
+                //.setLabel("Настройки расстояний")
                 .setBackgroundColor(color(#003D7C, 100))
-                .setBackgroundHeight(180)
-                .setPosition(ORIGINX, ORIGINY + DEFY + 120)
+                .setBackgroundHeight(110)
+                .setPosition(ORIGINX, ORIGINY + DEFY + 100)
                 .setWidth(380)
                 ;
    
    cp5.addSlider("Scream_distance")
+      //.setLabel("Радиус слышимости")
       .setPosition(10,5)
       .setSize(sSSX,sSSY)
       .setRange(0,200)
@@ -151,35 +161,40 @@ void setup(){
       .moveTo(distGroup);
    
    cp5.addSlider("Max_pack_distance")
-      .setPosition(10,35)
+      //.setLabel("Макс. расст. в стае")
+      .setPosition(10,5 + sGap)
       .setSize(sSSX,sSSY)
       .setRange(0,200)
       .setValue(80)
       .moveTo(distGroup);
    
    cp5.addSlider("Connection_distance")
-      .setPosition(10,65)
+      //.setLabel("Расст. объед. в стаи")
+      .setPosition(10,5 + 2 * sGap)
       .setSize(sSSX,sSSY)
       .setRange(0,200)
       .setValue(40)
       .moveTo(distGroup);
    
    cp5.addSlider("Comfortable_distance")
-      .setPosition(10,95)
+      //.setLabel("Комф. расст. в стае")
+      .setPosition(10,5 + 3 * sGap)
       .setSize(sSSX,sSSY)
       .setRange(0,200)
       .setValue(20)
       .moveTo(distGroup);
    
    cp5.addSlider("Pack_comfortable_distance")
-      .setPosition(10,125)
+      //.setLabel("Комф. расст. между стаями")
+      .setPosition(10,5 + 4 * sGap)
       .setSize(sSSX,sSSY)
       .setRange(0,200)
       .setValue(80)
       .moveTo(distGroup);
       
    cp5.addSlider("Fight_distance")
-      .setPosition(10,155)
+      //.setLabel("Радиус конкуренции")
+      .setPosition(10,5 + 5 * sGap)
       .setSize(sSSX,sSSY)
       .setRange(0,200)
       .setValue(40)
@@ -187,20 +202,23 @@ void setup(){
       
       
    cp5.addBang("Reset")
-      .setPosition(345,65)
+      //.setLabel("Сбросить")
+      .setPosition(345, 45)
       .setSize(20,20)
       .moveTo(distGroup);
    
    
    
    Group agentGroup = cp5.addGroup("Agent_settings")
+                       //.setLabel("Настройки агентов")
                        .setBackgroundColor(color(#003D7C, 100))
-                       .setBackgroundHeight(320)
+                       .setBackgroundHeight(190)
                        .setPosition(ORIGINX + 390, ORIGINY + DEFY + 20)
                        .setWidth(380)
                        ;
    
    cp5.addSlider("Red_Valence")
+      //.setLabel("Вал-ть кр. агентов")
       .setPosition(10, 5)
       .setSize(bSSX2,bSSY)
       .setRange(0,5)
@@ -211,7 +229,8 @@ void setup(){
       .moveTo(agentGroup);
    
    cp5.addSlider("Green_Valence")
-      .setPosition(10, 45)
+      //.setLabel("Вал-ть зел. агентов")
+      .setPosition(10, 5 + bGap)
       .setSize(bSSX2,bSSY)
       .setRange(0,5)
       .setValue(2)
@@ -221,21 +240,24 @@ void setup(){
       .moveTo(agentGroup);
       
    cp5.addSlider("Base_speed_1")
-      .setPosition(10, 85)
+      //.setLabel("Баз. скорость кр. агентов")
+      .setPosition(10, 5 + 2 * bGap)
       .setSize(bSSX2,bSSY)
       .setRange(0,3)
       .setValue(1.6)
       .moveTo(agentGroup);
       
    cp5.addSlider("Base_speed_2")
-      .setPosition(10, 125)
+      //.setLabel("Баз. скорость зел. агентов")
+      .setPosition(10, 5 + 3 * bGap)
       .setSize(bSSX2,bSSY)
       .setRange(0,3)
       .setValue(1.6)
       .moveTo(agentGroup);
       
    cp5.addSlider("Initial_agent_amount_1")
-      .setPosition(10, 165)
+      //.setLabel("Нач. кол-во кр. агентов")
+      .setPosition(10, 5 + 4 * bGap)
       .setSize(bSSX2,bSSY)
       .setNumberOfTickMarks(51)
       .setRange(0,500)
@@ -244,7 +266,8 @@ void setup(){
       .moveTo(agentGroup);
       
    cp5.addSlider("Initial_agent_amount_2")
-      .setPosition(10, 205)
+      //.setLabel("Нач. кол-во зел. агентов")
+      .setPosition(10, 5 + 5 * bGap)
       .setSize(bSSX2,bSSY)
       .setNumberOfTickMarks(51)
       .setRange(0,500)
@@ -253,7 +276,8 @@ void setup(){
       .moveTo(agentGroup);
       
    cp5.addSlider("Reproduction_rate_1")
-      .setPosition(10, 245)
+      //.setLabel("Ур. рождаемости кр. агентов")
+      .setPosition(10, 5 + 6 * bGap)
       .setSize(bSSX2,bSSY)
       .setRange(0,100)
       .setNumberOfTickMarks(51)
@@ -261,7 +285,8 @@ void setup(){
       .moveTo(agentGroup);
       
    cp5.addSlider("Reproduction_rate_2")
-      .setPosition(10, 285)
+      //.setLabel("Ур. рождаемости зел. агентов")
+      .setPosition(10, 5 + 7 * bGap)
       .setSize(bSSX2,bSSY)
       .setRange(0,100)
       .setNumberOfTickMarks(51)
@@ -269,13 +294,7 @@ void setup(){
       .moveTo(agentGroup);
    
       
-   cp5.addBang("Start")
-      .setPosition(1200 - 65, ORIGINY + DEFY + 20)
-      .setSize(45, 30);
    
-   cp5.addBang("Pause")
-      .setPosition(1200 - 65, ORIGINY + DEFY + 70)
-      .setSize(45, 30);
       
    /*
    float NRGPERFIGHT = 1.0;
@@ -293,14 +312,16 @@ float NRGBALANCESPEED = 0.002;
    */
       
    Group genGroup = cp5.addGroup("General_settings")
+                       //.setLabel("Общие настройки")
                        .setBackgroundColor(color(#003D7C, 100))
-                       .setBackgroundHeight(320)
+                       .setBackgroundHeight(190)
                        .setPosition(ORIGINX + 780, ORIGINY + DEFY + 20)
                        .setWidth(340)
                        ;
                        
    
    cp5.addSlider("Fight_energy")
+      //.setLabel("Энергия на конкуренцию")
       .setPosition(10,5)
       .setSize(sSSX,sSSY)
       .setRange(0,5)
@@ -310,7 +331,8 @@ float NRGBALANCESPEED = 0.002;
    
       
    cp5.addSlider("Energy_steal_coefficient")
-      .setPosition(10,85)
+      //.setLabel("Доля переходящей энергии")
+      .setPosition(10, 5 + 2 * bGap)
       .setSize(sSSX,sSSY)
       .setRange(0,2)
       .setValue(0.5)
@@ -318,7 +340,8 @@ float NRGBALANCESPEED = 0.002;
       .hide();
       
    cp5.addSlider("Energy_stolen")
-      .setPosition(10,45)
+      //.setLabel("Шаблон конкуренции")
+      .setPosition(10,5 + bGap)
       .setSize(sSSX,sSSY)
       .setRange(0,1)
       .setValue(0)
@@ -329,7 +352,8 @@ float NRGBALANCESPEED = 0.002;
    
       
    cp5.addSlider("Connection_fight_scheme")
-      .setPosition(10,125)
+      //.setLabel("Тип зав-ти от соединений")
+      .setPosition(10,5 + 3 * bGap)
       .setSize(sSSX,sSSY)
       .setRange(0,2)
       .setValue(1)
@@ -341,9 +365,10 @@ float NRGBALANCESPEED = 0.002;
    
       
    cp5.addSlider("Pack_hostility_size")
-      .setPosition(10,205)
+      //.setLabel("Мин. размер агресивной стаи")
+      .setPosition(10,5 + 5 * bGap)
       .setSize(sSSX,sSSY)
-      .setRange(0,15)
+      .setRange(2,15)
       .setValue(3)
       .setNumberOfTickMarks(16)
       .setDecimalPrecision(0)
@@ -352,7 +377,8 @@ float NRGBALANCESPEED = 0.002;
       .hide();
       
    cp5.addSlider("Fight_scheme")
-      .setPosition(10,165)
+      //.setLabel("Модификация шабл. конкуренции")
+      .setPosition(10,5 + 4 * bGap)
       .setSize(sSSX,sSSY)
       .setRange(0,2)
       .setValue(0)
@@ -362,7 +388,8 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup);
       
    cp5.addSlider("Energy_balancing_speed")
-      .setPosition(10,285)
+      //.setLabel("Скорость баланса энергии")
+      .setPosition(10,5 + 7 * bGap)
       .setSize(sSSX,sSSY)
       .setRange(0,0.05)
       .setValue(0.002)
@@ -371,7 +398,8 @@ float NRGBALANCESPEED = 0.002;
       .hide();
       
    cp5.addSlider("Energy_balancing_type")
-      .setPosition(10,245)
+      //.setLabel("Тип баланса энергии")
+      .setPosition(10,5 + 6 * bGap)
       .setSize(sSSX,sSSY)
       .setRange(0,2)
       .setValue(2)
@@ -381,7 +409,19 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup);
    
    
+   cp5.addBang("Start")
+      //.setLabel("Старт")
+      .setPosition(1200 - 65, ORIGINY + DEFY + 20)
+      .setSize(45, 30);
    
+   cp5.addBang("Pause")
+      //.setLabel("Пауза")
+      .setPosition(1200 - 65, ORIGINY + DEFY + 70)
+      .setSize(45, 30);
+   
+   cp5.addBang("Screenshot")
+      .setPosition(1200 - 65, ORIGINY + DEFY + 120)
+      .setSize(45, 30);
       
    
    PFont font = createFont("PressStart2P-Regular.ttf", 5);
@@ -567,16 +607,27 @@ void Pause(){
     pause = false;
   else {
     if(!firstRun){
-      fill(0, 100);
+      fill(0, 80);
       stroke(0, 0);
       rect(ORIGINX, ORIGINY, DEFX, DEFY);
-      fill(#ffffff); 
-      textSize(20);
-      text("PAUSE", DEFX/2 - 40, DEFY/2);
+      fill(#ffffff, 100); 
+      rect(ORIGINX + 5, ORIGINY + 5, 12, 30);
+      rect(ORIGINX + 25, ORIGINY + 5, 12, 30);
       pause = true;
     }
   }
 }
+
+
+void Screenshot(){
+  saveFrame("Screenshots/Aviary_Run-" + screenshotNum + ".png");
+  screenshotNum++;
+  scrShCounter = 120;
+}
+ 
+ /*
+ .setPosition(1200 - 65, ORIGINY + DEFY + 120)
+      .setSize(45, 30);*/
  
  
 void draw(){
@@ -586,6 +637,15 @@ void draw(){
   if(!pause){
     if(AV != null)
       AV.run();
+  }
+  
+  if(scrShCounter > 0){
+    scrShCounter--;
+    fill(#ffffff, 100);
+    stroke(#ffffff, 255);
+    rect(1200 - 47 + 5, ORIGINY + DEFY + 170, 2, 15);
+    triangle(1200 - 50 + 5, ORIGINY + DEFY + 185, 1200 - 42 + 5, ORIGINY + DEFY + 185, 1200 - 46 + 5, ORIGINY + DEFY + 195);
+    rect(1200 - 55 + 5, ORIGINY + DEFY + 195, 20, 2);
   }
   
   popMatrix();
@@ -619,25 +679,25 @@ void keyPressed(){
       background(0);
       AV = new AviaryRivalry();
       if(pause){
-        fill(0, 100);
+        fill(0, 80);
         stroke(0, 0);
         rect(ORIGINX, ORIGINY, DEFX, DEFY);
-        fill(#ffffff); 
-        textSize(20);
-        text("PAUSE", DEFX/2 - 40, DEFY/2);
+        fill(#ffffff, 100); 
+        rect(ORIGINX + 5, ORIGINY + 5, 12, 30);
+        rect(ORIGINX + 25, ORIGINY + 5, 12, 30);
       }
-      break;
+    break;
     case ' ':
       if(pause)
         pause = false;
       else {
         if(!firstRun){
-          fill(0, 100);
+          fill(0, 80);
           stroke(0, 0);
           rect(ORIGINX, ORIGINY, DEFX, DEFY);
-          fill(#ffffff); 
-          textSize(20);
-          text("PAUSE", DEFX/2 - 40, DEFY/2);
+          fill(#ffffff, 100);  
+          rect(ORIGINX + 5, ORIGINY + 5, 12, 30);
+          rect(ORIGINX + 25, ORIGINY + 5, 12, 30);
           pause = true;
         }
         else{
@@ -647,6 +707,12 @@ void keyPressed(){
           pause = false;
         }
       }
+    break;
+    case 's':
+    case 'S':
+      saveFrame("Screenshots/Aviary_Run-" + screenshotNum + ".png");
+      screenshotNum++;
+      scrShCounter = 120;
     break;
   }
 }

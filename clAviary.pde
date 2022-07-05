@@ -40,8 +40,11 @@ class AviaryRivalry {                                                           
     }                                                                                 //Add agents 
     println("INITIAL AGENT COUNT: ", INITAGENTAMOUNT1 + "   " + INITAGENTAMOUNT2);
     
-    grSp1Pop = new Graph(DEFX + 6, 0);
-    grSp1Pop.setSize(592,200);
+    int graphWidth = 690;
+    int graphHeight = 165;
+    
+    grSp1Pop = new Graph(DEFX + 6, 1);
+    grSp1Pop.setSize(graphWidth,graphHeight);
     grSp1Pop.setType(1);
     grSp1Pop.setXAmnt(1000);
     grSp1Pop.setBordColor(#980000);
@@ -49,10 +52,10 @@ class AviaryRivalry {                                                           
     grSp1Pop.setLineColor(#FFFFFF);
     grSp1Pop.setTextColor(#FFFFFF);
     grSp1Pop.setBackgroundColor(#101010);
-    grSp1Pop.setGraphTitle("Red population");
+    grSp1Pop.setGraphTitle("Популяция кр. агентов");
     
-    grSp2Pop = new Graph(DEFX + 6, 200 + 2);
-    grSp2Pop.setSize(592,200);
+    grSp2Pop = new Graph(DEFX + 6, graphHeight + 4);
+    grSp2Pop.setSize(graphWidth,graphHeight);
     grSp2Pop.setType(1);
     grSp2Pop.setXAmnt(1000);
     grSp2Pop.setBordColor(#499D00);
@@ -60,16 +63,16 @@ class AviaryRivalry {                                                           
     grSp2Pop.setLineColor(#FFC800);
     grSp2Pop.setTextColor(#FFD900);
     grSp2Pop.setBackgroundColor(#101010);
-    grSp2Pop.setGraphTitle("Green population");
+    grSp2Pop.setGraphTitle("Популяция зел. агентов");
     
-    grPopPack = new Graph(DEFX + 6, 400 + 4);
-    grPopPack.setSize(592,198);
+    grPopPack = new Graph(DEFX + 6, 2 * graphHeight + 7);
+    grPopPack.setSize(graphWidth,graphHeight);
     grPopPack.setType(0);
     grPopPack.setXAmnt(1000);
     grPopPack.setBackgroundColor(#101010);
     grPopPack.setBordColor(#555555);
     grPopPack.setColor(#FFFFFF);
-    grPopPack.setGraphTitle("Packs (lone agents)");
+    grPopPack.setGraphTitle("Кол-во стай(св. агенты)");
   }
   
   //Getters
