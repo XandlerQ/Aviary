@@ -140,6 +140,10 @@ class Agent {
     return age;
   }
   
+  int getValence(){
+    return valence;
+  }
+  
   boolean dead(){
     return dieFlag;
   }

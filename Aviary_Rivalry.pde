@@ -115,7 +115,7 @@ void setup(){
    
    cp5 = new ControlP5(this);
    
-   Group resGroup = cp5.addGroup("Resource_settings")
+   Group resGroup = cp5.addGroup("GrResSettings")
                        //.setLabel("Настройки ресурса")
                        .setBackgroundColor(color(#003D7C, 100))
                        .setBackgroundHeight(60)
@@ -123,7 +123,7 @@ void setup(){
                        .setWidth(380)
                        ;
    
-   cp5.addSlider("Resource")
+   cp5.addSlider("SlResDensity")
       //.setLabel("Пл-ть ресурса")
       .setPosition(10,5)
       .setSize(bSSX,bSSY)
@@ -132,7 +132,7 @@ void setup(){
       .moveTo(resGroup);
    
    
-   cp5.addSlider("Resource_type")
+   cp5.addSlider("SlResType")
       //.setLabel("Распределение ресурса")
       .setPosition(10, 5 + bGap)
       .setSize(bSSX,bSSY)
@@ -144,7 +144,7 @@ void setup(){
       .moveTo(resGroup);
       
    
-   Group distGroup = cp5.addGroup("Distances_settings")
+   Group distGroup = cp5.addGroup("GrDistSettings")
                 //.setLabel("Настройки расстояний")
                 .setBackgroundColor(color(#003D7C, 100))
                 .setBackgroundHeight(110)
@@ -152,7 +152,7 @@ void setup(){
                 .setWidth(380)
                 ;
    
-   cp5.addSlider("Scream_distance")
+   cp5.addSlider("SlScreamDist")
       //.setLabel("Радиус слышимости")
       .setPosition(10,5)
       .setSize(sSSX,sSSY)
@@ -160,7 +160,7 @@ void setup(){
       .setValue(100)
       .moveTo(distGroup);
    
-   cp5.addSlider("Max_pack_distance")
+   cp5.addSlider("SlMaxPackDist")
       //.setLabel("Макс. расст. в стае")
       .setPosition(10,5 + sGap)
       .setSize(sSSX,sSSY)
@@ -168,7 +168,7 @@ void setup(){
       .setValue(80)
       .moveTo(distGroup);
    
-   cp5.addSlider("Connection_distance")
+   cp5.addSlider("SlConDist")
       //.setLabel("Расст. объед. в стаи")
       .setPosition(10,5 + 2 * sGap)
       .setSize(sSSX,sSSY)
@@ -176,7 +176,7 @@ void setup(){
       .setValue(40)
       .moveTo(distGroup);
    
-   cp5.addSlider("Comfortable_distance")
+   cp5.addSlider("SlComfDist")
       //.setLabel("Комф. расст. в стае")
       .setPosition(10,5 + 3 * sGap)
       .setSize(sSSX,sSSY)
@@ -184,7 +184,7 @@ void setup(){
       .setValue(20)
       .moveTo(distGroup);
    
-   cp5.addSlider("Pack_comfortable_distance")
+   cp5.addSlider("SlPackComfDist")
       //.setLabel("Комф. расст. между стаями")
       .setPosition(10,5 + 4 * sGap)
       .setSize(sSSX,sSSY)
@@ -192,7 +192,7 @@ void setup(){
       .setValue(80)
       .moveTo(distGroup);
       
-   cp5.addSlider("Fight_distance")
+   cp5.addSlider("SlFightDist")
       //.setLabel("Радиус конкуренции")
       .setPosition(10,5 + 5 * sGap)
       .setSize(sSSX,sSSY)
@@ -201,7 +201,7 @@ void setup(){
       .moveTo(distGroup);
       
       
-   cp5.addBang("Reset")
+   cp5.addBang("BgResetDist")
       //.setLabel("Сбросить")
       .setPosition(345, 45)
       .setSize(20,20)
@@ -209,7 +209,7 @@ void setup(){
    
    
    
-   Group agentGroup = cp5.addGroup("Agent_settings")
+   Group agentGroup = cp5.addGroup("GrAgentSettings")
                        //.setLabel("Настройки агентов")
                        .setBackgroundColor(color(#003D7C, 100))
                        .setBackgroundHeight(190)
@@ -217,7 +217,7 @@ void setup(){
                        .setWidth(380)
                        ;
    
-   cp5.addSlider("Red_Valence")
+   cp5.addSlider("SlRedValence")
       //.setLabel("Вал-ть кр. агентов")
       .setPosition(10, 5)
       .setSize(bSSX2,bSSY)
@@ -228,7 +228,7 @@ void setup(){
       .setSliderMode(Slider.FLEXIBLE)
       .moveTo(agentGroup);
    
-   cp5.addSlider("Green_Valence")
+   cp5.addSlider("SlGreenValence")
       //.setLabel("Вал-ть зел. агентов")
       .setPosition(10, 5 + bGap)
       .setSize(bSSX2,bSSY)
@@ -239,7 +239,7 @@ void setup(){
       .setSliderMode(Slider.FLEXIBLE)
       .moveTo(agentGroup);
       
-   cp5.addSlider("Base_speed_1")
+   cp5.addSlider("SlBaseSpeedRed")
       //.setLabel("Баз. скорость кр. агентов")
       .setPosition(10, 5 + 2 * bGap)
       .setSize(bSSX2,bSSY)
@@ -247,7 +247,7 @@ void setup(){
       .setValue(1.6)
       .moveTo(agentGroup);
       
-   cp5.addSlider("Base_speed_2")
+   cp5.addSlider("SlBaseSpeedGreen")
       //.setLabel("Баз. скорость зел. агентов")
       .setPosition(10, 5 + 3 * bGap)
       .setSize(bSSX2,bSSY)
@@ -255,7 +255,7 @@ void setup(){
       .setValue(1.6)
       .moveTo(agentGroup);
       
-   cp5.addSlider("Initial_agent_amount_1")
+   cp5.addSlider("SlInitAgentAmountRed")
       //.setLabel("Нач. кол-во кр. агентов")
       .setPosition(10, 5 + 4 * bGap)
       .setSize(bSSX2,bSSY)
@@ -265,7 +265,7 @@ void setup(){
       .setDecimalPrecision(0)
       .moveTo(agentGroup);
       
-   cp5.addSlider("Initial_agent_amount_2")
+   cp5.addSlider("SlInitAgentAmountGreen")
       //.setLabel("Нач. кол-во зел. агентов")
       .setPosition(10, 5 + 5 * bGap)
       .setSize(bSSX2,bSSY)
@@ -275,7 +275,7 @@ void setup(){
       .setDecimalPrecision(0)
       .moveTo(agentGroup);
       
-   cp5.addSlider("Reproduction_rate_1")
+   cp5.addSlider("SlReproductionRateRed")
       //.setLabel("Ур. рождаемости кр. агентов")
       .setPosition(10, 5 + 6 * bGap)
       .setSize(bSSX2,bSSY)
@@ -284,7 +284,7 @@ void setup(){
       .setValue(10)
       .moveTo(agentGroup);
       
-   cp5.addSlider("Reproduction_rate_2")
+   cp5.addSlider("SlReproductionRateGreen")
       //.setLabel("Ур. рождаемости зел. агентов")
       .setPosition(10, 5 + 7 * bGap)
       .setSize(bSSX2,bSSY)
@@ -311,7 +311,7 @@ int NRGBALANCINGTYPE = 2; //0 -- no balancing, 1 -- gradual balancing, 2 -- imme
 float NRGBALANCESPEED = 0.002;
    */
       
-   Group genGroup = cp5.addGroup("General_settings")
+   Group genGroup = cp5.addGroup("GrGeneralSettings")
                        //.setLabel("Общие настройки")
                        .setBackgroundColor(color(#003D7C, 100))
                        .setBackgroundHeight(190)
@@ -320,7 +320,7 @@ float NRGBALANCESPEED = 0.002;
                        ;
                        
    
-   cp5.addSlider("Fight_energy")
+   cp5.addSlider("SlFightEnergy")
       //.setLabel("Энергия на конкуренцию")
       .setPosition(10,5)
       .setSize(sSSX,sSSY)
@@ -330,7 +330,7 @@ float NRGBALANCESPEED = 0.002;
       
    
       
-   cp5.addSlider("Energy_steal_coefficient")
+   cp5.addSlider("SlEnergyStealCoef")
       //.setLabel("Доля переходящей энергии")
       .setPosition(10, 5 + 2 * bGap)
       .setSize(sSSX,sSSY)
@@ -339,7 +339,7 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup)
       .hide();
       
-   cp5.addSlider("Energy_stolen")
+   cp5.addSlider("SlEnergyStolen")
       //.setLabel("Шаблон конкуренции")
       .setPosition(10,5 + bGap)
       .setSize(sSSX,sSSY)
@@ -351,7 +351,7 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup);
    
       
-   cp5.addSlider("Connection_fight_scheme")
+   cp5.addSlider("SlConFightScheme")
       //.setLabel("Тип зав-ти от соединений")
       .setPosition(10,5 + 3 * bGap)
       .setSize(sSSX,sSSY)
@@ -364,7 +364,7 @@ float NRGBALANCESPEED = 0.002;
    
    
       
-   cp5.addSlider("Pack_hostility_size")
+   cp5.addSlider("SlPackHostilitySize")
       //.setLabel("Мин. размер агресивной стаи")
       .setPosition(10,5 + 5 * bGap)
       .setSize(sSSX,sSSY)
@@ -376,7 +376,7 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup)
       .hide();
       
-   cp5.addSlider("Fight_scheme")
+   cp5.addSlider("SlFightScheme")
       //.setLabel("Модификация шабл. конкуренции")
       .setPosition(10,5 + 4 * bGap)
       .setSize(sSSX,sSSY)
@@ -387,7 +387,7 @@ float NRGBALANCESPEED = 0.002;
       .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup);
       
-   cp5.addSlider("Energy_balancing_speed")
+   cp5.addSlider("SlEnergyBalancingSpeed")
       //.setLabel("Скорость баланса энергии")
       .setPosition(10,5 + 7 * bGap)
       .setSize(sSSX,sSSY)
@@ -397,7 +397,7 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup)
       .hide();
       
-   cp5.addSlider("Energy_balancing_type")
+   cp5.addSlider("SlEnergyBalancingType")
       //.setLabel("Тип баланса энергии")
       .setPosition(10,5 + 6 * bGap)
       .setSize(sSSX,sSSY)
@@ -409,17 +409,17 @@ float NRGBALANCESPEED = 0.002;
       .moveTo(genGroup);
    
    
-   cp5.addBang("Start")
+   cp5.addBang("BgStart")
       //.setLabel("Старт")
       .setPosition(1200 - 65, ORIGINY + DEFY + 20)
       .setSize(45, 30);
    
-   cp5.addBang("Pause")
+   cp5.addBang("BgPause")
       //.setLabel("Пауза")
       .setPosition(1200 - 65, ORIGINY + DEFY + 70)
       .setSize(45, 30);
    
-   cp5.addBang("Screenshot")
+   cp5.addBang("BgScreenshot")
       .setPosition(1200 - 65, ORIGINY + DEFY + 120)
       .setSize(45, 30);
       
@@ -430,7 +430,7 @@ float NRGBALANCESPEED = 0.002;
    
 }
 
-void Resource(float bsRes){
+void SlResDensity(float bsRes){
   BASERES = bsRes;
   RESREPSPEED = BASERES/60;
   if(AV != null){
@@ -439,14 +439,14 @@ void Resource(float bsRes){
   }
 }
 
-void Resource_type(float valR){
+void SlResType(float valR){
   RESTYPE = (int)valR;
   if(AV != null){
     AV.getNet().updateMaxRes();
   }
 }
 
-void Red_Valence(float valR){
+void SlRedValence(float valR){
   VALENCE1 = (int)valR;
   if(AV != null){
     AV.updateValences();
@@ -455,139 +455,141 @@ void Red_Valence(float valR){
 
 
 
-void Green_Valence(float valR){
+void SlGreenValence(float valR){
   VALENCE2 = (int)valR;
   if(AV != null){
     AV.updateValences();
   }
 }
 
-void Initial_agent_amount_1(float valR){
+void SlInitAgentAmountRed(float valR){
   INITAGENTAMOUNT1 = (int)valR;
 }
 
+void SlInitAgentAmountGreen(float valR){
+  INITAGENTAMOUNT2 = (int)valR;
+}
 
-void Base_speed_1 (float valR){
+
+void SlBaseSpeedRed (float valR){
   BASESPEED1 = valR;
   SPEEDRANDOMNESS1 = BASESPEED1/2;
   NRGPERSTEP1 = BASESPEED1/8;
 }
 
-void Base_speed_2 (float valR){
+void SlBaseSpeedGreen (float valR){
   BASESPEED2 = valR;
   SPEEDRANDOMNESS2 = BASESPEED2/2;
   NRGPERSTEP2 = BASESPEED2/8;
 }
 
 
-void Reproduction_rate_1(float valR){
+void SlReproductionRateRed(float valR){
   REPRODUCTPROB1 = valR / 10000;
 }
 
-void Reproduction_rate_2(float valR){
+void SlReproductionRateGreen(float valR){
   REPRODUCTPROB2 = valR / 10000;
 }
 
 
 
-void Initial_agent_amount_2(float valR){
-  INITAGENTAMOUNT2 = (int)valR;
-}
 
-void Scream_distance(float valR){
+
+void SlScreamDist(float valR){
   SCRHEARDIST = valR;
 }
 
-void Max_pack_distance(float valR){
+void SlMaxPackDist(float valR){
   PACKDIST = valR;
 }
 
-void Connection_distance(float valR){
+void SlConDist(float valR){
   CONNECTDIST = valR;
 }
 
-void Comfortable_distance(float valR){
+void SlComfDist(float valR){
   COMDIST = valR;
 }
 
-void Pack_comfortable_distance(float valR){
+void SlPackComfDist(float valR){
   PACKCOMDIST = valR;
 }
 
-void Fight_distance(float valR){
+void SlFightDist(float valR){
   FIGHTDIST = valR;
 }
 
-void Fight_energy(float valR){
+void SlFightEnergy(float valR){
   NRGPERFIGHT = valR;
 }
 
-void Energy_stolen(float valR){
+void SlEnergyStolen(float valR){
   NRGFIGHTSCHEME = (int)valR;
   if((int)valR == 0){
-    cp5.getGroup("General_settings").getController("Energy_steal_coefficient").hide();
+    cp5.getGroup("GrGeneralSettings").getController("SlEnergyStealCoef").hide();
   }
   else{
-    cp5.getGroup("General_settings").getController("Energy_steal_coefficient").show();
+    cp5.getGroup("GrGeneralSettings").getController("SlEnergyStealCoef").show();
   }
 }
 
-void Energy_steal_coefficient(float valR){
+void SlEnergyStealCoef(float valR){
   NRGSTEALCOEFF = valR;
 }
 
-void Connection_fight_scheme(float valR){
+void SlConFightScheme(float valR){
   COEFSCHEME = (int)valR;
 }
 
 
 
-void Fight_scheme(float valR){
+void SlFightScheme(float valR){
   FIGHTSCHEME = (int)valR;
   if((int)valR == 0){
-    cp5.getGroup("General_settings").getController("Pack_hostility_size").hide();
+    cp5.getGroup("GrGeneralSettings").getController("SlPackHostilitySize").hide();
   }
   else{
-    cp5.getGroup("General_settings").getController("Pack_hostility_size").show();
+    cp5.getGroup("GrGeneralSettings").getController("SlPackHostilitySize").show();
   }
 }
 
-void Pack_hostility_size(float valR){
+void SlPackHostilitySize(float valR){
   PACKFIGHTPEAK = (int)valR;
 }
 
-void Energy_balancing_type(float valR){
+void SlEnergyBalancingType(float valR){
   NRGBALANCINGTYPE = (int)valR;
   if((int)valR == 1){
-    cp5.getGroup("General_settings").getController("Energy_balancing_speed").show();
+    cp5.getGroup("GrGeneralSettings").getController("SlEnergyBalancingSpeed").show();
   }
   else{
-    cp5.getGroup("General_settings").getController("Energy_balancing_speed").hide();
+    cp5.getGroup("GrGeneralSettings").getController("SlEnergyBalancingSpeed").hide();
   }
 }
 
-void Energy_balancing_speed(float valR){
+void SlEnergyBalancingSpeed(float valR){
   NRGBALANCESPEED = valR;
 }
 
-void Reset(){
+void BgResetDist(){
   SCRHEARDIST = 100;
   PACKDIST = 80;
   CONNECTDIST = 40;
   COMDIST = 20;
   PACKCOMDIST = 80;
   FIGHTDIST = 40;
-  cp5.getController("Scream_distance").setValue(100);
-  cp5.getController("Max_pack_distance").setValue(80);
-  cp5.getController("Connection_distance").setValue(40);
-  cp5.getController("Comfortable_distance").setValue(20);
-  cp5.getController("Pack_comfortable_distance").setValue(80);
-  cp5.getController("Fight_distance").setValue(40);
+  cp5.getController("SlScreamDist").setValue(100);
+  cp5.getController("SlMaxPackDist").setValue(80);
+  cp5.getController("SlConDist").setValue(40);
+  cp5.getController("SlComfDist").setValue(20);
+  cp5.getController("SlPackComfDist").setValue(80);
+  cp5.getController("SlFightDist").setValue(40);
 }
 
 
 
-void Start(){
+void BgStart(){
   firstRun = false;
   background(0);
   AV = new AviaryRivalry();
@@ -602,7 +604,7 @@ void Start(){
 }
 
 
-void Pause(){
+void BgPause(){
   if(pause)
     pause = false;
   else {
@@ -619,7 +621,7 @@ void Pause(){
 }
 
 
-void Screenshot(){
+void BgScreenshot(){
   saveFrame("Screenshots/Aviary_Run-" + screenshotNum + ".png");
   screenshotNum++;
   scrShCounter = 120;

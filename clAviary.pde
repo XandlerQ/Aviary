@@ -84,12 +84,16 @@ class AviaryRivalry {                                                           
   //Setters
   
   void updateValences(){
-    agents.forEach((ag) -> {ag.updateValence();});
+    agents.parallelStream().forEach((ag) -> {ag.updateValence();});
   }
   
   //Methods
   
   int getPack(Agent argAg){
+    
+    if(argAg.getConCount() == 0)
+      return -1;
+      
     int idx = -1;
     int at = 0;
     for (Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
@@ -338,6 +342,9 @@ class AviaryRivalry {                                                           
         dirToSet = calculateDir(argAg);
       }
       else{
+        
+        if(argAg.getValence() == 0)
+          return;
         //println("NOT IN PACK");
         for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
           Agent ag = iter.next();
@@ -555,7 +562,7 @@ class AviaryRivalry {                                                           
   void tick(){                                                                        //Performes animation tick
     
     if(NRGFORCONDEPLETING)
-      packs.forEach((pack) -> {pack.energyDepletion();});
+      packs.parallelStream().forEach((pack) -> {pack.energyDepletion();});
     
     ArrayList<Agent> reproductList = new ArrayList<Agent>();
     net.replenish();
@@ -589,10 +596,10 @@ class AviaryRivalry {                                                           
       }
     }
     
-    reproductList.forEach((ag) -> {reproduction(ag);});
+    reproductList.parallelStream().forEach((ag) -> {reproduction(ag);});
     
     if(NRGBALANCINGTYPE != 0)
-      packs.forEach((pack) -> {pack.energyBalancing();});
+      packs.parallelStream().forEach((pack) -> {pack.energyBalancing();});
     
       
     fights();
