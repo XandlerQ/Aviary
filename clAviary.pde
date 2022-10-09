@@ -208,15 +208,18 @@ class AviaryRivalry {                                                           
     int packIdx = getPack(argAg);
     
     if(packIdx != -1){
-      return argAg.dirToFace(packs.get(packIdx).getPackCenterX(), packs.get(packIdx).getPackCenterY());
+      //return argAg.dirToFace(packs.get(packIdx).getPackCenterX(), packs.get(packIdx).getPackCenterY());
+      ArrayList<Agent> conAg = packs.get(packIdx).getConnected(argAg);
+      ArrayList<Float> dirs = new ArrayList<Float>(conAg.size());
+      conAg.forEach((ag) -> {
+        if(argAg.getDistTo(ag.getX(), ag.getY()) > PACKDIST)
+          dirs.add(argAg.dirToFace(ag.getX(), ag.getY()));
+      });
+      float resDir = directionAddition(dirs);
+      return resDir;
     }
     else
       return 0;
-      
-    /*if(packIdx != -1 && packs.get(packIdx).getAgent(0) != argAg)
-      return argAg.dirToFace(packs.get(packIdx).getAgent(0).getX(), packs.get(packIdx).getAgent(0).getY());
-    else
-      return 0;*/
   }
   
   float getPackMaxDist(Agent argAg){

@@ -1,51 +1,66 @@
+// External method file
 
-color STDBASECOLOR = #3483FF;
+float directionAddition(float dir1, float dir2){
+  float resDir = 0;
+  float x1, y1, x2, y2;
+  x1 = cos(dir1);
+  y1 = sin(dir1);
+  x2 = cos(dir2);
+  y2 = sin(dir2);
+  
+  float xres, yres;
+  
+  xres = x1 + x2;
+  yres = y1 + y2;
+  
+  float module = sqrt((xres * xres) + (yres * yres));
+  
+  if (module == 0){
+    Random r = new Random();
+    resDir = (float)(2 * Math.PI * r.nextFloat());
+  }
+  else{
+    xres /= module;
+    yres /= module;
+    resDir = acos(xres);
+    if(yres < 0)
+      resDir = 2 * (float)Math.PI - resDir;
+  }
+  return resDir;
+}
 
-
-class Base{
+float directionAddition(ArrayList<Float> dirs){
+  float resDir = 0;
+  if(dirs.size() == 1){
+    resDir = dirs.get(0);
+  }
+  ArrayList<Float> xi = new ArrayList<Float>(dirs.size());
+  ArrayList<Float> yi = new ArrayList<Float>(dirs.size());
   
-  float x, y;                                                                        //Position
-  int resourceTypeAmount;                                                                     //Amount of resource types
-  int[] res;                                                                         //Array for stored resources by type
-  color cl = #3483FF;                                                                //Base color
-  float size = 40;                                                                   //Base size px
+  dirs.forEach((dir) -> {
+    xi.add(cos(dir));
+    yi.add(sin(dir));
+  });
   
-  //Constructors
+  float xres = 0, yres = 0;
   
-  Base(){
-    Random r = new Random();                                                         //Randomizer
-    x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                                     //
-    y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                                     //Random position
-    
-    resourceTypeAmount = 1;                                                                   //Single resource type by default
-    res = new int[resourceTypeAmount];                                                        //Make stored resources by type array
-    
-    for(int i = 0; i < resourceTypeAmount; i++)
-      res[i] = 0;
+  for (int i = 0; i < xi.size(); i++){
+    xres += xi.get(i);
+    yres += yi.get(i);
   }
   
-  //Getters
+  float module = sqrt((xres * xres) + (yres * yres));
   
-  //Setters
-  
-  void setPos(float argX, float argY){
-    x = argX;
-    y = argY;
+  if (module == 0){
+    Random r = new Random();
+    resDir = (float)(2 * Math.PI * r.nextFloat());
   }
-  
-  //Methods
-  
-  void addRes(int argResTp, int argResAmnt){                                         //Adds resource to storage
-    res[argResTp] += argResAmnt;
+  else{
+    xres /= module;
+    yres /= module;
+    resDir = acos(xres);
+    if(yres < 0)
+      resDir = 2 * (float)Math.PI - resDir;
   }
-  
-  //Renderers
-  
-  void render()                                                                      //Renders base
-  {
-    noStroke();
-    fill(cl);
-    circle(x, y, size);
-  }
-  
+  return resDir;
 }
