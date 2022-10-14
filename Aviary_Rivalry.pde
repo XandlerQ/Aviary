@@ -6,11 +6,11 @@ import controlP5.*;
 int ORIGINX = 3;
 int ORIGINY = 3;
 
-int DEFX = 500;
-int DEFY = 500;
+int DEFX = 600;
+int DEFY = 600;
 
-int QUADX = 100;
-int QUADY = 100;
+int QUADX = 3;
+int QUADY = 3;
 
 int INITAGENTAMOUNT1 = 100;
 int INITAGENTAMOUNT2 = 100;
@@ -18,8 +18,9 @@ int INITAGENTAMOUNT2 = 100;
 boolean SYSSPAWN = true;
 
 int RESTYPE = 0; //0 -- regular, 1 -- linear, 2 -- bilinear, 3 -- random
-float BASERES = 1.6;
-float RESREPSPEED = BASERES/60;
+float BASERES = 20;
+float RESREPSPEED = BASERES/360;
+int RESPERQUAD = 3;
 
 //  Agent settings
 float BASESPEED1 = 1.6;
@@ -79,11 +80,13 @@ float CONNECTDIST = 40;
 float COMDIST = 20;
 float PACKCOMDIST = 80;
 float FIGHTDIST = 40;
+float VISUALDIST = 50;
 
 //Graph counter
 int INFOREPCTRPEAK = 60;
 
 AviaryRivalry AV = null;
+ResourceNet RN = null;
 
 boolean pause = false;
 boolean firstRun = true;
@@ -114,7 +117,7 @@ void setup(){
    int sGap = 18;
    
    cp5 = new ControlP5(this);
-   
+   /*
    Group resGroup = cp5.addGroup("GrResSettings")
                        //.setLabel("Настройки ресурса")
                        .setBackgroundColor(color(#003D7C, 100))
@@ -309,7 +312,7 @@ int PACKFIGHTPEAK = 3;  //Pack size to be hostile
 int NRGBALANCINGTYPE = 2; //0 -- no balancing, 1 -- gradual balancing, 2 -- immediate balancing
 
 float NRGBALANCESPEED = 0.002;
-   */
+   
       
    Group genGroup = cp5.addGroup("GrGeneralSettings")
                        //.setLabel("Общие настройки")
@@ -407,7 +410,7 @@ float NRGBALANCESPEED = 0.002;
       .setDecimalPrecision(0)
       .setSliderMode(Slider.FLEXIBLE)
       .moveTo(genGroup);
-   
+   */
    
    cp5.addBang("BgStart")
       //.setLabel("Старт")
@@ -592,7 +595,8 @@ void BgResetDist(){
 void BgStart(){
   firstRun = false;
   background(0);
-  AV = new AviaryRivalry();
+  //AV = new AviaryRivalry();
+  RN = new ResourceNet();
   if(pause){
     fill(0, 100);
     stroke(0, 0);
@@ -633,12 +637,19 @@ void BgScreenshot(){
  
  
 void draw(){
-  
+  background(0);
   pushMatrix();
   
   if(!pause){
     if(AV != null)
       AV.run();
+  }
+  
+  if(!pause){
+    if(RN != null){
+      RN.render();
+      RN.replenish();
+    }
   }
   
   if(scrShCounter > 0){
@@ -717,4 +728,9 @@ void keyPressed(){
       scrShCounter = 120;
     break;
   }
+}
+
+void mouseClicked(){
+  if(RN != null)
+    print(RN.getVisibleResources(mouseX, mouseY, VISUALDIST).size() + "\n");
 }

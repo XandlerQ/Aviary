@@ -1,13 +1,15 @@
 color STDRESOURCECOLOR = #FFAA00;
 
 
-/*class Resource{
-  
-  int type;                                                              //Type index
+class Resource{
+
   float x, y;                                                            //Position
-  int res;                                                               //Amount of resource held
+  float res;                                                               //Amount of resource held
+  float resRepSpeed;
   float size;
   color cl = #FFAA00;                                                    //Color
+  int repCtr;
+  int repCtrPeak;
   
   //Constructors
   
@@ -16,11 +18,25 @@ color STDRESOURCECOLOR = #FFAA00;
     x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                         //
     y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                         //Random position
     
-    type = 0;                                                            //Type 0 by default
+    res = BASERES / 2;                                                            //Initial resource stored by default
+    resRepSpeed = RESREPSPEED;
+    updateSize();
     
-    res = 200;                                                            //Initial resource stored by default
-    size = 20 + res/10;
+    repCtr = 0;
+    repCtrPeak = 60 * 4;
+  }
+  
+  Resource(float origX, float origY, float sideX, float sideY){
+    Random r = new Random();
+    x = origX + sideX/20 + (18 * sideX / 20) * r.nextFloat();                         //
+    y = origY + sideY/20 + (18 * sideY / 20) * r.nextFloat();                         //Random position in square
     
+    res = BASERES / 2;                                                            //Initial resource stored by default
+    resRepSpeed = RESREPSPEED;
+    updateSize();
+    
+    repCtr = 0;
+    repCtrPeak = 60 * 6;
   }
   
   //Getters
@@ -41,79 +57,77 @@ color STDRESOURCECOLOR = #FFAA00;
   
   //Methods
   
-  boolean lowerRes(){                                                    //Lower stored resource amount
-    res--;
-    size = 20 + res/10;
-    return (res == 0);
-    
+  void updateSize(){
+    size = res;
+  }
+  
+  float lowerRes(float amount){                                                    //Lower stored resource amount
+    if (amount > res){
+      float taken = res;
+      res = 0;
+      updateSize();
+      repCtr = repCtrPeak;
+      return taken;
+    }
+    else{
+      res -= amount;
+      updateSize();
+      repCtr = repCtrPeak;
+      return amount;
+    }
+  }
+  
+  void replenish(){
+    if(repCtr != 0){
+      repCtr--;
+      return;
+    }
+    else{
+      if(res < BASERES)
+        res += resRepSpeed;
+      if(res > BASERES)
+        res = BASERES;
+      updateSize();
+    }
   }
   
   //Renderers
     
   void render(){                                                         //Renders resource
     noStroke();
-    fill(cl);
+    fill(cl, 255);
+    circle(x, y, 2);
+    fill(cl, 150);
     circle(x, y, size);
   }
   
-}*/
+}
 
 class ResourceNet{
   
   int quadX;
   int quadY;
-  float sideX;
-  float sideY;
-  float[][] quads;
-  color cl = #03FFF9;
-  float[][] maxRes;
-  float repSpeed;
+  float dimX;
+  float dimY;
+  int quadAmount;
+  ArrayList<Resource> resources;  
   
   //Constructors
   
   ResourceNet(){
-    
     quadX = QUADX;
     quadY = QUADY;
+    dimX = DEFX / quadX;
+    dimY = DEFY / quadY;
+    quadAmount = RESPERQUAD;
     
-    sideX = DEFX / QUADX;
-    sideY = DEFY / QUADY;
+    int resCount = QUADX * QUADY * RESPERQUAD;
+    resources = new ArrayList<Resource>(resCount);
     
-    quads = new float[quadX][quadY];
-    maxRes = new float[quadX][quadY];
-    
-    repSpeed = RESREPSPEED;
-    
-    if(RESTYPE == 0){
-      for(int i = 0; i < quadX; i++)
-        for(int j = 0; j < quadY; j++){
-            quads[i][j] = BASERES / 2;
-            maxRes[i][j] = BASERES;
-        }  
-    }
-    if(RESTYPE == 1){
-      
-      for(int i = 0; i < quadX; i++){
-        for(int j = 0; j < quadY; j++){
-            quads[i][j] = BASERES / 2 - BASERES * (Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) / 2;
-            maxRes[i][j] = BASERES - BASERES * (Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1));
-        }
-      }
-    }
-    if(RESTYPE == 2){
-      for(int i = 0; i < quadX; i++){
-        for(int j = 0; j < quadY; j++){
-            quads[i][j] = BASERES / 2 - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 4;
-            maxRes[i][j] = BASERES - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 2;
-        }
-      }
-    }
-    else if (RESTYPE == 3){
-      Random r = new Random();
-      for(int i = 0; i < quadX; i++){
-        for(int j = 0; j < quadY; j++){
-            quads[i][j] = BASERES * r.nextFloat() / 1.5;
-            maxRes[i][j] = BASERES - BASERES * r.nextFloat() / 1.5;
+    for(int i = 0; i < quadX; i++){
+      for(int j = 0; j < quadY; j++){
+        for (int k = 0; k < quadAmount; k++){
+          resources.add(new Resource(i * dimX, j * dimY, dimX, dimY));
         }
       }
     }
@@ -121,96 +135,114 @@ class ResourceNet{
   
   //Getters
   
-  float getMaxRes(int argI, int argJ){
-    return maxRes[argI][argJ];
-  }
-  
-  float getRes(int argI, int argJ){
-    return quads[argI][argJ];
+  ArrayList<Resource> getResources(){
+    return resources;
   }
   
   //Setters
   
-  void setRepSpeed(float argRepSpeed){
-    repSpeed = argRepSpeed;
-  }
-  
   //Methods
   
-  void updateMaxRes(){
-    if(RESTYPE == 0){
-      for(int i = 0; i < quadX; i++)
-        for(int j = 0; j < quadY; j++){
-            maxRes[i][j] = BASERES;
-        }  
-    }
-    if(RESTYPE == 1){
-      
-      for(int i = 0; i < quadX; i++){
-        for(int j = 0; j < quadY; j++){
-            maxRes[i][j] = BASERES - BASERES * (Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1));
-        }
-      }
-    }
-    if(RESTYPE == 2){
-      for(int i = 0; i < quadX; i++){
-        for(int j = 0; j < quadY; j++){
-            maxRes[i][j] = BASERES - BASERES * ((Math.abs((float)i - (quadX - 1) / 2) / (quadX - 1)) + (Math.abs((float)j - (quadY - 1) / 2) / (quadY - 1))) / 2;
-        }
-      }
-    }
-    else if (RESTYPE == 3){
-      Random r = new Random();
-      for(int i = 0; i < quadX; i++){
-        for(int j = 0; j < quadY; j++){
-            maxRes[i][j] = BASERES - BASERES * r.nextFloat() / 1.5;
-        }
-      }
-    }
-  }
-  
-  void updateResRepSpeed(){
-    repSpeed = RESREPSPEED;
-  }
-    
-  
-  float lowerRes(int argI, int argJ, float argAm){
-    if(quads[argI][argJ] < argAm){
-      float retRes = quads[argI][argJ];
-      quads[argI][argJ] = 0;
-      return retRes;
-    }
-    else{
-      quads[argI][argJ] -= argAm;
-      return argAm;
-    }      
-  }
-  
   void replenish(){
-    for(int i = 0; i < quadX; i++)
-      for(int j = 0; j < quadY; j++){
-        if(quads[i][j] < maxRes[i][j]){
-          quads[i][j] += repSpeed;
-        }
-        else
-        {
-          quads[i][j] = maxRes[i][j];
+    resources.forEach((res) -> {res.replenish();});
+  }
+  
+  ArrayList<Resource> getVisibleResources(float posX, float posY, float radius){
+    
+    if(posX > DEFX)
+      posX = DEFX;
+    if(posY > DEFY)
+      posY = DEFY;
+    
+    int posQuadX = 0;
+    posQuadX = (int)((posX - (posX % dimX)) / dimX);
+    if(posQuadX >= quadX)
+      posQuadX = quadX - 1;
+    int posQuadY = 0;
+    posQuadY = (int)((posY - (posY % dimY)) / dimY);
+    if(posQuadY >= quadY)
+      posQuadY = quadY - 1;
+    
+    int moreL = 0;
+    int moreR = 0;
+    int moreT = 0;
+    int moreB = 0;
+    
+    float radiusOverlapL = posQuadX * dimX - (posX - radius);
+    float radiusOverlapR = (posX + radius) - (posQuadX + 1) * dimX;
+    float radiusOverlapT = posQuadY * dimY - (posY - radius);
+    float radiusOverlapB = (posY + radius) - (posQuadY + 1) * dimY;
+    
+    int quadLeftL = posQuadX;
+    int quadLeftR = quadX - (posQuadX + 1);
+    int quadLeftT = posQuadY;
+    int quadLeftB = quadY - (posQuadY + 1);
+    
+    if(radiusOverlapL > 0){
+      moreL = (int)((radiusOverlapL - radiusOverlapL % dimX) / dimX) + 1;
+      if(moreL > quadLeftL){
+        moreL = quadLeftL;
+      }
+    }
+    if(radiusOverlapR > 0){
+      moreR = (int)((radiusOverlapR - radiusOverlapR % dimX) / dimX) + 1;
+      if(moreR > quadLeftR){
+        moreR = quadLeftR;
+      }
+    }
+    if(radiusOverlapT > 0){
+      moreT = (int)((radiusOverlapT - radiusOverlapT % dimY) / dimY) + 1;
+      if(moreT > quadLeftT){
+        moreT = quadLeftT;
+      }
+    }
+    if(radiusOverlapB > 0){
+      moreB = (int)((radiusOverlapB - radiusOverlapB % dimY) / dimY) + 1;
+      if(moreB > quadLeftB){
+        moreB = quadLeftB;
+      }
+    }
+
+    ArrayList<Resource> visibleRes = new ArrayList<Resource>();
+    
+    for(int i = posQuadX - moreL; i <= posQuadX + moreR; i++){
+      for(int j = posQuadY - moreT; j <= posQuadY + moreB; j++){
+        for(int k = 0; k < quadAmount; k++){
+          visibleRes.add(resources.get(i * quadY * quadAmount + j * quadAmount + k));
         }
       }
+    }
+    
+    return visibleRes;
   }
+  
+  void updateMaxRes(){
+  }
+  void updateResRepSpeed(){
+  }
+  int getRes(int a, int b){
+    return 0;
+  }
+  float lowerRes(int a, int b, float c){
+    return 0;
+  }
+  
+  
+  
   
   //Renderers
   
   void render()
   {
-    noStroke();
-    for(int i = 0; i < quadX; i++)
-      for(int j = 0; j < quadY; j++){
-        fill(cl, 50 * (quads[i][j]) / BASERES);
-        rect(ORIGINX + i * sideX, ORIGINY + j * sideY, sideX, sideY);
-        /*fill(cl, 50);
-        circle(i * sideX + sideX/2, j * sideY + sideY/2, sideX * (quads[i][j]) / maxRes);*/
-      }
+    resources.forEach((res) -> {res.render();});
+    stroke(#FFAA00, 100);
+    strokeWeight(2);
+    for(int i = 0; i < quadX + 1; i++){
+      line(i * dimX, 0, i * dimX, DEFY);
+    }
+    for(int j = 0; j < quadY + 1; j++){
+      line(0, j * dimY, DEFX, j * dimY);
+    }
   }
     
   
