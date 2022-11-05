@@ -42,7 +42,7 @@ class AviaryRivalry {                                                           
     int graphWidth = 690;
     int graphHeight = 165;
     
-    grSp1Pop = new Graph(DEFX + 6, 1);
+    /*grSp1Pop = new Graph(DEFX + 6, 1);
     grSp1Pop.setSize(graphWidth,graphHeight);
     grSp1Pop.setType(1);
     grSp1Pop.setXAmnt(1000);
@@ -62,7 +62,7 @@ class AviaryRivalry {                                                           
     grSp2Pop.setLineColor(#FFC800);
     grSp2Pop.setTextColor(#FFD900);
     grSp2Pop.setBackgroundColor(#101010);
-    grSp2Pop.setGraphTitle("Популяция зел. агентов");
+    grSp2Pop.setGraphTitle("Популяция зел. агентов");*/
     
   }
   
@@ -125,18 +125,31 @@ class AviaryRivalry {                                                           
   }
   
   void agResCollection(Agent argAg){
-    //ArrayList<Resource> visibleRes = net.getVisibleResources(argAg.getX(), argAg.getY(), VISUALDIST);
     Resource lockedRes = argAg.getLockedRes();
     if(lockedRes == null){
+      argAg.setStationary(false);
       return;
     }
     float dist = argAg.getDistTo(lockedRes.getX(), lockedRes.getY());
-    if(dist <= lockedRes.getSize() + 1){
+    if(dist <= lockedRes.getSize() + 4){
       if(argAg.getConCount() == 0){
         float hunger = argAg.howHungry();
-        argAg.collectRes(lockedRes.lowerRes(min(hunger, RESECOLLECTEDPERSTEP)));
+        if(hunger == 0){
+          argAg.lockInResource(null);
+          argAg.setStationary(false);
+        }
+        else{
+          argAg.collectRes(lockedRes.lowerRes(min(hunger, RESECOLLECTEDPERSTEP)));
+          argAg.setStationary(true);
+        }
       }
-      argAg.collectRes(lockedRes.lowerRes(RESECOLLECTEDPERSTEP));
+      else{
+        argAg.collectRes(lockedRes.lowerRes(RESECOLLECTEDPERSTEP));
+        argAg.setStationary(true);
+      }
+    }
+    else{
+      argAg.setStationary(false);
     }
   }
   
@@ -222,7 +235,7 @@ class AviaryRivalry {                                                           
         argAg.setDir(foodDir);
       }
       else{
-        if(packDir != -1){
+        if(packDir != -1 && !argAg.getPackPosIndiff()){
           argAg.setDir(packDir);
         }
       }
@@ -238,12 +251,12 @@ class AviaryRivalry {                                                           
         argAg.lockInResource(null);
       }
     }
-    
-    if(lockedRes == null){
-      if(argAg.getConCount() == 0 && argAg.wellFed())
+    else{
+      if(argAg.getConCount() == 0 && argAg.wellFed()){
         return;
-      ArrayList<Resource> resources = net.getResources();
-      float minDist = argAg.getDistTo(resources.get(0).getX(), resources.get(0).getY());
+      }
+      ArrayList<Resource> resources = net.getVisibleResources(argAg.getX(), argAg.getY(), VISUALDIST);
+      float minDist = argAg.getDistTo(resources.get(0).getX(), resources.get(0).getY()) + 1;
       int minDistIdx = -1;
       int idx = 0;
       for(Iterator<Resource> iter = resources.iterator(); iter.hasNext();){
@@ -311,13 +324,13 @@ class AviaryRivalry {                                                           
   }
   
   void scream(Agent argAg){
-    if(argAg.getConCount() == 0 && argAg.wellFed() && argAg.getLockedRes() == null){
+    if(argAg.getConCount() == 0 && argAg.wellFed() && argAg.getLockedRes() == null && argAg.readyToAct()){
       loneAgentConnectionListen(argAg);
     }
     if(argAg.getConCount() == 0 && argAg.getLockedRes() != null){
       loneAgentResScream(argAg);
     }
-    if(argAg.getConCount() != 0 && argAg.getLockedRes() != null){
+    if(argAg.getConCount() != 0 && (argAg.getLockedRes() != null || argAg.getLastHeardAge() != -1)){
       packAgentResScream(argAg);
     }
   }
@@ -357,11 +370,19 @@ class AviaryRivalry {                                                           
   void loneAgentResScream(Agent argAg){
     for(Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
+      float distance = argAg.getDistTo(ag.getX(), ag.getY());
       if(ag.getLockedRes() == null 
       && ag.getConCount() == 0 
       && ag.getSpecies() == argAg.getSpecies() 
-      && argAg.getDistTo(ag.getX(), ag.getY()) < SCRHEARDIST){
-        ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+      && distance < SCRHEARDIST){
+        if(ag.getValence() == 0){
+          if(!ag.wellFed()){
+            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+          }
+        }
+        else{
+          ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+        }
       }
     }
   }
@@ -372,9 +393,39 @@ class AviaryRivalry {                                                           
       return;
     ArrayList<Agent> connAg = argPack.getConnected(argAg);
     connAg.forEach((ag) -> {
-      if(ag.getLastHeardAge() < argAg.getAge() && ag.getLockedRes() == null){
-        ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-        ag.setLastHeardAge(argAg.getAge());
+      if(ag.getLockedRes() == null){
+        if(argAg.getLastHeardAge() == -1){
+          if(ag.getLastHeardAge() <= argAg.getAge()){
+            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+            ag.setLastHeardAge(argAg.getAge());
+            ag.setPackPosIndiff(true);
+          }
+        }
+        else{
+          if(ag.getLastHeardAge() < argAg.getLastHeardAge()){
+            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+            ag.setLastHeardAge(argAg.getLastHeardAge());
+            ag.setPackPosIndiff(true);
+          }
+        }
+      }
+      else{
+        if(argAg.getLastHeardAge() == -1){
+          if(ag.getAge() < argAg.getAge()){
+            ag.lockInResource(null);
+            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+            ag.setLastHeardAge(argAg.getAge());
+            ag.setPackPosIndiff(true);
+          }
+        }
+        else{
+          if(ag.getAge() < argAg.getLastHeardAge()){
+            ag.lockInResource(null);
+            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+            ag.setLastHeardAge(argAg.getLastHeardAge());
+            ag.setPackPosIndiff(true);
+          }
+        }
       }
     });
   }
@@ -455,11 +506,10 @@ class AviaryRivalry {                                                           
         }
         
         directionDecision(ag);
-        if(ag.ifReadyToAct()){
-          scream(ag);
-        }
+        scream(ag);
         ag.step();
         agResCollection(ag);
+        
         
         if(ag.readyToReproduct()){
           reproductList.add(ag);
@@ -505,8 +555,8 @@ class AviaryRivalry {                                                           
   }
   
   void renderGraphs(){
-    grSp1Pop.render();
-    grSp2Pop.render();
+    /*grSp1Pop.render();
+    grSp2Pop.render();*/
   }
   
   void render(){                                                    //Renders aviary

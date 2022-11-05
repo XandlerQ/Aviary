@@ -70,7 +70,7 @@ class Resource{
   //Methods
   
   void updateSize(){
-    size = res;
+    size = res * 20 / maxRes;
   }
   
   float lowerRes(float amount){                                                    //Lower stored resource amount

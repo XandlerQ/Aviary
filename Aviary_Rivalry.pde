@@ -6,21 +6,21 @@ import controlP5.*;
 int ORIGINX = 3;
 int ORIGINY = 3;
 
-int DEFX = 600;
-int DEFY = 600;
+int DEFX = 1000;
+int DEFY = 1000;
 
-int QUADX = 4;
-int QUADY = 4;
+int QUADX = 5;
+int QUADY = 5;
 
-int INITAGENTAMOUNT1 = 10;
+int INITAGENTAMOUNT1 = 20;
 int INITAGENTAMOUNT2 = 0;
 
 boolean SYSSPAWN = true;
 
-float BASERES = 40;
+float BASERES = 300;
 float RESREPSPEED = BASERES/360;
 int RESPERQUAD = 3;
-int REPCTRPEAK = 360;
+int REPCTRPEAK = 240;
 
 //  Agent settings
 float BASESPEED1 = 1.6;
@@ -34,10 +34,10 @@ float AGEPERSTEP = 0;
 
 float SUFFENERGY = 25;
 float MAXENERGY = 50;
-float NRGPERSTEP1 = 0.05;//BASESPEED1/8;
+float NRGPERSTEP1 = 0.02;//BASESPEED1/8;
 float NRGPERSTEP2 = 0;//BASESPEED2/8;
 
-int VALENCE1 = 4;
+int VALENCE1 = 0;
 int VALENCE2 = 2;
 
 float RESECOLLECTEDPERSTEP = 1.0;
@@ -45,7 +45,7 @@ float RESECOLLECTEDPERSTEP = 1.0;
 //  Reproduction settings 
 float REPRODUCTLOW = 1440;
 float REPRODUCTHIGH = 3000;
-float REPRODUCTPROB1 = 0.001;
+float REPRODUCTPROB1 = 0.051;
 float REPRODUCTPROB2 = 0.001;
 float REPRODUCTCOST = 5.0;
 
@@ -94,7 +94,7 @@ ControlP5 cp5;
 
 
 void setup(){
-   size(1200, 720); 
+   size(1300, 1300); 
    background(0);
    ellipseMode(CENTER);
    

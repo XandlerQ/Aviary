@@ -30,10 +30,14 @@ class Agent {
   
   boolean dieFlag;
   
-  int ActCtrPeak;       //Predetermined value for scrCtr peak value
+  int actCtrPeak;       //Predetermined value for scrCtr peak value
   int actCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
   
+  boolean packPosIndiff;
+  
   color cl = #000000;   //Inner render color
+  
+  boolean stationary;
   
   //Constructors
   
@@ -56,7 +60,7 @@ class Agent {
       
     valence = VALENCE1;
     conCount = 0;
-    lastHeardAge = 0;
+    lastHeardAge = -1;
     
     dieFlag = false;
     
@@ -67,9 +71,11 @@ class Agent {
     delta = r.nextFloat();
     speed = BASESPEED1 + SPEEDRANDOMNESS1 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
       
-    ActCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
-    actCtr = r.nextInt(ActCtrPeak);                         //Random initial scream counter value
+    actCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
+    actCtr = r.nextInt(actCtrPeak);                         //Random initial scream counter value
     
+    packPosIndiff = false;
+    stationary = false;
   }
   
   Agent(int argSpec){
@@ -128,7 +134,7 @@ class Agent {
   }
   
   int getActCtrPeak(){
-    return ActCtrPeak;
+    return actCtrPeak;
   }
   
   int getStatus(){
@@ -179,6 +185,10 @@ class Agent {
       return hunger;
   }
   
+  boolean getPackPosIndiff(){
+    return packPosIndiff;
+  }
+  
   //Setters
   
   void setColor(color argCl){
@@ -227,8 +237,17 @@ class Agent {
   }
   
   void resetLastHeardAge(){
-    lastHeardAge = 0;
+    lastHeardAge = -1;
   }
+  
+  void setPackPosIndiff(boolean flag){
+    packPosIndiff = flag;
+  }
+  
+  void setStationary(boolean flag){
+    stationary = flag;
+  }
+    
   
   //Methods
   @Override
@@ -292,16 +311,17 @@ class Agent {
     return status == 0;
   }
   
-  boolean ifReadyToAct(){                                        //True if ready to scream
-    return actCtr == ActCtrPeak;
+  boolean readyToAct(){                                        //True if ready to scream
+    return actCtr == actCtrPeak;
   }
   
   void peakActCounter(){                                  //Peaks scream counter
-    actCtr = ActCtrPeak;
+    actCtr = actCtrPeak;
   }
   
   void resetActCounter(){                                  //Resets scream counter
-    actCtr = 0;
+    actCtr = actCtrPeak;
+    packPosIndiff = false;
   }
   
   void resetConCount(){
@@ -379,6 +399,10 @@ class Agent {
   
   void eatCollected(){
     eat(collectedRes);
+    if(howHungry() == 0){
+      setStationary(false);
+      lockInResource(null);
+    }
   }
   
   void eat(float argRes){
@@ -390,16 +414,16 @@ class Agent {
   }
   
   void step() {                                                    //Make step, returns color of next position
-     Random r = new Random();                                       //Randomizer
+    Random r = new Random();                                       //Randomizer
      
-     age += agePerStep;
-     updateSpeed();
-     
-     if(species == 0){
-        energy -= NRGPERSTEP1 * (speed * speed/(BASESPEED1 * BASESPEED1));
+    age += agePerStep;
+    updateSpeed();
+    
+    if(species == 0){
+      energy -= NRGPERSTEP1 * (speed * speed/(BASESPEED1 * BASESPEED1));
     }
     else{
-        energy -= NRGPERSTEP2 * (speed * speed/(BASESPEED2 * BASESPEED2));
+      energy -= NRGPERSTEP2 * (speed * speed/(BASESPEED2 * BASESPEED2));
     }
      
      
@@ -410,29 +434,31 @@ class Agent {
      
      updateStatus();
      
-     direction += -0.16 + (0.32) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
-     
-     fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
-     
-     float newX = x + speed * cos(direction);                             //
-     float newY = y + speed * sin(direction);                             //Calculate new coordinates
-     
-     if (newX > DEFX - WALLTHICKNESS ||
-         newX < WALLTHICKNESS ||
-         newY > DEFY - WALLTHICKNESS ||
-         newY < WALLTHICKNESS){                                     //If a wall is hit
-       direction += (float)(Math.PI);                                     //Turn around
-       fixDir();
-       newX = x + speed * cos(direction);                                 //
-       newY = y + speed * sin(direction);                                 //Set new coordinates according to new direction
+     if(!stationary){
+       direction += -0.16 + (0.32) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+       
+       fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
+       
+       float newX = x + speed * cos(direction);                             //
+       float newY = y + speed * sin(direction);                             //Calculate new coordinates
+         
+       if (newX > DEFX - WALLTHICKNESS ||
+           newX < WALLTHICKNESS ||
+           newY > DEFY - WALLTHICKNESS ||
+           newY < WALLTHICKNESS){                                     //If a wall is hit
+         direction += (float)(Math.PI);                                     //Turn around
+         fixDir();
+         newX = x + speed * cos(direction);                                 //
+         newY = y + speed * sin(direction);                                 //Set new coordinates according to new direction
+       }
+       
+       x = newX;                                                      //
+       y = newY;                                                      //Change coordinates
      }
      
-     x = newX;                                                      //
-     y = newY;                                                      //Change coordinates
+     actCtr -= 1;                                                   //Increment scream counter
      
-     actCtr += 1;                                                   //Increment scream counter
-     
-     if(actCtr > ActCtrPeak){                                       //If screamed previous step
+     if(actCtr == 0){                                       //If screamed previous step
        resetActCounter();                                                  //Reset scream counter
      }
      
@@ -451,9 +477,5 @@ class Agent {
     fill(cl);
     circle(ORIGINX + x, ORIGINY + y, 4);
     line(ORIGINX + x, ORIGINY + y, ORIGINX + x + 6 * cos(direction), ORIGINY + y + 6 * sin(direction));
-    fill(0,0);
-    circle(ORIGINX + x, ORIGINY + y, VISUALDIST * 2);
-    stroke(#8E8E8E, 150);
-    circle(ORIGINX + x, ORIGINY + y, SCRHEARDIST * 2);
   }
 }
