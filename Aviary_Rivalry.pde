@@ -9,18 +9,18 @@ int ORIGINY = 3;
 int DEFX = 600;
 int DEFY = 600;
 
-int QUADX = 3;
-int QUADY = 3;
+int QUADX = 4;
+int QUADY = 4;
 
-int INITAGENTAMOUNT1 = 100;
-int INITAGENTAMOUNT2 = 100;
+int INITAGENTAMOUNT1 = 10;
+int INITAGENTAMOUNT2 = 0;
 
 boolean SYSSPAWN = true;
 
-int RESTYPE = 0; //0 -- regular, 1 -- linear, 2 -- bilinear, 3 -- random
-float BASERES = 20;
+float BASERES = 40;
 float RESREPSPEED = BASERES/360;
 int RESPERQUAD = 3;
+int REPCTRPEAK = 360;
 
 //  Agent settings
 float BASESPEED1 = 1.6;
@@ -30,18 +30,17 @@ float SPEEDRANDOMNESS2 = BASESPEED2/2;
 float SPEEDAGECOEFF = 1.0;
 
 float BASEMAXAGE = 3600;
-float AGEPERSTEP = 1;
+float AGEPERSTEP = 0;
 
 float SUFFENERGY = 25;
 float MAXENERGY = 50;
-float NRGPERSTEP1 = BASESPEED1/8;
-float NRGPERSTEP2 = BASESPEED2/8;
+float NRGPERSTEP1 = 0.05;//BASESPEED1/8;
+float NRGPERSTEP2 = 0;//BASESPEED2/8;
 
-int VALENCE1 = 2;
+int VALENCE1 = 4;
 int VALENCE2 = 2;
 
-float RESEATENPERSTEP = 1.0;
-float RESEATENPERSTEPAGECOEFF = 0;
+float RESECOLLECTEDPERSTEP = 1.0;
 
 //  Reproduction settings 
 float REPRODUCTLOW = 1440;
@@ -52,19 +51,11 @@ float REPRODUCTCOST = 5.0;
 
 //  Fight settings
 float NRGPERFIGHT = 1.0;
-int NRGFIGHTSCHEME = 0; //0 -- both lose energy, 1 -- energy gets stolen
-int COEFSCHEME = 1; //0 -- no dependence, 1 -- energy depends on the amount of cons for this particular agent, 2 energy depends on amount of cons in the whole pack
-float NRGSTEALCOEFF = 0.5; //energy steal coefficiency
-
-int FIGHTSCHEME = 0; //0 -- everyone diff species, 1 -- two lones don't fight (PACKFIGHTPEAK has to be defined), 2 -- lones never fight (PACKFIGHTPEAK has to be defined)
-int PACKFIGHTPEAK = 3;  //Pack size to be hostile
 
 //  Pack energy balancing settings
 int NRGBALANCINGTYPE = 2; //0 -- no balancing, 1 -- gradual balancing, 2 -- immediate balancing
 
 int BALANCINGCTRPEAK = 5;
-
-float NRGBALANCESPEED = 0.002;
 
 //  Pack energy depletion settings
 boolean NRGFORCONDEPLETING = true;
@@ -74,7 +65,7 @@ float NRGFORCONPERSTEP = 0.05;
 int ACTCTRPEAK = 15;
 
 // Distances settings
-float SCRHEARDIST = 100;
+float SCRHEARDIST = 150;
 float PACKDIST = 80;
 float CONNECTDIST = 40;
 float COMDIST = 20;
@@ -437,15 +428,8 @@ void SlResDensity(float bsRes){
   BASERES = bsRes;
   RESREPSPEED = BASERES/60;
   if(AV != null){
-    AV.getNet().updateMaxRes();
-    AV.getNet().updateResRepSpeed();
-  }
-}
-
-void SlResType(float valR){
-  RESTYPE = (int)valR;
-  if(AV != null){
-    AV.getNet().updateMaxRes();
+    AV.updateMaxRes();
+    AV.updateResRepSpeed();
   }
 }
 
@@ -527,40 +511,6 @@ void SlFightEnergy(float valR){
   NRGPERFIGHT = valR;
 }
 
-void SlEnergyStolen(float valR){
-  NRGFIGHTSCHEME = (int)valR;
-  if((int)valR == 0){
-    cp5.getGroup("GrGeneralSettings").getController("SlEnergyStealCoef").hide();
-  }
-  else{
-    cp5.getGroup("GrGeneralSettings").getController("SlEnergyStealCoef").show();
-  }
-}
-
-void SlEnergyStealCoef(float valR){
-  NRGSTEALCOEFF = valR;
-}
-
-void SlConFightScheme(float valR){
-  COEFSCHEME = (int)valR;
-}
-
-
-
-void SlFightScheme(float valR){
-  FIGHTSCHEME = (int)valR;
-  if((int)valR == 0){
-    cp5.getGroup("GrGeneralSettings").getController("SlPackHostilitySize").hide();
-  }
-  else{
-    cp5.getGroup("GrGeneralSettings").getController("SlPackHostilitySize").show();
-  }
-}
-
-void SlPackHostilitySize(float valR){
-  PACKFIGHTPEAK = (int)valR;
-}
-
 void SlEnergyBalancingType(float valR){
   NRGBALANCINGTYPE = (int)valR;
   if((int)valR == 1){
@@ -569,10 +519,6 @@ void SlEnergyBalancingType(float valR){
   else{
     cp5.getGroup("GrGeneralSettings").getController("SlEnergyBalancingSpeed").hide();
   }
-}
-
-void SlEnergyBalancingSpeed(float valR){
-  NRGBALANCESPEED = valR;
 }
 
 void BgResetDist(){
@@ -595,8 +541,7 @@ void BgResetDist(){
 void BgStart(){
   firstRun = false;
   background(0);
-  //AV = new AviaryRivalry();
-  RN = new ResourceNet();
+  AV = new AviaryRivalry();
   if(pause){
     fill(0, 100);
     stroke(0, 0);
@@ -643,13 +588,6 @@ void draw(){
   if(!pause){
     if(AV != null)
       AV.run();
-  }
-  
-  if(!pause){
-    if(RN != null){
-      RN.render();
-      RN.replenish();
-    }
   }
   
   if(scrShCounter > 0){
@@ -728,9 +666,4 @@ void keyPressed(){
       scrShCounter = 120;
     break;
   }
-}
-
-void mouseClicked(){
-  if(RN != null)
-    print(RN.getVisibleResources(mouseX, mouseY, VISUALDIST).size() + "\n");
 }

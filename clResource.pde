@@ -5,6 +5,7 @@ class Resource{
 
   float x, y;                                                            //Position
   float res;                                                               //Amount of resource held
+  float maxRes;
   float resRepSpeed;
   float size;
   color cl = #FFAA00;                                                    //Color
@@ -19,24 +20,19 @@ class Resource{
     y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                         //Random position
     
     res = BASERES / 2;                                                            //Initial resource stored by default
+    maxRes = BASERES;
     resRepSpeed = RESREPSPEED;
     updateSize();
     
     repCtr = 0;
-    repCtrPeak = 60 * 4;
+    repCtrPeak = REPCTRPEAK;
   }
   
   Resource(float origX, float origY, float sideX, float sideY){
+    this();
     Random r = new Random();
     x = origX + sideX/20 + (18 * sideX / 20) * r.nextFloat();                         //
     y = origY + sideY/20 + (18 * sideY / 20) * r.nextFloat();                         //Random position in square
-    
-    res = BASERES / 2;                                                            //Initial resource stored by default
-    resRepSpeed = RESREPSPEED;
-    updateSize();
-    
-    repCtr = 0;
-    repCtrPeak = 60 * 6;
   }
   
   //Getters
@@ -53,7 +49,23 @@ class Resource{
     return size;
   }
   
+  boolean empty(){
+    return res <= 0;
+  }
+  
   //Setters
+  
+  void updateMaxRes(){
+    maxRes = BASERES;
+  }
+  
+  void updateResRepSpeed(){
+    resRepSpeed = RESREPSPEED;
+  }
+  
+  void updateRepDelay(){
+    repCtrPeak = REPCTRPEAK;
+  }
   
   //Methods
   
@@ -83,10 +95,10 @@ class Resource{
       return;
     }
     else{
-      if(res < BASERES)
+      if(res < maxRes)
         res += resRepSpeed;
-      if(res > BASERES)
-        res = BASERES;
+      if(res > maxRes)
+        res = maxRes;
       updateSize();
     }
   }
@@ -140,6 +152,18 @@ class ResourceNet{
   }
   
   //Setters
+  
+  void updateMaxRes(){
+    resources.forEach((res) -> {res.updateMaxRes();});
+  }
+  
+  void updateResRepSpeed(){
+    resources.forEach((res) -> {res.updateResRepSpeed();});
+  }
+  
+  void updateRepDelay(){
+    resources.forEach((res) -> {res.updateRepDelay();});
+  }
   
   //Methods
   
@@ -215,20 +239,6 @@ class ResourceNet{
     
     return visibleRes;
   }
-  
-  void updateMaxRes(){
-  }
-  void updateResRepSpeed(){
-  }
-  int getRes(int a, int b){
-    return 0;
-  }
-  float lowerRes(int a, int b, float c){
-    return 0;
-  }
-  
-  
-  
   
   //Renderers
   

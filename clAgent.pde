@@ -1,4 +1,3 @@
-
 color SPEC1CL = #FF0004;
 color SPEC2CL = #2DFF00;
 
@@ -10,6 +9,7 @@ class Agent {
   float x; 
   float y;           //Position 
   float direction;
+  Resource lockedRes;
   float speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
   float delta;
   
@@ -21,8 +21,12 @@ class Agent {
   float suffEnergy;
   float maxEnergy;
   
+  float collectedRes;
+  
   int valence;
   int conCount;
+  
+  float lastHeardAge;
   
   boolean dieFlag;
   
@@ -47,15 +51,19 @@ class Agent {
     energy = SUFFENERGY / 2 + SUFFENERGY * r.nextFloat();
     suffEnergy = SUFFENERGY;
     maxEnergy = MAXENERGY;
+    
+    collectedRes = 0;
       
     valence = VALENCE1;
     conCount = 0;
+    lastHeardAge = 0;
     
     dieFlag = false;
     
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
+    lockedRes = null;
     delta = r.nextFloat();
     speed = BASESPEED1 + SPEEDRANDOMNESS1 * delta - SPEEDAGECOEFF * (age - maxAge/2) * (age - maxAge/2) / (maxAge * maxAge);             //Random speed in range 0.6 -> 1.0
       
@@ -91,7 +99,6 @@ class Agent {
     this(argSpec);
     x = argX;
     y = argY;
-    age = 0;
   }
   
   //Getters
@@ -106,6 +113,10 @@ class Agent {
   
   float getDir(){
     return direction;
+  }
+  
+  Resource getLockedRes(){
+    return lockedRes;
   }
   
   float getSpeed(){
@@ -136,6 +147,14 @@ class Agent {
     return energy;
   }
   
+  float getCollectedRes(){
+    return collectedRes;
+  }
+  
+  float getLastHeardAge(){
+    return lastHeardAge;
+  }
+  
   float getAge(){
     return age;
   }
@@ -149,7 +168,7 @@ class Agent {
   }
   
   boolean readyToReproduct(){
-    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy >= SUFFENERGY + REPRODUCTCOST * 1.5; //&& conCount > 0;
+    return age >= REPRODUCTLOW && age <= REPRODUCTHIGH && energy + collectedRes >= SUFFENERGY + REPRODUCTCOST * 1.5; //&& conCount > 0;
   }
   
   float howHungry(){
@@ -169,6 +188,10 @@ class Agent {
   void setDir(float argDir){
     direction = argDir;
     fixDir();
+  }
+  
+  void lockInResource(Resource argRes){
+    lockedRes = argRes;
   }
   
   void setStatus(int argStatus){
@@ -193,6 +216,18 @@ class Agent {
     else{
       valence = VALENCE2;
     }
+  }
+  
+  void setLastHeardAge(float argAge){
+    lastHeardAge = argAge;
+  }
+  
+  void resetCollected(){
+    collectedRes = 0;
+  }
+  
+  void resetLastHeardAge(){
+    lastHeardAge = 0;
   }
   
   //Methods
@@ -242,6 +277,9 @@ class Agent {
     if(energy <= 0){
        dieFlag = true;
        return;
+    }
+    if(energy > maxEnergy){
+      energy = maxEnergy;
     }
     updateStatus();
   }
@@ -335,10 +373,20 @@ class Agent {
     return dirToFace(argX, argY, getDistTo(argX, argY));
   }
   
+  void collectRes(float argRes){
+    collectedRes = argRes;
+  }
+  
+  void eatCollected(){
+    eat(collectedRes);
+  }
+  
   void eat(float argRes){
-    if(energy <= maxEnergy)
-      energy += argRes - argRes * (age / maxAge) * RESEATENPERSTEPAGECOEFF;
+    if(energy <= maxEnergy){
+      energy += argRes;
+    }
     updateStatus();
+    resetCollected();
   }
   
   void step() {                                                    //Make step, returns color of next position
@@ -402,17 +450,10 @@ class Agent {
     strokeWeight(1);
     fill(cl);
     circle(ORIGINX + x, ORIGINY + y, 4);
+    line(ORIGINX + x, ORIGINY + y, ORIGINX + x + 6 * cos(direction), ORIGINY + y + 6 * sin(direction));
+    fill(0,0);
+    circle(ORIGINX + x, ORIGINY + y, VISUALDIST * 2);
+    stroke(#8E8E8E, 150);
+    circle(ORIGINX + x, ORIGINY + y, SCRHEARDIST * 2);
   }
-  
-  void render(float sz)
-  {
-    if(species == 0)
-      stroke(SPEC1CL);
-    else
-      stroke(SPEC2CL);
-    strokeWeight(1);
-    fill(cl);
-    circle(ORIGINX + x, ORIGINY + y, sz);
-  }
-  
 }

@@ -1,7 +1,7 @@
 // External method file
 
 float directionAddition(float dir1, float dir2){
-  float resDir = 0;
+  float resDir = -1;
   float x1, y1, x2, y2;
   x1 = cos(dir1);
   y1 = sin(dir1);
@@ -30,7 +30,11 @@ float directionAddition(float dir1, float dir2){
 }
 
 float directionAddition(ArrayList<Float> dirs){
-  float resDir = 0;
+  float resDir = -1;
+  
+  if(dirs.size() == 0)
+    return resDir;
+  
   if(dirs.size() == 1){
     resDir = dirs.get(0);
   }
@@ -63,4 +67,15 @@ float directionAddition(ArrayList<Float> dirs){
       resDir = 2 * (float)Math.PI - resDir;
   }
   return resDir;
+}
+
+float fixDir(float argDir){
+  float dir = argDir;
+  while(dir < 0){
+    dir += 2 * (float)Math.PI;
+  }
+  while(dir >= 2 * Math.PI){
+    dir -= 2 * (float)Math.PI;
+  }
+  return dir;
 }
