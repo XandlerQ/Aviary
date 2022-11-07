@@ -144,8 +144,17 @@ class AviaryRivalry {                                                           
         }
       }
       else{
-        argAg.collectRes(lockedRes.lowerRes(RESECOLLECTEDPERSTEP));
-        argAg.setStationary(true);
+        Pack pck = getPack(argAg);
+        if(pck != null){
+          float packHunger = getPack(argAg).getMedHunger();
+          argAg.collectRes(lockedRes.lowerRes(min(packHunger, RESECOLLECTEDPERSTEP)));
+          argAg.setStationary(true);
+        }
+        else{
+          float hunger = argAg.howHungry();
+          argAg.collectRes(lockedRes.lowerRes(min(hunger, RESECOLLECTEDPERSTEP)));
+          argAg.setStationary(true);
+        }
       }
     }
     else{
@@ -235,7 +244,7 @@ class AviaryRivalry {                                                           
         argAg.setDir(foodDir);
       }
       else{
-        if(packDir != -1 && !argAg.getPackPosIndiff()){
+        if(packDir != -1){
           argAg.setDir(packDir);
         }
       }
@@ -312,11 +321,11 @@ class AviaryRivalry {                                                           
       return packDirFar;
     }
     
-    if(packDirClose != -1){
+    if(packDirClose != -1 && !argAg.getPackPosIndiff()){
       return packDirClose;
     }
     
-    if(closestUncomPack != null){
+    if(closestUncomPack != null && !argAg.getPackPosIndiff()){
       return fixDir(argAg.dirToFace(closestUncomPack.getPackCenterX(), closestUncomPack.getPackCenterY()) + (float)Math.PI);
     }
     
@@ -393,37 +402,39 @@ class AviaryRivalry {                                                           
       return;
     ArrayList<Agent> connAg = argPack.getConnected(argAg);
     connAg.forEach((ag) -> {
-      if(ag.getLockedRes() == null){
-        if(argAg.getLastHeardAge() == -1){
-          if(ag.getLastHeardAge() <= argAg.getAge()){
-            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-            ag.setLastHeardAge(argAg.getAge());
-            ag.setPackPosIndiff(true);
-          }
-        }
-        else{
+      if(argAg.getLockedRes() == null){
+        if(ag.getLockedRes() == null){
           if(ag.getLastHeardAge() < argAg.getLastHeardAge()){
             ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
             ag.setLastHeardAge(argAg.getLastHeardAge());
             ag.setPackPosIndiff(true);
           }
         }
+        else{
+          if(ag.getAge() < argAg.getLastHeardAge()){
+            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+            ag.setLastHeardAge(argAg.getLastHeardAge());
+            ag.setPackPosIndiff(true);
+            ag.lockInResource(null);
+          }
+        }        
       }
       else{
-        if(argAg.getLastHeardAge() == -1){
-          if(ag.getAge() < argAg.getAge()){
-            ag.lockInResource(null);
+        if(ag.getLockedRes() == null){
+          if(ag.getLastHeardAge() < argAg.getAge()){
             ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
             ag.setLastHeardAge(argAg.getAge());
             ag.setPackPosIndiff(true);
           }
         }
         else{
-          if(ag.getAge() < argAg.getLastHeardAge()){
-            ag.lockInResource(null);
-            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-            ag.setLastHeardAge(argAg.getLastHeardAge());
-            ag.setPackPosIndiff(true);
+          if(ag.getAge() < argAg.getAge()){
+            if(ag.getLockedRes() != argAg.getLockedRes()){
+              ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
+              ag.setLastHeardAge(argAg.getAge());
+              ag.setPackPosIndiff(true);
+              ag.lockInResource(null);
+            }
           }
         }
       }
@@ -535,8 +546,8 @@ class AviaryRivalry {                                                           
   }
   
   void run(){                                                       //Main method                                                                           //Perform animation tick
-    render();
     tick();
+    render();
   }
   
   

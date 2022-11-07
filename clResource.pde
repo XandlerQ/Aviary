@@ -49,6 +49,10 @@ class Resource{
     return size;
   }
   
+  float getRes(){
+    return res;
+  }
+  
   boolean empty(){
     return res <= 0;
   }
@@ -101,6 +105,18 @@ class Resource{
         res = maxRes;
       updateSize();
     }
+  }
+  
+  @Override
+  public boolean equals(Object obj){
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    Resource arg = (Resource) obj;
+    return x == arg.getX() 
+           && y == arg.getY()
+           && res == arg.getRes();
   }
   
   //Renderers

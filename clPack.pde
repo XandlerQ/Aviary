@@ -187,6 +187,16 @@ class Pack{
       agents.forEach((ag) -> {ag.eat(resToDistr/agCount);});
   }
   
+  float getMedHunger(){
+    float hunger = 0;
+    for(Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      hunger += ag.howHungry();
+    }
+    
+    return hunger / agents.size();
+  }
+  
   void energyDepletion(){
     for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
       Connection con = iter.next();

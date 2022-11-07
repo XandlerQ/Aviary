@@ -477,5 +477,8 @@ class Agent {
     fill(cl);
     circle(ORIGINX + x, ORIGINY + y, 4);
     line(ORIGINX + x, ORIGINY + y, ORIGINX + x + 6 * cos(direction), ORIGINY + y + 6 * sin(direction));
+    /*fill(0,0);
+    stroke(SPEC2CL, 50);
+    circle(ORIGINX + x, ORIGINY + y, VISUALDIST * 2);*/
   }
 }

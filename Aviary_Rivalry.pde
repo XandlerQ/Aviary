@@ -17,7 +17,7 @@ int INITAGENTAMOUNT2 = 0;
 
 boolean SYSSPAWN = true;
 
-float BASERES = 300;
+float BASERES = 150;
 float RESREPSPEED = BASERES/360;
 int RESPERQUAD = 3;
 int REPCTRPEAK = 240;
@@ -37,7 +37,7 @@ float MAXENERGY = 50;
 float NRGPERSTEP1 = 0.02;//BASESPEED1/8;
 float NRGPERSTEP2 = 0;//BASESPEED2/8;
 
-int VALENCE1 = 0;
+int VALENCE1 = 3;
 int VALENCE2 = 2;
 
 float RESECOLLECTEDPERSTEP = 1.0;
@@ -45,7 +45,7 @@ float RESECOLLECTEDPERSTEP = 1.0;
 //  Reproduction settings 
 float REPRODUCTLOW = 1440;
 float REPRODUCTHIGH = 3000;
-float REPRODUCTPROB1 = 0.051;
+float REPRODUCTPROB1 = 0.005;
 float REPRODUCTPROB2 = 0.001;
 float REPRODUCTCOST = 5.0;
 
@@ -65,7 +65,7 @@ float NRGFORCONPERSTEP = 0.05;
 int ACTCTRPEAK = 15;
 
 // Distances settings
-float SCRHEARDIST = 150;
+float SCRHEARDIST = 200;
 float PACKDIST = 80;
 float CONNECTDIST = 40;
 float COMDIST = 20;
