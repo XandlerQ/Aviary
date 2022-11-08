@@ -33,8 +33,6 @@ class Agent {
   int actCtrPeak;       //Predetermined value for scrCtr peak value
   int actCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
   
-  boolean packPosIndiff;
-  
   color cl = #000000;   //Inner render color
   
   boolean stationary;
@@ -74,7 +72,6 @@ class Agent {
     actCtrPeak = ACTCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     actCtr = r.nextInt(actCtrPeak);                         //Random initial scream counter value
     
-    packPosIndiff = false;
     stationary = false;
   }
   
@@ -185,10 +182,6 @@ class Agent {
       return hunger;
   }
   
-  boolean getPackPosIndiff(){
-    return packPosIndiff;
-  }
-  
   //Setters
   
   void setColor(color argCl){
@@ -238,10 +231,6 @@ class Agent {
   
   void resetLastHeardAge(){
     lastHeardAge = -1;
-  }
-  
-  void setPackPosIndiff(boolean flag){
-    packPosIndiff = flag;
   }
   
   void setStationary(boolean flag){
@@ -321,7 +310,6 @@ class Agent {
   
   void resetActCounter(){                                  //Resets scream counter
     actCtr = actCtrPeak;
-    packPosIndiff = false;
   }
   
   void resetConCount(){

@@ -308,9 +308,9 @@ class AviaryRivalry {                                                           
       return -2;
     }
     
-    if(argAg == argPack.getLeader()){
+    /*if(argAg == argPack.getLeader()){
       return -1;
-    }
+    }*/
     
     Pack closestUncomPack = getSameSpeciesClosestUncomPack(argAg);
     
@@ -321,11 +321,11 @@ class AviaryRivalry {                                                           
       return packDirFar;
     }
     
-    if(packDirClose != -1 && !argAg.getPackPosIndiff()){
+    if(packDirClose != -1){
       return packDirClose;
     }
     
-    if(closestUncomPack != null && !argAg.getPackPosIndiff()){
+    if(closestUncomPack != null){
       return fixDir(argAg.dirToFace(closestUncomPack.getPackCenterX(), closestUncomPack.getPackCenterY()) + (float)Math.PI);
     }
     
@@ -339,7 +339,7 @@ class AviaryRivalry {                                                           
     if(argAg.getConCount() == 0 && argAg.getLockedRes() != null){
       loneAgentResScream(argAg);
     }
-    if(argAg.getConCount() != 0 && (argAg.getLockedRes() != null || argAg.getLastHeardAge() != -1)){
+    if(argAg.getConCount() != 0){
       packAgentResScream(argAg);
     }
   }
@@ -402,38 +402,21 @@ class AviaryRivalry {                                                           
       return;
     ArrayList<Agent> connAg = argPack.getConnected(argAg);
     connAg.forEach((ag) -> {
-      if(argAg.getLockedRes() == null){
-        if(ag.getLockedRes() == null){
-          if(ag.getLastHeardAge() < argAg.getLastHeardAge()){
-            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-            ag.setLastHeardAge(argAg.getLastHeardAge());
-            ag.setPackPosIndiff(true);
+      if(ag.getLockedRes() != null){
+        if(argAg.getLockedRes() == null){
+          if(argAg.getLastHeardAge() < ag.getAge()){
+            argAg.setDir(argAg.dirToFace(ag.getX(), ag.getY()));
+            argAg.setLastHeardAge(ag.getAge());
           }
         }
         else{
-          if(ag.getAge() < argAg.getLastHeardAge()){
-            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-            ag.setLastHeardAge(argAg.getLastHeardAge());
-            ag.setPackPosIndiff(true);
-            ag.lockInResource(null);
-          }
-        }        
-      }
-      else{
-        if(ag.getLockedRes() == null){
-          if(ag.getLastHeardAge() < argAg.getAge()){
-            ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-            ag.setLastHeardAge(argAg.getAge());
-            ag.setPackPosIndiff(true);
-          }
-        }
-        else{
-          if(ag.getAge() < argAg.getAge()){
-            if(ag.getLockedRes() != argAg.getLockedRes()){
-              ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
-              ag.setLastHeardAge(argAg.getAge());
-              ag.setPackPosIndiff(true);
-              ag.lockInResource(null);
+          if(argAg.getLockedRes() != ag.getLockedRes()){
+            if(argAg.getAge() < ag.getAge()){
+              if(argAg.getLastHeardAge() < ag.getAge()){
+                argAg.setLastHeardAge(ag.getAge());
+                argAg.lockInResource(null);
+                argAg.setDir(argAg.dirToFace(ag.getX(), ag.getY()));
+              }
             }
           }
         }

@@ -19,7 +19,7 @@ boolean SYSSPAWN = true;
 
 float BASERES = 150;
 float RESREPSPEED = BASERES/360;
-int RESPERQUAD = 3;
+int RESPERQUAD = 5;
 int REPCTRPEAK = 240;
 
 //  Agent settings
