@@ -13,13 +13,13 @@ int QUADX = 5;
 int QUADY = 5;
 
 int INITAGENTAMOUNT1 = 20;
-int INITAGENTAMOUNT2 = 0;
+int INITAGENTAMOUNT2 = 20;
 
 boolean SYSSPAWN = true;
 
-float BASERES = 150;
+float BASERES = 50;
 float RESREPSPEED = BASERES/360;
-int RESPERQUAD = 5;
+int RESPERQUAD = 3;
 int REPCTRPEAK = 240;
 
 //  Agent settings
@@ -38,24 +38,19 @@ float NRGPERSTEP1 = 0.02;//BASESPEED1/8;
 float NRGPERSTEP2 = 0;//BASESPEED2/8;
 
 int VALENCE1 = 3;
-int VALENCE2 = 2;
+int VALENCE2 = 0;
 
 float RESECOLLECTEDPERSTEP = 1.0;
 
 //  Reproduction settings 
 float REPRODUCTLOW = 1440;
 float REPRODUCTHIGH = 3000;
-float REPRODUCTPROB1 = 0.005;
+float REPRODUCTPROB1 = 0.001;
 float REPRODUCTPROB2 = 0.001;
 float REPRODUCTCOST = 5.0;
 
 //  Fight settings
 float NRGPERFIGHT = 1.0;
-
-//  Pack energy balancing settings
-int NRGBALANCINGTYPE = 2; //0 -- no balancing, 1 -- gradual balancing, 2 -- immediate balancing
-
-int BALANCINGCTRPEAK = 5;
 
 //  Pack energy depletion settings
 boolean NRGFORCONDEPLETING = true;
@@ -509,16 +504,6 @@ void SlFightDist(float valR){
 
 void SlFightEnergy(float valR){
   NRGPERFIGHT = valR;
-}
-
-void SlEnergyBalancingType(float valR){
-  NRGBALANCINGTYPE = (int)valR;
-  if((int)valR == 1){
-    cp5.getGroup("GrGeneralSettings").getController("SlEnergyBalancingSpeed").show();
-  }
-  else{
-    cp5.getGroup("GrGeneralSettings").getController("SlEnergyBalancingSpeed").hide();
-  }
 }
 
 void BgResetDist(){

@@ -91,13 +91,6 @@ class Pack{
     balancingCtr = 0;
   }
   
-  void incCtr(){
-    balancingCtr++;
-    if(balancingCtr > BALANCINGCTRPEAK){
-      resetImmCtr();
-    }
-  }
-  
   //Methods
   
   boolean addAgent(Agent argAg){

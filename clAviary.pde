@@ -39,10 +39,10 @@ class AviaryRivalry {                                                           
     }                                                                                 //Add agents 
     println("INITIAL AGENT COUNT: ", INITAGENTAMOUNT1 + "   " + INITAGENTAMOUNT2);
     
-    int graphWidth = 690;
-    int graphHeight = 165;
+    int graphWidth = 290;
+    int graphHeight = 200;
     
-    /*grSp1Pop = new Graph(DEFX + 6, 1);
+    grSp1Pop = new Graph(DEFX + 6, 1);
     grSp1Pop.setSize(graphWidth,graphHeight);
     grSp1Pop.setType(1);
     grSp1Pop.setXAmnt(1000);
@@ -62,7 +62,7 @@ class AviaryRivalry {                                                           
     grSp2Pop.setLineColor(#FFC800);
     grSp2Pop.setTextColor(#FFD900);
     grSp2Pop.setBackgroundColor(#101010);
-    grSp2Pop.setGraphTitle("Популяция зел. агентов");*/
+    grSp2Pop.setGraphTitle("Популяция зел. агентов");
     
   }
   
@@ -340,7 +340,7 @@ class AviaryRivalry {                                                           
       loneAgentResScream(argAg);
     }
     if(argAg.getConCount() != 0){
-      packAgentResScream(argAg);
+      packAgentResListen(argAg);
     }
   }
   
@@ -396,7 +396,7 @@ class AviaryRivalry {                                                           
     }
   }
   
-  void packAgentResScream(Agent argAg){
+  void packAgentResListen(Agent argAg){
     Pack argPack = getPack(argAg);
     if(argPack == null)
       return;
@@ -425,14 +425,58 @@ class AviaryRivalry {                                                           
   }
   
   void fights(){
-    
+    for(Iterator<Agent> iter1 = agents.iterator(); iter1.hasNext();){
+      Agent ag1 = iter1.next();
+      for(Iterator<Agent> iter2 = agents.iterator(); iter2.hasNext();){
+        Agent ag2 = iter2.next();
+        if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= FIGHTDIST){
+          fight(ag1, ag2);
+        }
+      }
+    }
   }
   
   void fight(Agent argAg1, Agent argAg2){
     
+    float coef1 = argAg1.getConCount() + 1;
+    float coef2 = argAg2.getConCount() + 1;
+    
+    ArrayList<Agent> connected1 = null;
+    ArrayList<Agent> connected2 = null;
+    
+    if(coef1 != 1){
+      connected1 = getPack(argAg1).getConnected(argAg1);
+    }
+    
+    if(coef2 != 1){
+      connected2 = getPack(argAg2).getConnected(argAg2);
+    }
+    
+    argAg1.addToEnergy(-NRGPERFIGHT / coef1);
+    argAg2.addToEnergy(-NRGPERFIGHT / coef2);
+    
+    if(connected1 != null){
+      connected1.forEach((ag) -> {
+        ag.addToEnergy(-NRGPERFIGHT / coef1);
+        stroke(#CF00FF,100); 
+        strokeWeight(2);
+        circle(ag.getX(), ag.getY(), 5);
+      });
+    }
+    if(connected2 != null){
+      connected2.forEach((ag) -> {
+        ag.addToEnergy(-NRGPERFIGHT / coef2);
+        stroke(#CF00FF,100); 
+        strokeWeight(2);
+        circle(ag.getX(), ag.getY(), 5);
+      });
+    }
+    
     stroke(#CF00FF,100); 
     strokeWeight(2);     
     line(ORIGINX + argAg1.getX(), ORIGINY + argAg1.getY(), ORIGINX + argAg2.getX(), ORIGINY + argAg2.getY());
+    
+    
     
   }
   
@@ -471,6 +515,18 @@ class AviaryRivalry {                                                           
           packs.add(newPack);
         }
       }
+    }
+  }
+  
+  void addPlotData(){
+    if(infCtr == INFOREPCTRPEAK){
+      grSp1Pop.addTimePoint(popSp1Ctr);
+      grSp2Pop.addTimePoint(popSp2Ctr);
+    }
+    infCtr++;
+    
+    if(infCtr > INFOREPCTRPEAK){
+      infCtr = 0;
     }
   }
   
@@ -517,7 +573,10 @@ class AviaryRivalry {                                                           
     
     reproductList.parallelStream().forEach((ag) -> {reproduction(ag);});
     
-    packs.parallelStream().forEach((pack) -> {pack.resDistribution();});
+    packs.parallelStream().forEach((pack) -> {
+      pack.resDistribution();
+      pack.energyDepletion();
+    });
     
     fights();
     
@@ -526,11 +585,13 @@ class AviaryRivalry {                                                           
       ag.resetLastHeardAge();
     });
     
+    addPlotData();
+    
   }
   
   void run(){                                                       //Main method                                                                           //Perform animation tick
-    tick();
     render();
+    tick();
   }
   
   
@@ -549,8 +610,8 @@ class AviaryRivalry {                                                           
   }
   
   void renderGraphs(){
-    /*grSp1Pop.render();
-    grSp2Pop.render();*/
+    grSp1Pop.render();
+    grSp2Pop.render();
   }
   
   void render(){                                                    //Renders aviary
