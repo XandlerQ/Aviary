@@ -1,6 +1,8 @@
 import java.util.*;
 import controlP5.*;
-
+import java.text.SimpleDateFormat;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 //  Aviary settings
 
 int ORIGINX = 3;
@@ -12,7 +14,7 @@ int DEFY = 1000;
 int QUADX = 5;
 int QUADY = 5;
 
-int INITAGENTAMOUNT1 = 20;
+int INITAGENTAMOUNT1 = 2;
 int INITAGENTAMOUNT2 = 20;
 
 boolean SYSSPAWN = true;
@@ -46,14 +48,13 @@ float RESECOLLECTEDPERSTEP = 1.0;
 float REPRODUCTLOW = 1440;
 float REPRODUCTHIGH = 3000;
 float REPRODUCTPROB1 = 0.001;
-float REPRODUCTPROB2 = 0.001;
+float REPRODUCTPROB2 = 0.002;
 float REPRODUCTCOST = 5.0;
 
 //  Fight settings
 float NRGPERFIGHT = 1.0;
 
 //  Pack energy depletion settings
-boolean NRGFORCONDEPLETING = true;
 float NRGFORCONPERSTEP = 0.05;
 
 //  Action counter
@@ -72,7 +73,7 @@ float VISUALDIST = 50;
 int INFOREPCTRPEAK = 60;
 
 AviaryRivalry AV = null;
-ResourceNet RN = null;
+Reporter REP = new Reporter(null);
 
 boolean pause = false;
 boolean firstRun = true;
@@ -81,6 +82,9 @@ boolean Fixed = true;
 
 int screenshotNum = 1;
 int scrShCounter = 0;
+
+boolean autoRun = false;
+boolean report = true;
 
 //AviaryRivalry(int argInitAgentAmnt, int argQuadX, int argQuadY, float argRes)
 
@@ -527,6 +531,8 @@ void BgStart(){
   firstRun = false;
   background(0);
   AV = new AviaryRivalry();
+  REP.setAviary(AV);
+  REP.setRunStartTimeStamp();
   if(pause){
     fill(0, 100);
     stroke(0, 0);
@@ -570,9 +576,28 @@ void draw(){
   background(0);
   pushMatrix();
   
+  boolean finished = false;
+  
   if(!pause){
-    if(AV != null)
-      AV.run();
+    if(AV != null){
+      finished = AV.run();
+    }
+  }
+  
+  if(finished){
+    /*boolean autoRun = false;
+boolean report = true;*/
+    if(report){
+      try {
+        REP.report();
+      }
+      catch(Exception e){
+        print(e.getMessage());
+      }
+    }
+    if(autoRun){
+      BgStart();
+    }
   }
   
   if(scrShCounter > 0){

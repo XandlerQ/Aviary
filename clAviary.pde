@@ -72,6 +72,36 @@ class AviaryRivalry {                                                           
     return net;
   }
   
+  int getPopSp1Ctr(){
+    return popSp1Ctr;
+  }
+  
+  int getPopSp2Ctr(){
+    return popSp2Ctr;
+  }
+  
+  int getSp1PackCount(){
+    int pckCount = 0;
+    for(Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+      Pack pck = iter.next();
+      if(pck.getPackSpecies() == 0)
+        pckCount++;
+    }
+    
+    return pckCount;
+  }
+  
+  int getSp2PackCount(){
+    int pckCount = 0;
+    for(Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
+      Pack pck = iter.next();
+      if(pck.getPackSpecies() == 1)
+        pckCount++;
+    }
+    
+    return pckCount;
+  }
+  
   //Setters
   
   void updateValences(){
@@ -589,9 +619,15 @@ class AviaryRivalry {                                                           
     
   }
   
-  void run(){                                                       //Main method                                                                           //Perform animation tick
+  boolean run(){                                                       //Main method                                                                           //Perform animation tick
     render();
     tick();
+    
+    if(popSp1Ctr == 0 || popSp2Ctr == 0){
+      return true;
+    }
+    
+    return false;
   }
   
   
