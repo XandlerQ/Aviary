@@ -106,6 +106,8 @@ void setup(){
    int sSSY = 8;
    int sGap = 18;
    
+   
+   
    cp5 = new ControlP5(this);
    /*
    Group resGroup = cp5.addGroup("GrResSettings")
@@ -528,11 +530,22 @@ void BgResetDist(){
 
 
 void BgStart(){
-  firstRun = false;
   background(0);
   AV = new AviaryRivalry();
   REP.setAviary(AV);
   REP.setRunStartTimeStamp();
+  
+  if(firstRun){
+    try{  
+     REP.initialReport();
+    }
+    catch(IOException e){
+     print("CUM");
+    }
+  }
+  
+  firstRun = false;
+  
   if(pause){
     fill(0, 100);
     stroke(0, 0);

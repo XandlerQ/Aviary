@@ -6,11 +6,42 @@ class Reporter{
   
   Date runStartTimeStamp;
   
+  int repCtr = 0;
+  
   boolean makeScrShot = false;
   boolean reported = false;
   
   Reporter(AviaryRivalry argAV){
     AV = argAV;
+  }
+  
+  void initialReport() throws IOException{
+    String reportStr =
+      "======================================================\n" +
+      "======================= Report =======================\n" +
+      "======================================================\n\n" +
+      formTimeStampReportString() +
+      formParameterReportString();
+      
+    File file = new File(fileName);
+      
+    if (!file.exists()) {
+      file.createNewFile();
+    }
+    
+    try {
+      FileWriter fw = new FileWriter(file,true);///true = append
+      BufferedWriter bw = new BufferedWriter(fw);
+      PrintWriter pw = new PrintWriter(bw);
+      pw.write(reportStr);
+     
+      pw.close();
+      bw.close();
+      fw.close();
+    } 
+    catch (IOException e) {
+      println("CUM");
+    }
   }
   
   void setAviary(AviaryRivalry argAV){
@@ -125,15 +156,8 @@ class Reporter{
   void report() throws IOException{
     if(!reported){
       String reportStr =
-      "======================================================\n" +
-      "======================= Report =======================\n" +
-      "======================================================\n\n" +
-      formTimeStampReportString() +
-      formParameterReportString() +
-      formFinalDataReportString() +
-      "======================================================\n" +
-      "==================== End Of Report ===================\n" +
-      "======================================================\n\n\n";
+      "---->   Run number " + repCtr + "   <----\n" +
+      formFinalDataReportString() + "\n\n";
       
       File file = new File(fileName);
       
@@ -156,7 +180,7 @@ class Reporter{
         println("CUM");
       } 
       reported = true;
-      print(reportStr);
+      repCtr++;
     }
   }
 }
