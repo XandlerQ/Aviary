@@ -291,7 +291,7 @@ class AviaryRivalry {                                                           
       }
     }
     else{
-      if(argAg.getConCount() == 0 && argAg.wellFed()){
+      if(argAg.getConCount() == 0 && argAg.wellFedLone()){
         return;
       }
       ArrayList<Resource> resources = net.getVisibleResources(argAg.getX(), argAg.getY(), VISUALDIST);

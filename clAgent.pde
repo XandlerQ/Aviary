@@ -300,6 +300,10 @@ class Agent {
     return status == 0;
   }
   
+  boolean wellFedLone(){
+    return energy > maxEnergy * 0.8;
+  }
+  
   boolean readyToAct(){                                        //True if ready to scream
     return actCtr == actCtrPeak;
   }
