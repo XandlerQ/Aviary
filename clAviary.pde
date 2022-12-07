@@ -415,7 +415,7 @@ class AviaryRivalry {                                                           
       && ag.getSpecies() == argAg.getSpecies() 
       && distance < SCRHEARDIST){
         if(ag.getValence() == 0){
-          if(!ag.wellFed()){
+          if(!ag.wellFedLone()){
             ag.setDir(ag.dirToFace(argAg.getX(), argAg.getY()));
           }
         }
