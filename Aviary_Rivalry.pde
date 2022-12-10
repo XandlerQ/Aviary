@@ -14,12 +14,12 @@ int DEFY = 1000;
 int QUADX = 5;
 int QUADY = 5;
 
-int INITAGENTAMOUNT1 = 2;
+int INITAGENTAMOUNT1 = 20;
 int INITAGENTAMOUNT2 = 20;
 
 boolean SYSSPAWN = true;
 
-float BASERES = 50;
+float BASERES = 150;
 float RESREPSPEED = BASERES/360;
 int RESPERQUAD = 3;
 int REPCTRPEAK = 240;
@@ -48,7 +48,7 @@ float RESECOLLECTEDPERSTEP = 1.0;
 float REPRODUCTLOW = 1440;
 float REPRODUCTHIGH = 3000;
 float REPRODUCTPROB1 = 0.001;
-float REPRODUCTPROB2 = 0.002;
+float REPRODUCTPROB2 = 0.001;
 float REPRODUCTCOST = 5.0;
 
 //  Fight settings
@@ -586,7 +586,6 @@ void BgScreenshot(){
  
  
 void draw(){
-  background(0);
   pushMatrix();
   
   boolean finished = false;
