@@ -45,7 +45,7 @@ class AviaryRivalry {                                                           
     grSp1Pop = new Graph(DEFX + 6, 1);
     grSp1Pop.setSize(graphWidth,graphHeight);
     grSp1Pop.setType(1);
-    grSp1Pop.setXAmnt(1000);
+    grSp1Pop.setXAmnt(280);
     grSp1Pop.setBordColor(#980000);
     grSp1Pop.setColor(#FF1A00);
     grSp1Pop.setLineColor(#FFFFFF);
@@ -56,7 +56,7 @@ class AviaryRivalry {                                                           
     grSp2Pop = new Graph(DEFX + 6, graphHeight + 4);
     grSp2Pop.setSize(graphWidth,graphHeight);
     grSp2Pop.setType(1);
-    grSp2Pop.setXAmnt(1000);
+    grSp2Pop.setXAmnt(280);
     grSp2Pop.setBordColor(#499D00);
     grSp2Pop.setColor(#83FF00);
     grSp2Pop.setLineColor(#FFC800);
@@ -550,7 +550,9 @@ class AviaryRivalry {                                                           
   
   void addPlotData(){
     if(infCtr == INFOREPCTRPEAK){
-      grSp1Pop.addTimePoint(popSp1Ctr);
+      if(INITAGENTAMOUNT1 != 0)
+        grSp1Pop.addTimePoint(popSp1Ctr);
+      if(INITAGENTAMOUNT2 != 0)
       grSp2Pop.addTimePoint(popSp2Ctr);
     }
     infCtr++;
