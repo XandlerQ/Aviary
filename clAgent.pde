@@ -5,6 +5,8 @@
 
 class Agent {
   
+  int role;            // 0 - std, 1 - navigator, 2 - fluctuator;
+  
   int status;           //values: 0 - seek base, 1 - seek resource
   
   float x; 
@@ -22,10 +24,13 @@ class Agent {
   float suppBaseDir;        //Supposed direction towards base
   int baseReach;         //Supposed distance to go to reach base
   
-  int scrCtrPeak;       //Predetermined value for scrCtr peak value
-  int scrCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
+  int lstnCtrPeak;       //Predetermined value for scrCtr peak value
+  int lstnCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
   
   float scrHearDist;      //Perception distance: if scream produced closer than scrHearDist, then change Dir and Dist variables accordingly
+  float visualDist;
+  
+  boolean lockedOn;
   
   color borderCl;
   color innerCl;   //Inner render color
@@ -52,10 +57,13 @@ class Agent {
     suppBaseDir = (float)(2 * Math.PI * r.nextFloat());
     baseReach = 0;
     
-    scrCtrPeak = SCRCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
-    scrCtr = r.nextInt(scrCtrPeak);                         //Random initial scream counter value
+    lstnCtrPeak = LSTNCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
+    lstnCtr = r.nextInt(lstnCtrPeak);                         //Random initial scream counter value
     
     scrHearDist = SCRHEARDIST;                                       //Fixed perception distance
+    visualDist = VISUALDIST;
+    
+    lockedOn = false;
     
     borderCl = #FFFFFF;
     innerCl = #000000;
@@ -69,6 +77,14 @@ class Agent {
   
   //Getters
   
+  int getRole(){
+    return role;
+  }
+  
+  int getStatus(){
+    return status;
+  }
+  
   float getX(){
     return x;
   }
@@ -76,13 +92,17 @@ class Agent {
   float getY(){
     return y;
   }
+  
+  float getSpeed(){
+    return speed;
+  }
  
-  int getScrCtr(){
-    return scrCtr;
+  int getLstnCtr(){
+    return lstnCtr;
   }
   
-  int getScrCtrPeak(){
-    return scrCtrPeak;
+  int getLstnCtrPeak(){
+    return lstnCtrPeak;
   }
   
   int getResReach(){
@@ -97,8 +117,8 @@ class Agent {
     return scrHearDist;
   }
   
-  int getStatus(){
-    return status;
+  float getVisualDist(){
+    return visualDist;
   }
   
   float getLoad(){
@@ -109,7 +129,25 @@ class Agent {
     return maxLoad;
   }
   
+  boolean locked(){
+    return lockedOn;
+  }
+  
   //Setters
+  
+  void setRole(int argRole){
+    role = argRole;
+    if(role == 0){
+      borderCl = #FFFFFF;
+    }
+    if(role == 1){
+      borderCl = #6100FF;
+    }
+    if(role == 2){
+      borderCl = #CFFF00;
+      lstnCtrPeak *= 2;
+    }
+  }
   
   void setSpeed(float argSp){
     speed = argSp;
@@ -164,6 +202,14 @@ class Agent {
     baseReach = 0;
   }
   
+  void lock(){
+    lockedOn = true;
+  }
+  
+  void unlock(){
+    lockedOn = false;
+  }
+  
   //Methods
   
   float getDistTo(float argX, float argY){                          //Get distance from self to point
@@ -174,16 +220,16 @@ class Agent {
     return argDist <= scrHearDist;
   }
   
-  boolean readyToScream(){                                        //True if ready to scream
-    return scrCtr == 0;
+  boolean readyToListen(){                                        //True if ready to scream
+    return lstnCtr == 0;
   }
   
-  void peakScrCtr(){                                  //Peaks scream counter
-    scrCtr = 0;
+  void peakLstnCtr(){                                  //Peaks scream counter
+    lstnCtr = 0;
   }
   
-  void resetScrCtr(){
-    scrCtr = scrCtrPeak;
+  void resetLstnCtr(){
+    lstnCtr = lstnCtrPeak;
   }
   
   void updateColor(){                                        //Updates color accordingly to status
@@ -232,7 +278,13 @@ class Agent {
      resReach += 1;
      baseReach += 1;
      
-     dir += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+     if(role == 2){
+       dir += (-0.08 + (0.16) * r.nextFloat()) * 2;                           //Randomly change direction of movement to eliminate linear movement
+     }
+     else{
+       dir += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+     }
+       
      
      fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
      
@@ -252,10 +304,10 @@ class Agent {
      x = newX;                                                      //
      y = newY;                                                      //Change coordinates
      
-     scrCtr -= 1;                                                   //Increment scream counter
+     lstnCtr -= 1;                                                   //Increment scream counter
      
-     if(scrCtr < 0){                                       //If screamed previous step
-       resetScrCtr();                                                  //Reset scream counter
+     if(lstnCtr < 0){                                       //If screamed previous step
+       resetLstnCtr();                                                  //Reset scream counter
      }
      
      updateSpeed(get(int(newX),int(newY)));
