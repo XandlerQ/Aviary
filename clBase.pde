@@ -4,8 +4,8 @@ color STDBASECOLOR = #3483FF;
 class Base{
   
   float x, y;                                                                        //Position
-  int resourceTypeAmount;                                                                     //Amount of resource types
-  int[] res;                                                                         //Array for stored resources by type
+  float res;                                                                         //Array for stored resources by type
+  float maxRes;
   color cl = #3483FF;                                                                //Base color
   float size = 40;                                                                   //Base size px
   
@@ -16,14 +16,26 @@ class Base{
     x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                                     //
     y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                                     //Random position
     
-    resourceTypeAmount = 1;                                                                   //Single resource type by default
-    res = new int[resourceTypeAmount];                                                        //Make stored resources by type array
-    
-    for(int i = 0; i < resourceTypeAmount; i++)
-      res[i] = 0;
+    res = 0;                                                        //Make stored resources by type array
   }
   
   //Getters
+  
+  float getSize(){
+    return size;
+  }
+  
+  float getX(){
+    return x;
+  }
+  
+  float getY(){
+    return y;
+  }
+  
+  float getRadius(){
+    return size/2;
+  }
   
   //Setters
   
@@ -34,8 +46,13 @@ class Base{
   
   //Methods
   
-  void addRes(int argResTp, int argResAmnt){                                         //Adds resource to storage
-    res[argResTp] += argResAmnt;
+  void addRes(float argRes){                                         //Adds resource to storage
+    if(res + argRes > maxRes){
+      res = maxRes;
+    }
+    else{
+      res += argRes;
+    }
   }
   
   //Renderers

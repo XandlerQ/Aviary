@@ -17,7 +17,7 @@ class Aviary {
   color resCl = #FFAA00;                                                              //Resource color TODO: MAKE IT AN ARRAY SIZED resourceTypeAmount TO KEEP COLORS OF EACH RESOURCE TYPE
   
   ArrayList<Base> bases;                                                              //
-  ArrayList<Resource> resourcesList;                                                         //
+  ArrayList<Resource> resources;                                                         //
   ArrayList<Agent> agents;                                                          //ArrayLists TODO: MAKE IT MULTIPLE RESOURCE TYPE COMPATIBLE
   
 
@@ -35,7 +35,7 @@ class Aviary {
     agentCounter = argInitAgentAmnt;                                                      //Set amounts
     
     bases = new ArrayList<Base>(argBaseAmnt);                                         //
-    resourcesList = new ArrayList<Resource>(argResAmnt);                                     //
+    resources = new ArrayList<Resource>(argResAmnt);                                     //
     agents = new ArrayList<Agent>(argInitAgentAmnt);                                //Making ArrayLists
     
     for(int i = 0; i < baseAmount; i++){                                                //
@@ -43,7 +43,7 @@ class Aviary {
     }                                                                                 //Add bases
     
     for(int i = 0; i < resourceAmount; i++){                                                 //
-      resourcesList.add(new Resource());                                                     //
+      resources.add(new Resource());                                                     //
     }                                                                                 //Add resources
     
     for(int i = 0; i < agentCounter; i++){                                                //
@@ -62,75 +62,98 @@ class Aviary {
     agents.forEach((ag) -> {                                                       //For each agent
       
       float distance = ag.getDistTo(agent.getX(), agent.getY());                     //Calculate distance to screamer
-      int scrHearDist = ag.getScrHearDist();                                         //Get hearing distance
+      float scrHearDist = ag.getScrHearDist();                                         //Get hearing distance
       
-      if(ag.ifHearFrom(distance)){                                                   //If agent can hear
-        int bsDist = agent.getBaseDist();                                             //Get screamers supposed base distance
+      if(ag.hearFrom(distance)){                                                   //If agent can hear
+        int bsDist = agent.getBaseReach();                                             //Get screamers supposed base distance
         
-        if(bsDist + scrHearDist < ag.getBaseDist()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
-          ag.setBaseDist(bsDist + scrHearDist);                                      //Set new supposed base distance for hearer
-          ag.setBaseDir(ag.directionToFace(agent.getX(), agent.getY(), distance));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
-          ag.peakScreamCounter();
-          if(ag.getFlag() == 0) ag.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
+        if(ag.getBaseReach() > bsDist + scrHearDist){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
+          ag.setBaseReach((int)(bsDist + scrHearDist));                                      //Set new supposed base distance for hearer
+          ag.setBaseDir(ag.dirToFace(agent.getX(), agent.getY()));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
+          ag.peakScrCtr();
+          stroke(#FFFFFF, 100);  strokeWeight(1);
+          line(agent.getX(), agent.getY(), ag.getX(), ag.getY());
+          if(ag.getStatus() == 0) ag.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
         }
-        
-        for(int i = 0; i < resourceTypeAmount; i++){           
-          int resDist = agent.getResDist(i);                            
-          if(resDist + scrHearDist < ag.getResDist(i)){            
-            ag.setResDist(i, resDist + ag.getScrHearDist());
-            ag.setResDir(i, ag.directionToFace(agent.getX(), agent.getY(), distance));
-            ag.peakScreamCounter();
-            if(ag.getFlag() == i + 1)  ag.updateDir();                                                        //Do the same for all resource types
-          }
-        } 
-      }
+                   
+        float resDist = agent.getResReach();                            
+        if(ag.getResReach() > resDist + scrHearDist){            
+          ag.setResReach((int)(resDist + ag.getScrHearDist()));
+          ag.setResDir(ag.dirToFace(agent.getX(), agent.getY()));
+          ag.peakScrCtr();
+          stroke(#FFFFFF, 100);  strokeWeight(1);
+          line(agent.getX(), agent.getY(), ag.getX(), ag.getY());
+          if(ag.getStatus() == 1)  ag.updateDir();                                                        //Do the same for all resource types
+        }
+      } 
     });
   }
   
   void screams(){                                                                     //Perform screams if ready
     agents.forEach((agent) -> {
-      if(agent.ifReadyToScream())
+      if(agent.readyToScream())
         scream(agent);
     });
   }
   
-  void run(int defX, int defY){                                                       //Main method
-    render(defX, defY);                                                               //Render boundaries, bases and resources
+  void run(){                                                       //Main method
+    render();                                                               //Render boundaries, bases and resources
     tick();                                                                           //Perform animation tick
     renderAgent();                                                                    //Render agants
   }
     
   
   void tick(){                                                                        //Performes animation tick
-    agents.forEach((agent) -> {                                                       //For each agent
-      color curCl = agent.step();                                                       //Perform step, get color from new location
-      if(curCl == baseCl){                                                            //If found base
-        agent.setFlag(1);                                                               //Set action flag to seek resource
-        agent.setBaseDist(0);                                                           //!!!Set supposed distance to base to 0!!!
-        agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
-        agent.peakScreamCounter();                                                    //Get ready to scream
-        agent.dropResources();
-      }
-      if(curCl == resCl){                                                             //If found resource
-      int at = 0;
-      int idx = -1;
-        for (Resource res: resourcesList){
-          if(agent.getDistTo(res.getX(), res.getY()) <= res.getSize()){
-            idx = at;
-          }
-          at++;            
+    agents.forEach((ag) -> {                                                       //For each agent
+      ag.step();                                                       //Perform step, get color from new location
+      
+      int status = ag.getStatus();
+      
+      int bsIdx = -1;
+      int curIdx = -1;
+      for(Iterator<Base> iter = bases.iterator(); iter.hasNext();){
+        Base bs = iter.next();
+        curIdx += 1;
+        if(ag.getDistTo(bs.getX(), bs.getY()) < bs.getRadius()){
+          bsIdx = curIdx;
         }
-        agent.setFlag(0);                                                               //Set action flag to seek base
-        agent.setResDist(0, 0);                                                         //!!!Set supposed distance to resource to 0!!!
-        agent.updateDir();                                                              //!!!Update direction accordingly to new action flag!!!
-        agent.peakScreamCounter();                                                    //Get ready to scream
-        if(idx != -1){
-          if (agent.getLoad() < agent.getMaxLoad()){
-            agent.addRes(0);
-            if(resourcesList.get(idx).lowerRes()){
-              resourcesList.remove(idx);
-              resourcesList.add(new Resource());
-            }
+      }
+      
+      int resIdx = -1;
+      curIdx = -1;
+      for(Iterator<Resource> iter = resources.iterator(); iter.hasNext();){
+        Resource res = iter.next();
+        curIdx += 1;
+        if(ag.getDistTo(res.getX(), res.getY()) < res.getRadius()){
+          resIdx = curIdx;
+        }
+      }
+      
+      if(bsIdx != -1){
+        ag.setBaseReach(0);
+        ag.peakScrCtr();
+        
+        if(status == 0){
+          float res = ag.getLoad();
+          ag.dropLoad();
+          bases.get(bsIdx).addRes(res);
+          ag.setStatus(1);
+          ag.updateDir();
+        }
+      }
+      
+      if(resIdx != -1){
+        ag.setResReach(0);
+        ag.peakScrCtr();
+        
+        if(status == 1){
+          float res = resources.get(resIdx).lowerRes(MAXLOAD);
+          ag.addLoad(res);
+          ag.setStatus(0);
+          ag.updateDir();
+          if(resources.get(resIdx).empty()){
+            resources.remove(resIdx);
+            resources.add(new Resource());
           }
         }
       }
@@ -142,37 +165,32 @@ class Aviary {
     bases.get(baseId).setPos(argX, argY);
   }
   
+  void moveRes(int resId, float argX, float argY){
+    resources.get(resId).setPos(argX, argY);
+  }
+  
   //Renderers
-  
-  void renderBounds(int defX, int defY){                                              //Renders boundaries of aviary
-
-  strokeWeight(WALLTHICKNESS);  stroke(WALLCOLOR);
-  line(WALLTHICKNESS / 2, WALLTHICKNESS / 2, WALLTHICKNESS / 2, defY - WALLTHICKNESS / 2);
-  line(WALLTHICKNESS / 2, WALLTHICKNESS / 2, defX - WALLTHICKNESS / 2, WALLTHICKNESS / 2);
-  line(defX - WALLTHICKNESS / 2, defY - WALLTHICKNESS / 2, defX - WALLTHICKNESS / 2, WALLTHICKNESS / 2);
-  line(defX - WALLTHICKNESS / 2, defY - WALLTHICKNESS / 2, WALLTHICKNESS / 2, defY - WALLTHICKNESS / 2);
-  
-}
 
   void renderBase(){                                                                  //Renders bases
     bases.forEach((base) -> base.render());
   }
   
   void renderRes(){                                                                   //Renders resources
-    resourcesList.forEach((res) -> res.render());
+    resources.forEach((res) -> res.render());
   }
   
   void renderAgent(){                                                                 //Renders agents
     agents.forEach((agent) -> agent.render());
   }
   
-  void render(int defX, int defY){                                                    //Renders aviary
+  void render(){                                                    //Renders aviary
     background(0);
-    renderBounds(defX, defY);
     renderBase();
     renderRes();
-    fill(255);  // инструкция
-    text("ЛКМ - перемещение базы, R - перезапуск, P - пауза", defX / 2 - 100, defY - 6);
+    stroke(#202020);
+    strokeWeight(0);
+    fill(#202020);
+    circle(DEFX/2, DEFY/2, 150);
   }
   
   

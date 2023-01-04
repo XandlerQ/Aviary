@@ -5,7 +5,7 @@ class Resource{
   
   int type;                                                              //Type index
   float x, y;                                                            //Position
-  int res;                                                               //Amount of resource held
+  float res;                                                               //Amount of resource held
   float size;
   color cl = #FFAA00;                                                    //Color
   
@@ -37,15 +37,37 @@ class Resource{
     return size;
   }
   
+  float getRadius(){
+    return size/2;
+  }
+  
   //Setters
+  
+  void setPos(float argX, float argY){
+    x = argX;
+    y = argY;
+  }
   
   //Methods
   
-  boolean lowerRes(){                                                    //Lower stored resource amount
-    res--;
+  float lowerRes(float argRes){                                                    //Lower stored resource amount
+    if(res < argRes){
+      res = 0;
+      return argRes;
+    }
+    else{
+      res -= argRes;
+      updateSize();
+      return argRes;
+    }
+  }
+  
+  void updateSize(){
     size = 20 + res/10;
-    return (res == 0);
-    
+  }
+  
+  boolean empty(){
+    return res <= 0;
   }
   
   //Renderers

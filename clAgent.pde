@@ -5,73 +5,66 @@
 
 class Agent {
   
-  int status;             //Action status, determines where to go, e.g. if status == 0, then seek base
-                        //values: 0 - seek base, 1 -> resourceTypeAmount - seek resource indexed accordingly
+  int status;           //values: 0 - seek base, 1 - seek resource
   
   float x; 
   float y;           //Position 
-  float direction;
+  float dir;
   float speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
-    
-  int resourceTypeAmount;
+  float baseSpeed;
   
-  int[] resAmount;      //Amount of resources carried, index = type (size = amount of resource types)
-  int load;
-  int maxLoad;
+  float load;
+  float maxLoad;
   
-  float[] resDirection;       //Supposed direction towards resource types, index = type (size = amount of resource types)
-  int[] resDist;        //Supposed distance to go to reach a resourse type, index = type
+  float suppResDir;       //Supposed direction towards resource types, index = type (size = amount of resource types)
+  int resReach;        //Supposed distance to go to reach a resourse type, index = type
   
-  float baseDirection;        //Supposed direction towards base
-  int baseDist;         //Supposed distance to go to reach base
+  float suppBaseDir;        //Supposed direction towards base
+  int baseReach;         //Supposed distance to go to reach base
   
   int scrCtrPeak;       //Predetermined value for scrCtr peak value
   int scrCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
   
-  int scrHearDist;      //Perception distance: if scream produced closer than scrHearDist, then change Dir and Dist variables accordingly
+  float scrHearDist;      //Perception distance: if scream produced closer than scrHearDist, then change Dir and Dist variables accordingly
   
-  color cl = #000000;   //Inner render color
+  color borderCl;
+  color innerCl;   //Inner render color
   
   //Constructors
   
   Agent(){
     Random r = new Random();                                //Randomizer
     
-    
-    resourceTypeAmount = 1;                                          //Single resource type by default
-    status = r.nextInt(resourceTypeAmount + 1);                            //Initially seek either base or resource
-    updateColor();                                                 //Update color accordingly
+    status = 1;
     
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
-    direction = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
-    speed = (float)(0.6 + 0.4 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
+    dir = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
+    speed = (float)(1.0 + 0.4 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
+    baseSpeed = speed;
     
+    load = 0;
+    maxLoad = MAXLOAD;
     
-    resAmount = new int[resourceTypeAmount];                         //
-    resDirection = new float[resourceTypeAmount];                          //
-    resDist = new int[resourceTypeAmount];                           //Resource related variables accordingly to the amount of resource types
+    suppResDir = (float)(2 * Math.PI * r.nextFloat());
+    resReach = 0;
     
-    for(int i = 0; i < resourceTypeAmount; i++){
-      resAmount[i] = 0;                                     //Initially no resources carried
-      resDirection[i] = (float)(2 * Math.PI * r.nextFloat());     //Random initial supposed direction to all resource types
-      resDist[i] = DEFX/5;                                  //SAME(essential) initial supposed distance to all resource types
-    }
+    suppBaseDir = (float)(2 * Math.PI * r.nextFloat());
+    baseReach = 0;
     
-    maxLoad = 1;
-    
-    if(status == 0){
-      resAmount[0] = 1;
-      load = maxLoad;
-    }
-    
-    baseDirection = (float)(2 * Math.PI * r.nextFloat());         //Random initial supposed direction to base
-    baseDist = DEFX/5;                                      //SAME(essential) initial supposed distance to base
-    
-    scrCtrPeak = 7;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
+    scrCtrPeak = SCRCTRPEAK;                                         //Peak for scrCtr, e.g. if scrCtrPeak = 2, scream every third step
     scrCtr = r.nextInt(scrCtrPeak);                         //Random initial scream counter value
     
-    scrHearDist = 45;                                       //Fixed perception distance
+    scrHearDist = SCRHEARDIST;                                       //Fixed perception distance
+    
+    borderCl = #FFFFFF;
+    innerCl = #000000;
+  }
+  
+  Agent(float argX, float argY){
+    this();
+    x = argX;
+    y = argY;
   }
   
   //Getters
@@ -92,86 +85,83 @@ class Agent {
     return scrCtrPeak;
   }
   
-  int[] getResDist(){
-    return resDist;
+  int getResReach(){
+    return resReach;
   }
   
-  int getResDist(int argIdx){
-    return resDist[argIdx];
+  int getBaseReach(){
+    return baseReach;
   }
   
-  int getBaseDist(){
-    return baseDist;
-  }
-  
-  int getScrHearDist(){
+  float getScrHearDist(){
     return scrHearDist;
   }
   
-  int getFlag(){
+  int getStatus(){
     return status;
   }
   
-  int getRes(int argIdx){
-    return resAmount[argIdx];
-  }
-  
-  int getLoad(){
+  float getLoad(){
     return load;
   }
   
-  int getMaxLoad(){
+  float getMaxLoad(){
     return maxLoad;
   }
   
   //Setters
   
-  void setColor(color argCl){
-    cl = argCl;
+  void setSpeed(float argSp){
+    speed = argSp;
   }
   
-  void setResDist(int[] argResDist){
-    resDist = argResDist;
+  void setInnerColor(color argCl){
+    innerCl = argCl;
   }
   
-  void setResDist(int argIdx, int argDist){
-    resDist[argIdx] = argDist;
+  void setBorderColor(color argCl){
+    borderCl = argCl;
   }
   
-  void setBaseDist(int argBaseDist){
-    baseDist = argBaseDist;
+  void setResReach(int argReach){
+    resReach = argReach;
   }
   
-  void setBaseDir(float argBaseDir){
-    baseDirection = argBaseDir;
+  void setBaseReach(int argReach){
+    baseReach = argReach;
   }
   
-  void setResDir(float[] argResDir){
-    resDirection = argResDir;
+  void setResDir(float argDir){
+    suppResDir = argDir;
   }
   
-  void setResDir(int argIdx, float argDist){
-    resDirection[argIdx] = argDist;
+  void setBaseDir(float argDir){
+    suppBaseDir = argDir;
   }
   
   void setDir(float argDir){
-    direction = argDir;
+    dir = argDir;
   }
   
-  void setFlag(int argStatus){
+  void setStatus(int argStatus){
     status = argStatus;
     updateColor();
   }
   
-  void addRes(int argIdx){
-    resAmount[argIdx]++;
-    load++;
+  void addLoad(float argLoad){
+    load += argLoad;
   }
   
-  void dropResources(){
-    for(int i = 0; i < resourceTypeAmount; i++)
-      resAmount[i] = 0;
+  void dropLoad(){
     load = 0;
+  }
+  
+  void resetResReach(){
+    resReach = 0;
+  }
+  
+  void resetBaseReach(){
+    baseReach = 0;
   }
   
   //Methods
@@ -180,41 +170,41 @@ class Agent {
     return dist(x, y, argX, argY);
   }
   
-  boolean ifHearFrom(float argDist){                                //True if hear from distance, false otherwise
+  boolean hearFrom(float argDist){                                //True if hear from distance, false otherwise
     return argDist <= scrHearDist;
   }
   
-  boolean ifReadyToScream(){                                        //True if ready to scream
-    return scrCtr == scrCtrPeak;
+  boolean readyToScream(){                                        //True if ready to scream
+    return scrCtr == 0;
   }
   
-  void peakScreamCounter(){                                  //Peaks scream counter
-    scrCtr = scrCtrPeak;
-  }
-  
-  void resetScreamCounter(){                                  //Resets scream counter
+  void peakScrCtr(){                                  //Peaks scream counter
     scrCtr = 0;
+  }
+  
+  void resetScrCtr(){
+    scrCtr = scrCtrPeak;
   }
   
   void updateColor(){                                        //Updates color accordingly to status
     if(status == 0)
-      cl = #FF8400;
+      innerCl = #FF8400;
     else
-      cl = #000000;
+      innerCl = #000000;
   }
   
   void fixDir(){                                                    //Fix direction to range [0 ; 2PI)
-    while(direction < 0){
-      direction += 2 * (float)Math.PI;
+    while(dir < 0){
+      dir += 2 * (float)Math.PI;
     }
-    while(direction >= 2 * Math.PI){
-      direction -= 2 * (float)Math.PI;
+    while(dir >= 2 * Math.PI){
+      dir -= 2 * (float)Math.PI;
     }
   }
   
-  float directionToFace(float argX, float argY, float argDist){           //Returns direction (angle in range [0 ; 2PI)) to face point (argX,argY), if distance to it is argDist
-    
-    float direct = acos((argX - x)/argDist);
+  float dirToFace(float argX, float argY){
+    float dist = getDistTo(argX, argY);
+    float direct = acos((argX - x)/dist);
     if(argY > y) {
       return direct;
     }
@@ -223,52 +213,60 @@ class Agent {
     }
   }
   
-  color step() {                                                    //Make step, returns color of next position
+  void face(float argX, float argY){
+    setDir(dirToFace(argX, argY));
+  }
+  
+  void updateSpeed(color cl){
+    if(cl == #202020){
+      setSpeed(baseSpeed / 2);
+    }
+    else{
+      setSpeed(baseSpeed);
+    }
+  }
+  
+  void step() {                                                    //Make step, returns color of next position
      Random r = new Random();                                       //Randomizer
      
-     for (int i = 0; i < resourceTypeAmount; i++){                           //
-       resDist[i]++;                                                //
-     }                                                              //Increment supposed distances to all resources by 1 with each step
+     resReach += 1;
+     baseReach += 1;
      
-     baseDist++;                                                    //Increment supposed distances to base by 1 with each step
-     
-     direction += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
+     dir += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement
      
      fixDir();                                                      //Fix new direction if it is not in range [0 ; 2PI)
      
-     float newX = x + speed * cos(direction);                             //
-     float newY = y + speed * sin(direction);                             //Calculate new coordinates
-     
-     color cl = get(int(newX),int(newY));                           //Get color in new coordinates
+     float newX = x + speed * cos(dir);                             //
+     float newY = y + speed * sin(dir);                             //Calculate new coordinates
      
      if (newX > DEFX - WALLTHICKNESS ||
          newX < WALLTHICKNESS ||
          newY > DEFY - WALLTHICKNESS ||
          newY < WALLTHICKNESS){                                     //If a wall is hit
-       direction += (float)(Math.PI);                                     //Turn around
+       dir += (float)(Math.PI);                                     //Turn around
        fixDir();
-       newX = x + speed * cos(direction);                                 //
-       newY = y + speed * sin(direction);                                 //Set new coordinates according to new direction
+       newX = x + speed * cos(dir);                                 //
+       newY = y + speed * sin(dir);                                 //Set new coordinates according to new direction
      }
      
      x = newX;                                                      //
      y = newY;                                                      //Change coordinates
      
-     scrCtr += 1;                                                   //Increment scream counter
+     scrCtr -= 1;                                                   //Increment scream counter
      
-     if(scrCtr > scrCtrPeak){                                       //If screamed previous step
-       resetScreamCounter();                                                  //Reset scream counter
+     if(scrCtr < 0){                                       //If screamed previous step
+       resetScrCtr();                                                  //Reset scream counter
      }
      
-     return cl;                                                     //Returns color of new position
+     updateSpeed(get(int(newX),int(newY)));
   }
   
   void updateDir(){                                                 //Update direction of movement accordingly to current action status value
     if(status == 0){                                                  //If seeking base
-      direction = baseDirection;                                                //Set direction of movement to supposed base direction
+      dir = suppBaseDir;                                                //Set direction of movement to supposed base direction
     }
     else{                                                           //If seeking resource
-      direction = resDirection[status - 1];                                       //Set direction of movement to supposed resource type direction
+      dir = suppResDir;                                       //Set direction of movement to supposed resource type direction
     }
   }
   
@@ -276,16 +274,9 @@ class Agent {
   
   void render()
   {
-    stroke(#ffffff);  strokeWeight(1);
-    fill(cl);
+    stroke(borderCl);  strokeWeight(1);
+    fill(innerCl);
     circle(x, y, 4);
-  }
-  
-  void render(float sz)
-  {
-    stroke(#ffffff);  strokeWeight(1);
-    fill(cl);
-    circle(x, y, sz);
   }
   
 }

@@ -1,14 +1,20 @@
 import java.util.Random;
-import java.util.ArrayList;
+import java.util.*;
 
 
 int DEFX = 1080;
 int DEFY = 1080;
 
+float MAXLOAD = 0.;
+
+float SCRHEARDIST = 50;
+
+int SCRCTRPEAK = 5;
+
 boolean pause = false;
 
 
-Aviary AV = new Aviary(1, 3, 500);
+Aviary AV = new Aviary(1, 1, 800);
 
 
 void setup(){
@@ -20,7 +26,7 @@ void setup(){
  
 void draw(){
   if(!pause){
-    AV.run(DEFX, DEFY);
+    AV.run();
     fill(#5555ff); text(int(frameRate),5,10);
   }
 }
@@ -33,7 +39,7 @@ void keyPressed(){
   switch(key){
     case 'r':
     case 'R':
-      AV = new Aviary(1, 3, 300);
+      AV = new Aviary(1, 1, 300);
       break;
     case 'p':
     case 'P':
@@ -41,6 +47,10 @@ void keyPressed(){
         pause = false;
       else
         pause = true;
+      break;
+    case 'e':
+    case 'E':
+      AV.moveRes(0, mouseX, mouseY);
       break;
   }
 }
