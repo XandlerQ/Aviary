@@ -55,9 +55,15 @@ class Aviary {
       agents.add(new Agent());                                                      //
     }                                                                                 //Add agents
     
-    for(int i = 0; i < agentCounter / 4; i++){
+    for(int i = 0; i < 0 * agentCounter / 8; i++){
       Agent ag = new Agent();
       ag.setRole(2);
+      agents.add(ag);
+    }
+    
+    for(int i = 0; i < agentCounter / 4; i++){
+      Agent ag = new Agent();
+      ag.setRole(1);
       agents.add(ag);
     }
   }
@@ -70,6 +76,10 @@ class Aviary {
   void clearBord(){
     x.clear();
     y.clear();
+  }
+  
+  void addRes(float argX, float argY){
+    resources.add(new Resource(argX, argY));
   }
   
   //Getters
@@ -146,7 +156,7 @@ class Aviary {
       float distance = ag.getDistTo(agent.getX(), agent.getY());                     //Calculate distance to screamer
       float scrHearDist = ag.getScrHearDist();                                         //Get hearing distance
       
-      if(ag.hearFrom(distance)){                                                   //If agent can hear
+      if(ag.hearFrom(distance) && !(ag.getRole() == 1)){                                                   //If agent can hear
         int bsDist = agent.getBaseReach();                                             //Get screamers supposed base distance
         
         if(ag.getBaseReach() > bsDist + scrHearDist / agent.getSpeed()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!

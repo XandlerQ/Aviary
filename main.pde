@@ -15,7 +15,7 @@ int LSTNCTRPEAK = 5;
 boolean pause = false;
 
 
-Aviary AV = new Aviary(1, 1, 400);
+Aviary AV = new Aviary(1, 1, 800);
 
 
 void setup(){
@@ -60,6 +60,10 @@ void keyPressed(){
     case 'z':
     case 'Z':
       AV.clearBord();
+      break;
+    case 'a':
+    case 'A':
+      AV.addRes(mouseX, mouseY);
       break;
   }
 }

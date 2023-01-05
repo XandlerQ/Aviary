@@ -13,6 +13,7 @@ class Agent {
   float y;           //Position 
   float dir;
   float speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
+  float slowedFactor;
   float baseSpeed;
   
   float load;
@@ -47,6 +48,7 @@ class Agent {
     dir = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
     speed = (float)(1.0 + 0.6 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
     baseSpeed = speed;
+    slowedFactor = 1;
     
     load = 0;
     maxLoad = MAXLOAD;
@@ -265,21 +267,22 @@ class Agent {
   
   void updateSpeed(color cl){
     if(cl == #202020){
-      setSpeed(baseSpeed / 2);
+      slowedFactor = 5;
     }
     else{
-      setSpeed(baseSpeed);
+      slowedFactor = 1;
     }
+    setSpeed(baseSpeed / slowedFactor);
   }
   
   void step() {                                                    //Make step, returns color of next position
      Random r = new Random();                                       //Randomizer
      
-     resReach += 1;
-     baseReach += 1;
+     resReach += slowedFactor;
+     baseReach += slowedFactor;
      
      if(role == 2){
-       dir += (-0.08 + (0.16) * r.nextFloat()) * 2;                           //Randomly change direction of movement to eliminate linear movement
+       dir += (-0.08 + (0.16) * r.nextFloat()) * 3;                           //Randomly change direction of movement to eliminate linear movement
      }
      else{
        dir += -0.08 + (0.16) * r.nextFloat();                           //Randomly change direction of movement to eliminate linear movement

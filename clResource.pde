@@ -23,6 +23,12 @@ class Resource{
     
   }
   
+  Resource(float X, float Y){
+    this();
+    x = X;
+    y = Y;
+  }
+  
   //Getters
   
   float getX(){
