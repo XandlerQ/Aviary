@@ -7,8 +7,8 @@ int DEFY = 1080;
 
 float MAXLOAD = 0.;
 
-float SCRHEARDIST = 50;
-float VISUALDIST = 100;
+float SCRHEARDIST = 60;
+float VISUALDIST = 20;
 
 int LSTNCTRPEAK = 5;
 

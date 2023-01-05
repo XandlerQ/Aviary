@@ -45,7 +45,7 @@ class Agent {
     x = DEFX/10 + (4 * DEFX / 5) * r.nextFloat();           //
     y = DEFY/10 + (4 * DEFY / 5) * r.nextFloat();           //Random coordinates accordingly to aviary dimensions
     dir = (float)(2 * Math.PI * r.nextFloat());             //Random initial direction
-    speed = (float)(1.0 + 0.4 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
+    speed = (float)(1.0 + 0.6 * r.nextFloat());             //Random speed in range 0.6 -> 1.0
     baseSpeed = speed;
     
     load = 0;

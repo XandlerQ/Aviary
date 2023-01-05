@@ -82,35 +82,61 @@ class Aviary {
   
     if(agent.locked() || agent.getRole() == 1)
       return;
+    
+    float minBaseReach = agents.get(0).getBaseReach();
+    float minResReach = agents.get(0).getResReach();
+    int minBaseReachIdx = -1;
+    int minResReachIdx = -1;
+    int curIdx = -1;
+    float scrHearDist = agent.getScrHearDist();
   
-    agents.forEach((ag) -> {                                                       //For each agent
+    for(Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      curIdx++;
       
       float distance = agent.getDistTo(ag.getX(), ag.getY());                     //Calculate distance to screamer
-      float scrHearDist = agent.getScrHearDist();                                         //Get hearing distance
       
       if(agent.hearFrom(distance)){                                                   //If agent can hear
-        int bsReach = ag.getBaseReach();                                             //Get screamers supposed base distance
+        int bsReach = ag.getBaseReach();
+        float resReach = ag.getResReach();
         
-        if(agent.getBaseReach() > bsReach + scrHearDist){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
-          agent.setBaseReach((int)(bsReach + scrHearDist));                                      //Set new supposed base distance for hearer
-          agent.setBaseDir(agent.dirToFace(ag.getX(), ag.getY()));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
-          agent.peakLstnCtr();
-          stroke(#FFFFFF, 100);  strokeWeight(1);
-          line(agent.getX(), agent.getY(), ag.getX(), ag.getY());
-          if(agent.getStatus() == 0) agent.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
+        if(bsReach < minBaseReach){
+          minBaseReach = bsReach;
+          minBaseReachIdx = curIdx;
         }
-                   
-        float resReach = ag.getResReach();                            
-        if(agent.getResReach() > resReach + scrHearDist){            
-          agent.setResReach((int)(resReach + scrHearDist));
-          agent.setResDir(agent.dirToFace(ag.getX(), ag.getY()));
-          agent.peakLstnCtr();
-          stroke(#FFFFFF, 100);  strokeWeight(1);
-          line(agent.getX(), agent.getY(), ag.getX(), ag.getY());
-          if(agent.getStatus() == 1)  agent.updateDir();                                                        //Do the same for all resource types
+        
+        if(resReach < minResReach){
+          minResReach = resReach;
+          minResReachIdx = curIdx;
         }
       } 
-    });
+    }
+    
+    if(minBaseReachIdx != -1){
+      Agent ag = agents.get(minBaseReachIdx);
+      float distance = agent.getDistTo(ag.getX(), ag.getY());
+      if(agent.getBaseReach() > minBaseReach + scrHearDist / agent.getSpeed()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
+        agent.setBaseReach((int)(minBaseReach + scrHearDist / agent.getSpeed()));                                      //Set new supposed base distance for hearer
+        agent.setBaseDir(agent.dirToFace(ag.getX(), ag.getY()));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
+        scream(agent);
+        stroke(#FFFFFF, 100);  strokeWeight(1);
+        line(agent.getX(), agent.getY(), ag.getX(), ag.getY());
+        if(agent.getStatus() == 0) agent.updateDir();                                     //If hearer is currently seeking base                                                          //Update his current direction
+      }
+    }
+                   
+    if(minResReachIdx != -1){
+      Agent ag = agents.get(minResReachIdx);
+      float distance = agent.getDistTo(ag.getX(), ag.getY());
+      if(agent.getResReach() > minResReach + scrHearDist / agent.getSpeed()){            
+        agent.setResReach((int)(minResReach + scrHearDist / agent.getSpeed()));
+        agent.setResDir(agent.dirToFace(ag.getX(), ag.getY()));
+        scream(agent);
+        stroke(#FFFFFF, 100);  strokeWeight(1);
+        line(agent.getX(), agent.getY(), ag.getX(), ag.getY());
+        if(agent.getStatus() == 1)  agent.updateDir();                                                        //Do the same for all resource types
+      }
+    }
   }
   
   void scream(Agent agent){                                                           //Performs scream of agent
@@ -123,8 +149,8 @@ class Aviary {
       if(ag.hearFrom(distance)){                                                   //If agent can hear
         int bsDist = agent.getBaseReach();                                             //Get screamers supposed base distance
         
-        if(ag.getBaseReach() > bsDist + scrHearDist){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
-          ag.setBaseReach((int)(bsDist + scrHearDist));                                      //Set new supposed base distance for hearer
+        if(ag.getBaseReach() > bsDist + scrHearDist / agent.getSpeed()){                                 //If screamer is supposedly closer to base, !!!considering hearing distance!!!
+          ag.setBaseReach((int)(bsDist + scrHearDist / agent.getSpeed()));                                      //Set new supposed base distance for hearer
           ag.setBaseDir(ag.dirToFace(agent.getX(), agent.getY()));  //Set new supposed base direction for hearer !!!as a direction to the screamer, not screamers supposed direction to the base!!!
           ag.peakLstnCtr();
           stroke(#FFFFFF, 100);  strokeWeight(1);
@@ -133,8 +159,8 @@ class Aviary {
         }
                    
         float resDist = agent.getResReach();                            
-        if(ag.getResReach() > resDist + scrHearDist){            
-          ag.setResReach((int)(resDist + ag.getScrHearDist()));
+        if(ag.getResReach() > resDist + scrHearDist / agent.getSpeed()){            
+          ag.setResReach((int)(resDist + scrHearDist / agent.getSpeed()));
           ag.setResDir(ag.dirToFace(agent.getX(), agent.getY()));
           ag.peakLstnCtr();
           stroke(#FFFFFF, 100);  strokeWeight(1);
@@ -305,6 +331,9 @@ class Aviary {
     background(0);
     renderBase();
     renderRes();
+    stroke(#00FFFD, 50);
+    strokeWeight(4);
+    line(bases.get(0).getX(), bases.get(0).getY(), resources.get(0).getX(), resources.get(0).getY());
     renderBord();
   }
   
