@@ -15,7 +15,7 @@ class Base{
     Random r = new Random();                                                         //Randomizer
     x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                                     //
     y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                                     //Random position
-    
+    maxRes = 50;
     res = 0;                                                        //Make stored resources by type array
   }
   

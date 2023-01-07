@@ -36,6 +36,8 @@ class Agent {
   color borderCl;
   color innerCl;   //Inner render color
   
+  boolean redirected = false;
+  
   //Constructors
   
   Agent(){
@@ -97,6 +99,10 @@ class Agent {
   
   float getSpeed(){
     return speed;
+  }
+  
+  float getDir(){
+    return dir;
   }
  
   int getLstnCtr(){
@@ -266,11 +272,20 @@ class Agent {
   }
   
   void updateSpeed(color cl){
+    Random r = new Random();
     if(cl == #202020){
-      slowedFactor = 5;
+      slowedFactor = 4;
+      
+      if(role == 2 && !redirected){
+        dir += (0.8 + 0.4 * r.nextFloat()) * (float)Math.PI;
+        fixDir();
+        redirected = true;
+      }
+      
     }
     else{
       slowedFactor = 1;
+      redirected = false;
     }
     setSpeed(baseSpeed / slowedFactor);
   }
@@ -278,8 +293,8 @@ class Agent {
   void step() {                                                    //Make step, returns color of next position
      Random r = new Random();                                       //Randomizer
      
-     resReach += slowedFactor;
-     baseReach += slowedFactor;
+     resReach += 1;//slowedFactor * 2;
+     baseReach += 1;//slowedFactor * 2;
      
      if(role == 2){
        dir += (-0.08 + (0.16) * r.nextFloat()) * 3;                           //Randomly change direction of movement to eliminate linear movement
@@ -318,10 +333,10 @@ class Agent {
   
   void updateDir(){                                                 //Update direction of movement accordingly to current action status value
     if(status == 0){                                                  //If seeking base
-      dir = suppBaseDir;                                                //Set direction of movement to supposed base direction
+      dir = suppBaseDir;
     }
     else{                                                           //If seeking resource
-      dir = suppResDir;                                       //Set direction of movement to supposed resource type direction
+      dir = suppResDir;
     }
   }
   
