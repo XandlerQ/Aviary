@@ -1,47 +1,46 @@
-color SPEC1CL = #FF0004;
-color SPEC2CL = #2DFF00;
+color SPECIES_COLORS[] = {#FF0004, #2DFF00};
 
 class Agent {
   
-  int species;
-  int status;
+  int species;  //Species
+  int status;  //Status
   
   float x; 
   float y;           //Position 
-  float direction;
-  Resource lockedRes;
-  float speed;         //Direction (angle in range [0 ; 2PI)) and speed of movement
-  float delta;
+  float direction;    //Direction (angle in range [0 ; 2PI)) and speed of movement
+  Resource lockedRes;  //Locked in resource
+  float speed;  //Speed
+  float delta;  //Speed random part coeff
   
-  float age;
-  float maxAge;
-  float agePerStep;
+  float age;  //Age
+  float maxAge;  //Max age
+  float agePerStep;  //Age increment
   
-  float energy;
-  float suffEnergy;
-  float maxEnergy;
+  float energy;  //Energy
+  float suffEnergy;  //Sufficient energy
+  float maxEnergy;  //Max energy
   
-  float collectedRes;
+  float collectedRes;  //Collected resourse
   
-  int valence;
-  int conCount;
+  int valence;  //Valence
+  int conCount;  //Connection counter
   
-  float lastHeardAge;
+  float lastHeardAge;  //Last heard age
   
-  boolean dieFlag;
+  boolean dieFlag;  //Flag for determining agent death
   
   int actCtrPeak;       //Predetermined value for scrCtr peak value
   int actCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
   
   color cl = #000000;   //Inner render color
   
-  boolean stationary;
+  boolean stationary;  //For stoping agent movement
   
   //Constructors
   
   Agent(){
     
-    Random r = new Random();                                //Randomizer
+    Random r = new Random();
     
     status = 1;
     species = 0;

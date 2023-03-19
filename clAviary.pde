@@ -6,7 +6,7 @@ float WALLTHICKNESS = 1;
 
 class AviaryRivalry {                                                                       //Agent counter
   
-  ResourceNet net;
+  ResourceGroup net;
   ArrayList<Agent> agents;                                                         
   ArrayList<Pack> packs;
   
@@ -23,7 +23,7 @@ class AviaryRivalry {                                                           
   
   AviaryRivalry(){                                           
     
-    net = new ResourceNet();
+    net = new ResourceGroup();
     agents = new ArrayList<Agent>(INITAGENTAMOUNT1 + INITAGENTAMOUNT2);                                //Making ArrayLists
     packs = new ArrayList<Pack>();
     
@@ -68,7 +68,7 @@ class AviaryRivalry {                                                           
   
   //Getters
   
-  ResourceNet getNet(){
+  ResourceGroup getNet(){
     return net;
   }
   

@@ -1,111 +1,189 @@
-color STDRESOURCECOLOR = #FFAA00;
+import java.util.concurrent.atomic.AtomicInteger;
 
+color STD_RESNODE_COLOR = #FFAA00;
+float STD_RESNODE_SIZE = 20;
 
-class Resource{
+class Resource {
+  protected float res;  //Current resource amount
+  protected float maxRes;  //Max resource amount
+  protected float resRepSpeed;
+  protected int repCtr;  //Replenishment counter
+  protected int repCtrPeak;  //Replenishment counter peak
+  
+  Resource() {
+    this.res = 0;
+    this.maxRes = 0;
+    this.resRepSpeed = 0;
+    this.repCtr = 0;
+    this.repCtrPeak = 0;
+  }
+  
+  Resource(float maxRes, float fraction, float resRepSpeed, int repCtrPeak) {
+    this.res = maxRes * fraction;  //fraction is assumed to be in range [0; 1]
+    this.maxRes = maxRes;
+    normalizeRes();
+    this.resRepSpeed = resRepSpeed;
+    this.repCtr = 0;
+    this.repCtrPeak = repCtrPeak;
+  }
+  
+  //---------------------------------
+  //-----------  Getters  -----------
+  //---------------------------------
+  
+  float getRes() {
+    return this.res;
+  }
+  
+  boolean empty() {
+    return this.res <= 0;
+  }
+  
+  //---------------------------------
+  //---------------------------------
+  
+  //---------------------------------
+  //-----------  Setters  -----------
+  //---------------------------------
+  
+  void setMaxRes(float maxRes) {
+    this.maxRes = maxRes;
+  }
+  
+  void setRepCtrPeak(int repCtrPeak) {
+    this.repCtrPeak = repCtrPeak;
+  }
+  
+  void setResRepSpeed(float resRepSpeed) {
+    this.resRepSpeed = resRepSpeed;
+  }  
+  
+  //---------------------------------
+  //---------------------------------
+  
+  void normalizeRes() {
+    if (this.res > this.maxRes) {
+      this.res = this.maxRes;
+    }
+    if (this.res < 0) {
+      this.res = 0;
+    }
+  }
+  
 
-  float x, y;                                                            //Position
-  float res;                                                               //Amount of resource held
-  float maxRes;
-  float resRepSpeed;
-  float size;
-  color cl = #FFAA00;                                                    //Color
-  int repCtr;
-  int repCtrPeak;
-  
-  //Constructors
-  
-  Resource(){
-    Random r = new Random();                                             //Randomizer
-    x = DEFX/5 + (3 * DEFX / 5) * r.nextFloat();                         //
-    y = DEFY/5 + (3 * DEFY / 5) * r.nextFloat();                         //Random position
-    
-    res = BASERES / 2;                                                            //Initial resource stored by default
-    maxRes = BASERES;
-    resRepSpeed = RESREPSPEED;
-    updateSize();
-    
-    repCtr = 0;
-    repCtrPeak = REPCTRPEAK;
-  }
-  
-  Resource(float origX, float origY, float sideX, float sideY){
-    this();
-    Random r = new Random();
-    x = origX + sideX/20 + (18 * sideX / 20) * r.nextFloat();                         //
-    y = origY + sideY/20 + (18 * sideY / 20) * r.nextFloat();                         //Random position in square
-  }
-  
-  //Getters
-  
-  float getX(){
-    return x;
-  }
-  
-  float getY(){
-    return y;
-  }
-  
-  float getSize(){
-    return size;
-  }
-  
-  float getRes(){
-    return res;
-  }
-  
-  boolean empty(){
-    return res <= 0;
-  }
-  
-  //Setters
-  
-  void updateMaxRes(){
-    maxRes = BASERES;
-  }
-  
-  void updateResRepSpeed(){
-    resRepSpeed = RESREPSPEED;
-  }
-  
-  void updateRepDelay(){
-    repCtrPeak = REPCTRPEAK;
-  }
-  
-  //Methods
-  
-  void updateSize(){
-    size = res * 20 / maxRes;
-  }
-  
-  float lowerRes(float amount){                                                    //Lower stored resource amount
-    if (amount > res){
-      float taken = res;
-      res = 0;
-      updateSize();
-      repCtr = repCtrPeak;
+  float lowerRes(float amount){
+    if (amount > this.res){
+      float taken = this.res;
+      this.res = 0;
+      this.repCtr = this.repCtrPeak;
       return taken;
     }
     else{
-      res -= amount;
-      updateSize();
-      repCtr = repCtrPeak;
+      this.res -= amount;
+      this.repCtr = this.repCtrPeak;
       return amount;
     }
   }
   
   void replenish(){
-    if(repCtr != 0){
-      repCtr--;
+    if(this.repCtr != 0){
+      this.repCtr--;
       return;
     }
     else{
-      if(res < maxRes)
-        res += resRepSpeed;
-      if(res > maxRes)
-        res = maxRes;
-      updateSize();
+      if(this.res < this.maxRes)
+        this.res += this.resRepSpeed;
+      if(this.res > this.maxRes)
+        this.res = this.maxRes;
     }
   }
+}
+
+
+
+
+
+
+
+
+AtomicInteger resIdGen = new AtomicInteger(0);
+
+
+class ResourceNode extends Resource {
+  private final int id;
+  private Dot coordinates;
+  private float size;
+  private color cl;
+  
+  ResourceNode() {
+    super();
+    this.id = resIdGen.incrementAndGet();
+    this.coordinates = null;
+    this.size = 0;
+    this.cl = STD_RESNODE_COLOR;
+  }
+  
+  ResourceNode(float maxRes, float fraction, float resRepSpeed, int repCtrPeak,
+               float x, float y) {
+    super(maxRes, fraction, resRepSpeed, repCtrPeak);
+    this.id = resIdGen.incrementAndGet();
+    this.coordinates = new Dot(x, y);
+    this.size = STD_RESNODE_SIZE * super.res / super.maxRes;
+    this.cl = STD_RESNODE_COLOR;
+  }
+  
+  ResourceNode(float maxRes, float fraction, float resRepSpeed, int repCtrPeak,
+               Dot coordinates) {
+    this(maxRes, fraction, resRepSpeed, repCtrPeak, coordinates.getX(), coordinates.getY());
+  }
+  
+  //---------------------------------
+  //-----------  Getters  -----------
+  //---------------------------------
+  
+  int getId() {
+    return this.id;
+  }
+  
+  float getX() {
+    return this.coordinates.getX();
+  }
+  
+  float getY() {
+    return this.coordinates.getY();
+  }
+  
+  Dot getCoordinates() {
+    return this.coordinates;
+  }
+  
+  float getSize() {
+    return this.size;
+  }
+  
+  //---------------------------------
+  //---------------------------------
+  
+  //---------------------------------
+  //-----------  Setters  -----------
+  //---------------------------------
+  
+  void setCoordinates(float x, float y) {
+    this.coordinates.setXY(x, y);
+  }
+  
+  void setColor(color cl) {
+    this.cl = cl;
+  }
+  
+  //---------------------------------
+  //---------------------------------
+  
+  void recalculateSize() {
+    this.size = STD_RESNODE_SIZE * this.res / this.maxRes;
+  }
+  
+  
   
   @Override
   public boolean equals(Object obj){
@@ -113,163 +191,18 @@ class Resource{
       return true;
     if (obj == null)
       return false;
-    Resource arg = (Resource) obj;
-    return x == arg.getX() 
-           && y == arg.getY()
-           && res == arg.getRes();
+    ResourceNode arg = (ResourceNode) obj;
+    return this.id == arg.getId();
   }
   
-  //Renderers
-    
-  void render(){                                                         //Renders resource
+  
+  void render(){
     noStroke();
     fill(cl, 255);
-    circle(x, y, 2);
+    circle(this.coordinates.getX(), this.coordinates.getY(), 2);
     fill(cl, 150);
-    circle(x, y, size);
+    circle(this.coordinates.getX(), this.coordinates.getY(), size);
   }
   
-}
-
-class ResourceNet{
-  
-  int quadX;
-  int quadY;
-  float dimX;
-  float dimY;
-  int quadAmount;
-  ArrayList<Resource> resources;  
-  
-  //Constructors
-  
-  ResourceNet(){
-    quadX = QUADX;
-    quadY = QUADY;
-    dimX = DEFX / quadX;
-    dimY = DEFY / quadY;
-    quadAmount = RESPERQUAD;
-    
-    int resCount = QUADX * QUADY * RESPERQUAD;
-    resources = new ArrayList<Resource>(resCount);
-    
-    for(int i = 0; i < quadX; i++){
-      for(int j = 0; j < quadY; j++){
-        for (int k = 0; k < quadAmount; k++){
-          resources.add(new Resource(i * dimX, j * dimY, dimX, dimY));
-        }
-      }
-    }
-  }
-  
-  //Getters
-  
-  ArrayList<Resource> getResources(){
-    return resources;
-  }
-  
-  //Setters
-  
-  void updateMaxRes(){
-    resources.forEach((res) -> {res.updateMaxRes();});
-  }
-  
-  void updateResRepSpeed(){
-    resources.forEach((res) -> {res.updateResRepSpeed();});
-  }
-  
-  void updateRepDelay(){
-    resources.forEach((res) -> {res.updateRepDelay();});
-  }
-  
-  //Methods
-  
-  void replenish(){
-    resources.forEach((res) -> {res.replenish();});
-  }
-  
-  ArrayList<Resource> getVisibleResources(float posX, float posY, float radius){
-    
-    if(posX > DEFX)
-      posX = DEFX;
-    if(posY > DEFY)
-      posY = DEFY;
-    
-    int posQuadX = 0;
-    posQuadX = (int)((posX - (posX % dimX)) / dimX);
-    if(posQuadX >= quadX)
-      posQuadX = quadX - 1;
-    int posQuadY = 0;
-    posQuadY = (int)((posY - (posY % dimY)) / dimY);
-    if(posQuadY >= quadY)
-      posQuadY = quadY - 1;
-    
-    int moreL = 0;
-    int moreR = 0;
-    int moreT = 0;
-    int moreB = 0;
-    
-    float radiusOverlapL = posQuadX * dimX - (posX - radius);
-    float radiusOverlapR = (posX + radius) - (posQuadX + 1) * dimX;
-    float radiusOverlapT = posQuadY * dimY - (posY - radius);
-    float radiusOverlapB = (posY + radius) - (posQuadY + 1) * dimY;
-    
-    int quadLeftL = posQuadX;
-    int quadLeftR = quadX - (posQuadX + 1);
-    int quadLeftT = posQuadY;
-    int quadLeftB = quadY - (posQuadY + 1);
-    
-    if(radiusOverlapL > 0){
-      moreL = (int)((radiusOverlapL - radiusOverlapL % dimX) / dimX) + 1;
-      if(moreL > quadLeftL){
-        moreL = quadLeftL;
-      }
-    }
-    if(radiusOverlapR > 0){
-      moreR = (int)((radiusOverlapR - radiusOverlapR % dimX) / dimX) + 1;
-      if(moreR > quadLeftR){
-        moreR = quadLeftR;
-      }
-    }
-    if(radiusOverlapT > 0){
-      moreT = (int)((radiusOverlapT - radiusOverlapT % dimY) / dimY) + 1;
-      if(moreT > quadLeftT){
-        moreT = quadLeftT;
-      }
-    }
-    if(radiusOverlapB > 0){
-      moreB = (int)((radiusOverlapB - radiusOverlapB % dimY) / dimY) + 1;
-      if(moreB > quadLeftB){
-        moreB = quadLeftB;
-      }
-    }
-
-    ArrayList<Resource> visibleRes = new ArrayList<Resource>();
-    
-    for(int i = posQuadX - moreL; i <= posQuadX + moreR; i++){
-      for(int j = posQuadY - moreT; j <= posQuadY + moreB; j++){
-        for(int k = 0; k < quadAmount; k++){
-          visibleRes.add(resources.get(i * quadY * quadAmount + j * quadAmount + k));
-        }
-      }
-    }
-    
-    return visibleRes;
-  }
-  
-  //Renderers
-  
-  void render()
-  {
-    resources.forEach((res) -> {res.render();});
-    stroke(#FFAA00, 100);
-    strokeWeight(2);
-    for(int i = 0; i < quadX + 1; i++){
-      line(i * dimX, 0, i * dimX, DEFY);
-    }
-    for(int j = 0; j < quadY + 1; j++){
-      line(0, j * dimY, DEFX, j * dimY);
-    }
-  }
-    
   
 }

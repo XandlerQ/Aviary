@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 //  Aviary settings
 
+
+
 int ORIGINX = 3;
 int ORIGINY = 3;
 
@@ -15,7 +17,7 @@ int QUADX = 5;
 int QUADY = 5;
 
 int INITAGENTAMOUNT1 = 100;
-int INITAGENTAMOUNT2 = 0;
+int INITAGENTAMOUNT2 = 100;
 
 boolean SYSSPAWN = true;
 
