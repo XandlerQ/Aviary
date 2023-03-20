@@ -294,7 +294,7 @@ class AviaryRivalry {                                                           
       if(argAg.getConCount() == 0 && argAg.wellFedLone()){
         return;
       }
-      ArrayList<Resource> resources = net.getVisibleResources(argAg.getX(), argAg.getY(), VISUALDIST);
+      ArrayList<Resource> resources = net.getVisibleResNodes(argAg.getX(), argAg.getY(), VISUALDIST);
       float minDist = argAg.getDistTo(resources.get(0).getX(), resources.get(0).getY()) + 1;
       int minDistIdx = -1;
       int idx = 0;

@@ -10,6 +10,10 @@ class Resource {
   protected int repCtr;  //Replenishment counter
   protected int repCtrPeak;  //Replenishment counter peak
   
+  //--------------------------------------
+  //-----------  Constructors  -----------
+  //---------------------------------------
+  
   Resource() {
     this.res = 0;
     this.maxRes = 0;
@@ -26,6 +30,9 @@ class Resource {
     this.repCtr = 0;
     this.repCtrPeak = repCtrPeak;
   }
+  
+  //---------------------------------------
+  //---------------------------------------
   
   //---------------------------------
   //-----------  Getters  -----------
@@ -59,6 +66,10 @@ class Resource {
   }  
   
   //---------------------------------
+  //---------------------------------
+  
+  //---------------------------------
+  //-----------  Methods  -----------
   //---------------------------------
   
   void normalizeRes() {
@@ -97,6 +108,10 @@ class Resource {
         this.res = this.maxRes;
     }
   }
+  
+  //---------------------------------
+  //---------------------------------
+  
 }
 
 
@@ -114,6 +129,10 @@ class ResourceNode extends Resource {
   private Dot coordinates;
   private float size;
   private color cl;
+  
+  //--------------------------------------
+  //-----------  Constructors  -----------
+  //---------------------------------------
   
   ResourceNode() {
     super();
@@ -136,6 +155,9 @@ class ResourceNode extends Resource {
                Dot coordinates) {
     this(maxRes, fraction, resRepSpeed, repCtrPeak, coordinates.getX(), coordinates.getY());
   }
+  
+  //---------------------------------------
+  //---------------------------------------
   
   //---------------------------------
   //-----------  Getters  -----------
@@ -179,11 +201,13 @@ class ResourceNode extends Resource {
   //---------------------------------
   //---------------------------------
   
+  //---------------------------------
+  //-----------  Methods  -----------
+  //---------------------------------
+  
   void recalculateSize() {
     this.size = STD_RESNODE_SIZE * this.res / this.maxRes;
   }
-  
-  
   
   @Override
   public boolean equals(Object obj){
@@ -194,6 +218,9 @@ class ResourceNode extends Resource {
     ResourceNode arg = (ResourceNode) obj;
     return this.id == arg.getId();
   }
+  
+  //---------------------------------
+  //---------------------------------
   
   
   void render(){
