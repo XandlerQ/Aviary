@@ -1,305 +1,215 @@
-class Point{
+class TimeGraph {
   
-  float x;
-  float y;
-  
-  Point(float argX, float argY){
-    x = argX;
-    y = argY;
+  public static enum Mode {
+    SCROLLING, STATIONARY
   }
   
-  //Getters
+  private int originX;
+  private int originY;
   
-  float getX(){
-    return x;
+  private int dimX;
+  private int dimY;
+  
+  private int capacity;
+  
+  private boolean filled;
+  
+  private int mode;
+  
+  private ArrayList<Dot> dots;
+  
+  private float maxY;
+  private float minY;
+  
+  //Colors
+  
+  color plainCl;
+  color borderCl;
+  color dotCl;
+  color lineCl;
+  color levelLineCl;
+  color valueTextCl;
+  
+    
+  //--------------------------------------
+  //-----------  Constructors  -----------
+  //---------------------------------------
+  
+  TimeGraph() {
+    this.originX = 0;
+    this.originY = 0;
+    this.dimX = 200;
+    this.dimY = 100;
+    this.capacity = 0;
+    this.mode = 0;
+    this.dots = new ArrayList<Dot>();
+    this.maxY = 0;
+    this.minY = 0;
   }
   
-  float getY(){
-    return y;
-  }
-  
-  //Setters
-  
-  void setX(float argX){
-    x = argX;
-  }
-  
-  void setY(float argY){
-    y = argY;
-  }
-  
-  void setCoords(float argX, float argY){
-    x = argX;
-    y = argY;
-  }
-  
-  @Override
-  public boolean equals(Object obj){
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    Point arg = (Point) obj;
-    return (arg.getX() == x && arg.getY() == y);
-  }
-  
-}
-
-class Graph{
-  
-  int type = 0;
-  
-  int origX;
-  int origY;
-  
-  int dimX;
-  int dimY;
-  
-  int xAmnt;
-  
-  color graphBordColor = #FFFFFF;
-  color graphColor = #FFFFFF;
-  color graphLineColor = #00A8FF;
-  color graphTextColor = #00A8FF;
-  color graphBackgroundColor = #000000;
-  
-  String graphTitle = "Graph";
-  
-  ArrayList<Point> arrPt;
-  
-  Graph(){
-    type = 0;
-    arrPt = new ArrayList<Point>();
-    origX = 0;
-    origY = 0;
-    dimX = 400;
-    dimY = 200;
-    xAmnt = 200;
-  }
-  
-  Graph(int orX, int orY){
+  TimeGraph(int capacity) {
     this();
-    origX = orX;
-    origY = orY;
+    this.capacity = capacity;
   }
   
-  //Getters
-  
-  int getOrX(){
-    return origX;
+  TimeGraph(int dimX, int dimY, int capacity) {
+    this(capacity);
+    this.dimX = dimX;
+    this.dimY = dimY;
   }
   
-  int getOrY(){
-    return origY;
+  TimeGraph(int dimX, int dimY, int capacity, int mode) {
+    this(dimX, dimY, capacity);
+    this.mode = mode;
   }
   
-  int getDimX(){
-    return dimX;
-  }
+  //---------------------------------------
+  //---------------------------------------
   
-  int getDimY(){
-    return dimY;
-  }
+  //---------------------------------
+  //-----------  Getters  -----------
+  //---------------------------------
   
-  //Setters
+  int getDimX() { return this.dimX; }
+  int getDimY() { return this.dimY; }
   
-  void setType(int argTp){
-    type = argTp;
-  }
+  int getCapacity() { return this.capacity; }
   
-  void setOrigin(int orX, int orY){
-    origX = orX;
-    origY = orY;
-  }
+  int filled() { return this.filled; }
   
-  void setSize(int dX, int dY){
-    dimX = dX;
-    dimY = dY;
-  }
+  ArrayList<Dot> getDots() { return this.dots; }
   
-  void setXAmnt(int argXAmnt){
-    xAmnt = argXAmnt;
-  }
-  
-  void setGraphTitle(String argGrTtl){
-    graphTitle = argGrTtl;
-  }
-  
-  
-  void setBordColor(color argCl){
-    graphBordColor = argCl;
-  }
-  
-  void setColor(color argCl){
-    graphColor = argCl;
-  }
-  
-  void setLineColor(color argCl){
-    graphLineColor = argCl;
-  }
-  
-  void setTextColor(color argCl){
-    graphTextColor = argCl;
-  }
-  
-  void setBackgroundColor(color argCl){
-    graphBackgroundColor = argCl;
-  }
-  
-  //Methods
-  
-  void addPoint(Point argPt){
-    
-    if(arrPt.size() != 0){
-      if(argPt.getX() == arrPt.get(arrPt.size() - 1).getX() && argPt.getY() == arrPt.get(arrPt.size() - 1).getY()){
-        return;
-      }
+  float getValue(int index) {
+    if(index < 0 || index >= this.dots.size()) {
+      return null;
     }
     
-    if(arrPt.size() <= xAmnt){
-      arrPt.add(argPt);
-    }
-    else{
-      arrPt.remove(0);
-      arrPt.add(argPt);
-    }
+    return this.dots.get(index);
   }
   
-  void addPoint(float argX, float argY){
-    Point newPt = new Point(argX, argY);
-    addPoint(newPt);
+  //---------------------------------
+  //---------------------------------
+  
+  //---------------------------------
+  //-----------  Setters  -----------
+  //---------------------------------
+  
+  void setOriginX(int originX) { this.originX = originX; }
+  void setOriginY(int originY) { this.originY = originY; }
+  
+  void setOrigin(int originX, int originY) {
+    this.originX = originX;
+    this.originY = originY;
   }
   
-  void addTimePoint(float argY){
-    Point newPt = new Point(millis()/1000, argY);
-    addPoint(newPt);
-  }
+  void setDimX(int dimX) { this.dimX = dimX; }
+  void setDimY(int dimY) { this.dimY = dimY; }
   
-  //Rendrers
+  void setCapacity(int capacity) { this.capacity = capacity; }
   
-  /*
-  color graphBordColor;
-  color graphColor;
-  color graphLineColor;
-  color graphTextColor;
-  */
+  void setMode(int mode) { this.mode = mode; }
   
+  //---------------------------------
+  //---------------------------------
   
-  void render(){
-
-    float maxY = 0;
-    for (Iterator<Point> iter = arrPt.iterator(); iter.hasNext();){
-      Point pt = iter.next();
-      if(pt.getY() > maxY){
-        maxY = pt.getY();
-      }
-    }
-        
-    if (maxY == 0)
-      maxY = 1;
+  //---------------------------------
+  //-----------  Methods  -----------
+  //---------------------------------
+  
+  void addValue(float val) {
     
+    Dot newDot = new Dot(millis() / 1000, val);
+    
+    if(filled) {
+      if(mode == STATIONARY) return;
+      else if(mode == SCROLLING) removeFirstDot();
+    }
+    
+    this.dots.add(newDot);
+    
+    if(this.dots.size() == capacity) filled = true;
+    
+    if(this.maxY < val) this.maxY = val;
+    if(this.minY > val) this.minY = val;
+  }
+  
+  void removeFirstDot() {
+    Dot firstDot = this.dots.get(0);
+    float firstY = firstDot.getY();
+    this.dots.remove(0);
+    if(firstY == this.minY) updateMinY();
+    if(firstY == this.maxY) updateMaxY();
+  }
+  
+  void updateMinY() {
+    float newMinY = this.maxY;
+    
+    for (Iterator<Dot> iter = this.dots.iterator(); iter.hasNext();){
+      Dot dot = iter.next();
+      float y = dot.getY();
+      if(y < newMinY) newMinY = y;
+    }
+    
+    this.minY = newMinY;
+  }
+  
+  void updateMaxY() {
+    float newMaxY = this.minY;
+    
+    for (Iterator<Dot> iter = this.dots.iterator(); iter.hasNext();){
+      Dot dot = iter.next();
+      float y = dot.getY();
+      if(y > newMaxY) newMaxY = y;
+    }
+    
+    this.maxY = newMaxY;
+  }
+  
+  
+  
+  //---------------------------------
+  //---------------------------------
+  
+  //-----------------------------------
+  //-----------  Renderers  -----------
+  //-----------------------------------
+  
+  void renderPlain() {
     strokeWeight(1);
-    stroke(graphBordColor);
-    fill(graphBackgroundColor);
-    rect(origX, origY, dimX, dimY);
-    
-    if(arrPt.size() == 0)
-      return;
-    
-    if(type == 1){
-      
-      fill(graphColor);
-      stroke(graphColor);
-      int step = 0;
-      
-      if(arrPt.size() != 1) 
-        step = dimX / (arrPt.size() - 1);
-
-
-      int curShift = 0;
-      
-      for (int i = 0; i < arrPt.size(); i++){
-        float X = origX + curShift;
-        float Y = origY + dimY * (1 - arrPt.get(i).getY() * 0.8 / maxY);
-        
-        if(i == 0){
-          circle(X, Y, 2);
-        }
-        else{        
-          float Xprev = origX + curShift - step;
-          float Yprev = origY + dimY * (1 - arrPt.get(i - 1).getY() * 0.8 / maxY);
-          
-          circle(X, Y, 2);
-          line(Xprev, Yprev, X, Y);
-        }
-        if(i == arrPt.size() - 1){
-          stroke(graphLineColor, 100);
-          line(X, Y, origX, Y);
-          fill(graphTextColor);
-          textSize(8);
-          text(int(arrPt.get(i).getY()), origX + 5, Y - 7);
-        }
-        curShift += step;
-      }
-      
-      text(int(millis()/1000), origX + dimX - 30, origY + dimY - 4);
-      text(int(maxY * 1.25), origX + 5, origY + 10);
-    }
-    else{
-      
-      stroke(graphColor, 150);
-      fill(graphColor, 75);
-      
-      float maxX = 0;
-      for (Iterator<Point> iter = arrPt.iterator(); iter.hasNext();){
-        Point pt = iter.next();
-        if(pt.getX() > maxX){
-          maxX = pt.getX();
-        }
-      }
-      
-      if (maxX== 0)
-      maxX = 1;
-      
-      for (int i = 0; i < arrPt.size(); i++){
-        float X = origX + dimX * arrPt.get(i).getX() * 0.8 / maxX;
-        float Y = origY + dimY * (1 - arrPt.get(i).getY() * 0.8 / maxY);
-        if(i == 0){
-          circle(X, Y, 2);
-        }
-        else{
-          float Xprev = origX + dimX * arrPt.get(i - 1).getX() * 0.8 /maxX;
-          float Yprev = origY + dimY * (1 - arrPt.get(i - 1).getY() * 0.8 / maxY);
-          circle(X, Y, 2);
-          line(Xprev, Yprev, X, Y);
-        }
-        if(i == arrPt.size() - 1){
-          stroke(graphLineColor, 100);
-          line(X, Y, origX, Y);
-          line(X, Y, X, origY + dimY);
-          fill(graphTextColor);
-          textSize(8);
-          text(int(arrPt.get(i).getY()), origX + 5, Y - 7);
-          text(int(arrPt.get(i).getX()), X + 3, origY + dimY - 7);
-        }
-      }
-      
-      text(int(maxX * 1.25), origX + dimX - 30, origY + dimY - 4);
-      text(int(maxY * 1.25), origX + 5, origY + 10);
-      
-    }
-    
-    strokeWeight(1);
-    stroke(graphBordColor);
-    fill(graphBordColor);
-    rect(origX + dimX - 200, origY, 200, 30);
-    
-    textSize(8);
-    fill(graphTextColor);
-    text(graphTitle, origX + dimX - 190, origY + 20);
-    
+    stroke(this.borderCl);
+    fill(this.plainCl);
+    rect(this.originX, this.originY, this.dimX, this.dimY);
   }
   
+  void renderDots() {
+    int maxX = millis();
+    
+    float previousAbsoluteX = 0;
+    float previousAbsoluteY = 0;
+    
+    for(int dotIdx = 0; dotIdx < this.dots.size(); dotIdx++) {
+      Dot dot = this.dots.get(dotIdx);
+      float absoluteX = this.originX + this.dimX * (dot.getX() / this.maxX);
+      float absoluteY = this.originY + this.dimY * (1 - 0.8 * dot.getY() / (this.maxY - this.minY));
+      
+      strokeWeight(1);
+      stroke(this.dotCl);
+      fill(this.dotCl);
+      circle(absoluteX, absoluteY, 2);
+      
+      if(dotIdx != 0) {
+        strokeWeight(1);
+        stroke(this.lineCl);
+        
+        line(previousAbsoluteX, previousAbsoluteY, absoluteX, absoluteY);
+      }
+      
+      previousAbsoluteX = absoluteX;
+      previousAbsoluteY = absoluteY;
+    }
+  }
   
+  //-----------------------------------
+  //-----------------------------------
   
 }

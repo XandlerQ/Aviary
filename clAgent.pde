@@ -1,40 +1,43 @@
 color SPECIES_COLORS[] = {#FF0004, #2DFF00};
 
+AtomicInteger agentIdGen = new AtomicInteger(0);
+
 class Agent {
   
-  int species;  //Species
-  int status;  //Status
+  private int id;
   
-  float x; 
-  float y;           //Position 
-  float direction;    //Direction (angle in range [0 ; 2PI)) and speed of movement
-  Resource lockedRes;  //Locked in resource
-  float speed;  //Speed
-  float delta;  //Speed random part coeff
+  private int species;  //Species
+  private int energyStatus;  //Status
   
-  float age;  //Age
-  float maxAge;  //Max age
-  float agePerStep;  //Age increment
+  private Dot coordinates;
+  private float direction;    //Direction (angle in range [0 ; 2PI)) and speed of movement
+  private Resource lockedRes;  //Locked in resource
+  private float speed;  //Speed
+  private float delta;  //Speed random part coeff
   
-  float energy;  //Energy
-  float suffEnergy;  //Sufficient energy
-  float maxEnergy;  //Max energy
+  private float age;  //Age
+  private float maxAge;  //Max age
+  private float agePerStep;  //Age increment
   
-  float collectedRes;  //Collected resourse
+  private float energy;  //Energy
+  private float suffEnergy;  //Sufficient energy
+  private float maxEnergy;  //Max energy
   
-  int valence;  //Valence
-  int conCount;  //Connection counter
+  private float collectedRes;  //Collected resourse
   
-  float lastHeardAge;  //Last heard age
+  private int valence;  //Valence
+  private int conCount;  //Connection counter
   
-  boolean dieFlag;  //Flag for determining agent death
+  private float lastHeardAge;  //Last heard age
   
-  int actCtrPeak;       //Predetermined value for scrCtr peak value
-  int actCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
+  private boolean dieFlag;  //Flag for determining agent death
   
-  color cl = #000000;   //Inner render color
+  private int actCtrPeak;       //Predetermined value for scrCtr peak value
+  private int actCtr;           //Scream counter, ++ when a step is made, perform a scream when the counter reaches predetrmined peak value of scrCtrPeak
   
-  boolean stationary;  //For stoping agent movement
+  private color cl = #000000;   //Inner render color
+  
+  private boolean stationary;  //For stoping agent movement
   
   //Constructors
   
@@ -42,7 +45,9 @@ class Agent {
     
     Random r = new Random();
     
-    status = 1;
+    id = agentIdGen.incrementAndGet();
+    
+    energyStatus = 1;
     species = 0;
   
     age = r.nextFloat() * BASEMAXAGE;
@@ -105,16 +110,20 @@ class Agent {
   
   //Getters
   
-  float getX(){
-    return x;
+  float getX() {
+    return this.coordinates.getX();
   }
   
-  float getY(){
-    return y;
+  float getY() {
+    return this.coordinates.getY();
+  }
+  
+  Dot getCoordinates() {
+    return this.coordinates;
   }
   
   float getDir(){
-    return direction;
+    return this.direction;
   }
   
   Resource getLockedRes(){
@@ -134,7 +143,7 @@ class Agent {
   }
   
   int getStatus(){
-    return status;
+    return energyStatus;
   }
   
   int getConCount(){
@@ -197,7 +206,7 @@ class Agent {
   }
   
   void setStatus(int argStatus){
-    status = argStatus;
+    energyStatus = argStatus;
     updateColor();
   }
   
@@ -296,7 +305,7 @@ class Agent {
   }
   
   boolean wellFed(){
-    return status == 0;
+    return energyStatus == 0;
   }
   
   boolean wellFedLone(){
@@ -333,14 +342,14 @@ class Agent {
   
   void updateStatus(){
     if(energy > suffEnergy)
-      status = 0;
+      energyStatus = 0;
     else
-      status = 1;
+      energyStatus = 1;
     updateColor();
   }
   
   void updateColor(){                                        //Updates color accordingly to status
-    if(status == 0)
+    if(energyStatus == 0)
       cl = #FF8400;
     else
       cl = #000000;

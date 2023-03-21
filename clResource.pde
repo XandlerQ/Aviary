@@ -4,9 +4,9 @@ color STD_RESNODE_COLOR = #FFAA00;
 float STD_RESNODE_SIZE = 20;
 
 class Resource {
-  protected float res;  //Current resource amount
+  protected float res;  //Resource currently stored
   protected float maxRes;  //Max resource amount
-  protected float resRepSpeed;
+  protected float resRepSpeed;  //Resource replenishment speed
   protected int repCtr;  //Replenishment counter
   protected int repCtrPeak;  //Replenishment counter peak
   
@@ -14,21 +14,26 @@ class Resource {
   //-----------  Constructors  -----------
   //---------------------------------------
   
-  Resource() {
-    this.res = 0;
-    this.maxRes = 0;
-    this.resRepSpeed = 0;
-    this.repCtr = 0;
-    this.repCtrPeak = 0;
+  Resource() {  //Default constructor
+    this.res = 0;  //Empty by default
+    this.maxRes = 0;  //Zero capacity
+    this.resRepSpeed = 0;  //No replenishment speed
+    this.repCtr = 0;  //Standard replenishment counter value
+    this.repCtrPeak = 0;  //No replenishment counter peak
   }
   
-  Resource(float maxRes, float fraction, float resRepSpeed, int repCtrPeak) {
-    this.res = maxRes * fraction;  //fraction is assumed to be in range [0; 1]
+  Resource(float maxRes, float fraction, float resRepSpeed, int repCtrPeak) {  
+    //maxRes - Resource capacity;
+    //fraction - initial resource amount coefficiency, assumed to be in range [0; 1];
+    //resRepSpeed - resource replenishment speed per tick;
+    //repCtrPeak - peak value for replenishment counter, determines frequency of resource replenishment.
+    this.res = maxRes * fraction;
     this.maxRes = maxRes;
-    normalizeRes();
+    normalizeRes();  //Normalizes initial this.res value
     this.resRepSpeed = resRepSpeed;
     this.repCtr = 0;
     this.repCtrPeak = repCtrPeak;
+    normalizeRepCtrPeak(); //Normalizes initial this.repCtrPeak value
   }
   
   //---------------------------------------
@@ -38,11 +43,11 @@ class Resource {
   //-----------  Getters  -----------
   //---------------------------------
   
-  float getRes() {
+  float getRes() {  //Returns current this.res value
     return this.res;
   }
   
-  boolean empty() {
+  boolean empty() {  //Returns boolean for current this.res value being considered empty
     return this.res <= 0;
   }
   
@@ -53,15 +58,15 @@ class Resource {
   //-----------  Setters  -----------
   //---------------------------------
   
-  void setMaxRes(float maxRes) {
+  void setMaxRes(float maxRes) {  //Sets maximum resource amount
     this.maxRes = maxRes;
   }
   
-  void setRepCtrPeak(int repCtrPeak) {
+  void setRepCtrPeak(int repCtrPeak) {  //Sets replenishment counter peak
     this.repCtrPeak = repCtrPeak;
   }
   
-  void setResRepSpeed(float resRepSpeed) {
+  void setResRepSpeed(float resRepSpeed) {  //Sets replenishment speed
     this.resRepSpeed = resRepSpeed;
   }  
   
@@ -72,7 +77,7 @@ class Resource {
   //-----------  Methods  -----------
   //---------------------------------
   
-  void normalizeRes() {
+  void normalizeRes() {  //Normalizes current this.res value by projecting it to [0; maxRes]
     if (this.res > this.maxRes) {
       this.res = this.maxRes;
     }
@@ -81,31 +86,37 @@ class Resource {
     }
   }
   
-
-  float lowerRes(float amount){
-    if (amount > this.res){
-      float taken = this.res;
-      this.res = 0;
-      this.repCtr = this.repCtrPeak;
-      return taken;
-    }
-    else{
-      this.res -= amount;
-      this.repCtr = this.repCtrPeak;
-      return amount;
+  void normalizeRepCtrPeak() { //Normalizes replenishment counter by assuring it is not lower then 0
+    if(this.resRepPeak < 0) {
+      this.resRepPeak = 0;
     }
   }
   
-  void replenish(){
-    if(this.repCtr != 0){
-      this.repCtr--;
+
+  float lowerRes(float amount){  //Lowers current this.res by amount
+    if (amount > this.res){  //If amount is greater then currently stored resource amount
+      float taken = this.res;  //Make new variable representing maximum possible resource withdraw
+      this.res = 0;  //Set current resource stored to 0
+      this.repCtr = this.repCtrPeak;  //As soon as resource is withdrawn, delay replenishment by this.repCtrPeak frames
+      return taken;  //Return maximum possible resource withdraw
+    }
+    else{  //If amount is less then currently stored resource amount
+      this.res -= amount;  //Lower resource currently stored by amount
+      this.repCtr = this.repCtrPeak;  //As soon as resource is withdrawn, delay replenishment by this.repCtrPeak frames
+      return amount;  //Return withdrawn amount
+    }
+  }
+  
+  void replenish(){  //Handles replenishment counter and replenishes stored resource
+    if(this.repCtr != 0){  //If the replenishment counter is not 0
+      this.repCtr--;  //Lower the replenishment counter
       return;
     }
-    else{
-      if(this.res < this.maxRes)
-        this.res += this.resRepSpeed;
-      if(this.res > this.maxRes)
-        this.res = this.maxRes;
+    else{  //If the replenishment counter is 0
+      if(this.res < this.maxRes)  //If resource currently stored is not at maximum
+        this.res += this.resRepSpeed;  //Replenish resource currently stored
+      if(this.res > this.maxRes)  //If resource currently stored is greater then maximum
+        this.res = this.maxRes;  //Set resource currently stored as maximum
     }
   }
   
@@ -222,6 +233,10 @@ class ResourceNode extends Resource {
   //---------------------------------
   //---------------------------------
   
+  //-----------------------------------
+  //-----------  Renderers  -----------
+  //-----------------------------------
+  
   
   void render(){
     noStroke();
@@ -230,6 +245,9 @@ class ResourceNode extends Resource {
     fill(cl, 150);
     circle(this.coordinates.getX(), this.coordinates.getY(), size);
   }
+  
+  //-----------------------------------
+  //-----------------------------------
   
   
 }

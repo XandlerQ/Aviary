@@ -114,10 +114,10 @@ class ResourceGroup{
   
   ArrayList<ResourceNode> getVisibleResNodes(float posX, float posY, float radius){
     
-    if(posX > DEFX)
-      posX = DEFX;
-    if(posY > DEFY)
-      posY = DEFY;
+    if(posX > this.defX)
+      posX = this.defX;
+    if(posY > this.defY)
+      posY = this.defY;
     
     int posQuadX = 0;
     posQuadX = (int)((posX - (posX % this.sideX)) / this.sideX);
@@ -181,7 +181,12 @@ class ResourceGroup{
     return visibleResNodes;
   }
   
-  //Renderers
+  //---------------------------------
+  //---------------------------------
+  
+  //-----------------------------------
+  //-----------  Renderers  -----------
+  //-----------------------------------
   
   void render()
   {
@@ -195,6 +200,9 @@ class ResourceGroup{
       line(0, j * this.sideY, this.defX, j * this.sideY);
     }
   }
+  
+  //-----------------------------------
+  //-----------------------------------
     
   
 }

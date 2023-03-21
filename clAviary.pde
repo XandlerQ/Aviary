@@ -606,7 +606,7 @@ class AviaryRivalry {                                                           
     reproductList.parallelStream().forEach((ag) -> {reproduction(ag);});
     
     packs.parallelStream().forEach((pack) -> {
-      pack.resDistribution();
+      pack.collectedResDistribution();
       pack.energyDepletion();
     });
     

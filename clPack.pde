@@ -1,116 +1,118 @@
-
-class Connection{
-  public Agent ag1;
-  public Agent ag2;
+class Pack {
   
-  Connection(Agent argAg1, Agent argAg2){
-    ag1 = argAg1;
-    ag2 = argAg2;
+  private ArrayList<Agent> agents;
+  private ArrayList<Connection> connections;
+  private int species;
+  private int balancingCtr;
+  
+  //--------------------------------------
+  //-----------  Constructors  -----------
+  //---------------------------------------
+  
+  Pack() {
+    this.agents = new ArrayList<Agent>();
+    this.connections = new ArrayList<Connection>();
+    this.species = -1;
+    this.balancingCtr = 0;
   }
   
-  boolean contains(Agent argAg){
-    return ag1 == argAg || ag2 == argAg;
-  }
+  //---------------------------------------
+  //---------------------------------------
   
-  @Override
-  public boolean equals(Object obj){
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    Connection arg = (Connection) obj;
-    return (arg.getFirst() == ag1 && arg.getSecond() == ag2)
-            ||(arg.getFirst() == ag2 && arg.getSecond() == ag1);
-  }
+  //---------------------------------
+  //-----------  Getters  -----------
+  //---------------------------------
   
-  Agent pairOf(Agent argAg){
-    if(contains(argAg)){
-      if(ag1 == argAg)
-        return ag2;
-      else
-        return ag1;
-    }
-    return null;
-  }
-  
-  Agent getFirst(){
-    return ag1;
-  }
-  
-  Agent getSecond(){
-    return ag2;
-  }
-  
-  
-}
-
-class Pack{
-  
-  ArrayList<Agent> agents;
-  
-  ArrayList<Connection> connections;
-  
-  int balancingCtr;
-  
-  //Constructors
-  
-  Pack(){
-    agents = new ArrayList<Agent>();
-    connections = new ArrayList<Connection>();
-    balancingCtr = 0;
-  }
-  
-  //Getters
-  
-  Agent getAgent(int argIdx){
-    if(argIdx >= 0 && argIdx < agents.size())
-      return agents.get(argIdx);
+  Agent getAgent(int id) {
+    if(id >= 0 && id < this.agents.size())
+      return this.agents.get(id);
     else
       return null;
   }
   
-  Agent getLeader(){
-    return agents.get(0);
+  ArrayList<Agent> getAgents() {
+    return this.agents;
   }
   
-  ArrayList<Agent> getAgents(){
-    return agents;
+  int getAgentCount() {
+    return this.agents.size();
   }
   
-  int getPackSize(){
-    return agents.size();
+  int getConnectionCount() {
+    return this.connections.size();
   }
   
-  int getConnectionsCount(){
-    return connections.size();
+  int getPackSpecies() {
+    return this.species;
   }
   
-  //Setters
-  
-  void resetImmCtr(){
-    balancingCtr = 0;
+  boolean contains(Agent argAg){
+    return agents.contains(argAg);
   }
   
-  //Methods
+  boolean empty(){
+    return agents.size() < 2 || connections.size() == 0;
+  }
+  
+  ArrayList<Agent> getConnected(Agent ag) {
+    ArrayList<Agent> conAg = new ArrayList<Agent>();
+    for (Iterator<Connection> iter = this.connections.iterator(); iter.hasNext();){
+      Connection con = iter.next();
+      if(con.contains(ag)){
+        conAg.add(con.pairOf(ag));
+      }
+    }
+    return conAg;
+  }
+  
+  Dot getPackCenter() {
+    float X = 0, Y = 0;
+    int sz = this.agents.size();
+    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      X += ag.getY() / sz;
+      Y += ag.getX() / sz;
+    }
+    return new Dot(X,Y);
+  }
+  
+  
+  
+  //---------------------------------
+  //---------------------------------
+  
+  //---------------------------------
+  //-----------  Setters  -----------
+  //---------------------------------
+  
+  void resetBalancingCtr(){
+    this.balancingCtr = 0;
+  }
+  
+  //---------------------------------
+  //---------------------------------
+  
+  //---------------------------------
+  //-----------  Methods  -----------
+  //---------------------------------
   
   boolean addAgent(Agent argAg){
     
     boolean everConnected = false;
     
-    if(agents.size() == 0){
-      //println("added agent to empty pack");
+    if(this.agents.size() == 0){
+      this.species = argAg.getSpecies();
       agents.add(argAg);
       everConnected = true;
       return everConnected;
     }
     
-    if(agents.contains(argAg)){
-      //println("tried to enter your own pack");
+    if(this.agents.contains(argAg)){
       everConnected = true;
       return everConnected;
     }
 
-    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
+    for (Iterator<Agent> iter = this.agents.iterator(); iter.hasNext();){
       Agent ag = iter.next();
       if(!ag.isTopCon()
          && !argAg.isTopCon() 
@@ -120,85 +122,45 @@ class Pack{
         if(!connections.contains(newCon))
           connections.add(newCon);
         //println("added connection, total connection amount for this pack: ", connections.size());
-        ag.addCon();
         argAg.addCon();
-        if(ag.isTopCon())
+        ag.addCon();
+        if(argAg.isTopCon())
           break;
       }
     }
     if(everConnected){
-      agents.add(argAg);
+      this.agents.add(argAg);
     }
     return everConnected;
   }
   
+  
   void removeAgent(Agent argAg){
-    if(!agents.contains(argAg)){
-      //println("removing agent from pack: THIS AGENT IS NOT IN THIS PACK");
+    if(!this.agents.contains(argAg)){
       return;
     }
-    int consFound = 0;
-    //println("removing agent from pack");
+    
+    int connectionsFound = 0;
     ArrayList<Agent> agToConnect = new ArrayList<Agent>();
-    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
+    for (Iterator<Connection> iter = this.connections.iterator(); iter.hasNext();){
       Connection con = iter.next();
       if(con.contains(argAg)){
         //println("found a connection to delete");
         agToConnect.add(con.pairOf(argAg));
         con.pairOf(argAg).removeCon();
         iter.remove();
-        consFound++;
-        if(consFound == argAg.getConCount())
+        connectionsFound++;
+        if(connectionsFound == argAg.getConCount())
           break;
       }
     }
-    agents.remove(argAg);
+    this.agents.remove(argAg);
     argAg.resetConCount();
-    //println("agToConnect size for this deletion:", agToConnect.size());
     if(agToConnect.size() >= 2){
       reconnect(agToConnect);
     }
   }
   
-  void resDistribution(){
-    float resToDistr = 0;
-    int agCount = agents.size();
-    for(Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-      Agent ag = iter.next();
-      resToDistr += ag.getCollectedRes();
-    }
-    
-    for(Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-      Agent ag = iter.next();
-      ag.eat(resToDistr/agCount);
-    }
-  }
-  
-  void resDistribution(float resToDistr){
-    int agCount = agents.size();
-    if(agCount != 0)
-      agents.forEach((ag) -> {ag.eat(resToDistr/agCount);});
-  }
-  
-  float getMedHunger(){
-    float hunger = 0;
-    for(Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-      Agent ag = iter.next();
-      hunger += ag.howHungry();
-    }
-    
-    return hunger / agents.size();
-  }
-  
-  void energyDepletion(){
-    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
-      Connection con = iter.next();
-      Agent ag1 = con.getFirst();
-      Agent ag2 = con.getSecond();
-      ag1.addToEnergy(-NRGFORCONPERSTEP);
-      ag2.addToEnergy(-NRGFORCONPERSTEP);
-    }
-  }
   
   void reconnect(ArrayList<Agent> agToConnect){
     for(int i = 0; i < agToConnect.size(); i++){
@@ -208,9 +170,8 @@ class Pack{
         Connection newCon = new Connection(ag1, ag2);
         if(!ag1.isTopCon()
          && !ag2.isTopCon()
-         && !connections.contains(newCon)){
-          //println("added a reconnection!!!");
-          connections.add(newCon);
+         && !this.connections.contains(newCon)){
+          this.connections.add(newCon);
           ag1.addCon();
           ag2.addCon();
          }
@@ -219,11 +180,12 @@ class Pack{
     fixCutOff(agToConnect);
   }
   
+  
   void fixCutOff(ArrayList<Agent> agToConnect){
     for (Iterator<Agent> iter = agToConnect.iterator(); iter.hasNext();){
       Agent ag = iter.next();
       boolean isCutOff = true;
-      for (Iterator<Connection> iterCon = connections.iterator(); iterCon.hasNext();){
+      for (Iterator<Connection> iterCon = this.connections.iterator(); iterCon.hasNext();){
         Connection con = iterCon.next();
         if(con.contains(ag)){
           isCutOff = false;
@@ -236,62 +198,56 @@ class Pack{
     }
   }
   
-  boolean contains(Agent argAg){
-    return agents.contains(argAg);
+  
+  void collectedResDistribution(){
+    float resToDistr = 0;
+    int agCount = agents.size();
+    for(Iterator<Agent> iter = this.agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      resToDistr += ag.getCollectedRes();
+    }
+    
+    for(Iterator<Agent> iter = this.agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      ag.eat(resToDistr/agCount);
+    }
   }
   
-  boolean empty(){
-    return agents.size() < 2 || connections.size() == 0;
+  void resDistribution(float resToDistr){
+    int agCount = this.agents.size();
+    if(agCount != 0)
+      this.agents.forEach((ag) -> {ag.eat(resToDistr/agCount);});
   }
   
-  ArrayList<Agent> getConnected(Agent argAg){
-    ArrayList<Agent> conAg = new ArrayList<Agent>();
-    for (Iterator<Connection> iter = connections.iterator(); iter.hasNext();){
+  float getMedHunger(){
+    float hunger = 0;
+    int agCount = this.agents.size();
+    for(Iterator<Agent> iter = this.agents.iterator(); iter.hasNext();){
+      Agent ag = iter.next();
+      hunger += ag.howHungry();
+    }
+    
+    return hunger / agCount;
+  }
+  
+  void energyDepletion(){
+    for (Iterator<Connection> iter = this.connections.iterator(); iter.hasNext();){
       Connection con = iter.next();
-      if(con.contains(argAg)){
-        conAg.add(con.pairOf(argAg));
-      }
+      Agent ag1 = con.getFirst();
+      Agent ag2 = con.getSecond();
+      ag1.addToEnergy(-NRGFORCONPERSTEP);
+      ag2.addToEnergy(-NRGFORCONPERSTEP);
     }
-    return conAg;
   }
   
-  ArrayList<Agent> getTooClose(Agent argAg){
-    ArrayList<Agent> closeAg = new ArrayList<Agent>();
-    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-      Agent ag = iter.next();
-      if(argAg.getDistTo(ag.getX(), ag.getY()) < COMDIST && argAg != ag){
-        closeAg.add(ag);
-      }
-    }
-    return closeAg;
-  }
   
-  float getPackCenterX(){
-    float resX = 0;
-    int sz = agents.size();
-    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-      Agent ag = iter.next();
-      resX += ag.getX() / sz;
-    }
-    return resX;
-  }
-  
-  float getPackCenterY(){
-    float resY = 0;
-    int sz = agents.size();
-    for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
-      Agent ag = iter.next();
-      resY += ag.getY() / sz;
-    }
-    return resY;
-  }
-  
-  int getPackSpecies(){
-    return agents.get(0).getSpecies();
-  }
+  //---------------------------------
+  //---------------------------------
     
   
-  //Renderers
+  //-----------------------------------
+  //-----------  Renderers  -----------
+  //-----------------------------------
   
   void render(){
     connections.forEach((con) -> {
@@ -312,4 +268,7 @@ class Pack{
     circle(ORIGINX + getAgent(0).getX(), ORIGINY + getAgent(0).getY(), 10);
     
   }
+  
+  //-----------------------------------
+  //-----------------------------------
 }

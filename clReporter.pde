@@ -1,4 +1,4 @@
-class Reporter{
+/*class Reporter{
   
   AviaryRivalry AV;
   
@@ -184,3 +184,4 @@ class Reporter{
     }
   }
 }
+*/
