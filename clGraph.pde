@@ -165,6 +165,13 @@ class TimeGraph {
     this.maxY = newMaxY;
   }
   
+  Dot calcAbsCoordinates(int index) {
+    Dot dot = this.dots.get(index);
+    float absoluteX = this.originX + this.dimX * (dot.getX() / this.maxX);
+    float absoluteY = this.originY + this.dimY * (1 - 0.8 * dot.getY() / (this.maxY - this.minY));
+    return new Dot(absoluteX, absoluteY);
+  }
+  
   
   
   //---------------------------------
@@ -174,6 +181,15 @@ class TimeGraph {
   //-----------  Renderers  -----------
   //-----------------------------------
   
+  /*
+  color plainCl;
+  color borderCl;
+  color dotCl;
+  color lineCl;
+  color levelLineCl;
+  color valueTextCl;
+  */
+  
   void renderPlain() {
     strokeWeight(1);
     stroke(this.borderCl);
@@ -181,32 +197,66 @@ class TimeGraph {
     rect(this.originX, this.originY, this.dimX, this.dimY);
   }
   
-  void renderDots() {
+  void renderDotsLine() {
     int maxX = millis();
     
-    float previousAbsoluteX = 0;
-    float previousAbsoluteY = 0;
+    Dot absoluteCoordinates;
+    Dot previousAbsoluteCoordinates;
     
     for(int dotIdx = 0; dotIdx < this.dots.size(); dotIdx++) {
       Dot dot = this.dots.get(dotIdx);
-      float absoluteX = this.originX + this.dimX * (dot.getX() / this.maxX);
-      float absoluteY = this.originY + this.dimY * (1 - 0.8 * dot.getY() / (this.maxY - this.minY));
+      absoluteCoordinates = calcAbsCoordinates(dotIdx);
       
       strokeWeight(1);
       stroke(this.dotCl);
       fill(this.dotCl);
-      circle(absoluteX, absoluteY, 2);
+      circle(absoluteCoordinates.getX(), absoluteCoordinates.getY(), 2);
       
       if(dotIdx != 0) {
         strokeWeight(1);
         stroke(this.lineCl);
         
-        line(previousAbsoluteX, previousAbsoluteY, absoluteX, absoluteY);
+        line(previousAbsoluteCoordinates.getX(), previousAbsoluteCoordinates.getY(), 
+             absoluteCoordinates.getX(), absoluteCoordinates.getY());
       }
       
-      previousAbsoluteX = absoluteX;
-      previousAbsoluteY = absoluteY;
+      previousAbsoluteCoordinates.setXY(absoluteCoordinates);
     }
+  }
+  
+  void renderLevelLine() {
+    Dot lastDot = this.dots.get(this.dots.size() - 1);
+    Dot lastAbsoluteCoordinates = calcAbsCoordinates(this.dots.size() - 1);
+    
+    strokeWeight(1);
+    stroke(this.levelLineCl, 130);
+    
+    line(this.originX, lastAbsoluteCoordinates.getY(),
+         lastAbsoluteCoordinates.getX(), lastAbsoluteCoordinates.getY());
+  }
+  
+  void renderLastDotValue() {
+    Dot lastDot = this.dots.get(this.dots.size() - 1);
+    Dot lastAbsoluteCoordinates = calcAbsCoordinates(this.dots.size() - 1);
+    
+    fill(valueTextCl);
+    textSize(8);
+    text(int(lastAbsoluteCoordinates,getY()), this.originX + 5, lastAbsoluteCoordinates,getY() - 7);
+  }
+  
+  void renderAxisScale() {
+    fill(valueTextCl);
+    textSize(8);
+    text(int(millis()/1000), this.originX + this.dimX - 30, this.originY + this.dimY - 4);
+    text(int(this.maxY * 1.25), this.originX + 5, this.originY + 10);
+  }
+  
+  void render() {
+    renderPlain();
+    renderDotLine();
+    renderLevelLine();
+    renderLastDotValue();
+    renderAxisScale();
   }
   
   //-----------------------------------

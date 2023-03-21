@@ -52,9 +52,7 @@ class ResourceGroup{
   //-----------  Getters  -----------
   //---------------------------------
   
-  ArrayList<ResourceNode> getResourceNodes(){
-    return resNodes;
-  }
+  ArrayList<ResourceNode> getResourceNodes(){ return resNodes; }
   
   //---------------------------------
   //---------------------------------

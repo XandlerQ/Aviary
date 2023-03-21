@@ -30,29 +30,17 @@ class Pack {
       return null;
   }
   
-  ArrayList<Agent> getAgents() {
-    return this.agents;
-  }
+  ArrayList<Agent> getAgents() { return this.agents; }
   
-  int getAgentCount() {
-    return this.agents.size();
-  }
+  int getAgentCount() { return this.agents.size(); }
   
-  int getConnectionCount() {
-    return this.connections.size();
-  }
+  int getConnectionCount() { return this.connections.size(); }
   
-  int getPackSpecies() {
-    return this.species;
-  }
+  int getPackSpecies() { return this.species; }
   
-  boolean contains(Agent argAg){
-    return agents.contains(argAg);
-  }
+  boolean contains(Agent argAg){ return agents.contains(argAg); }
   
-  boolean empty(){
-    return agents.size() < 2 || connections.size() == 0;
-  }
+  boolean empty(){ return agents.size() < 2 || connections.size() == 0; }
   
   ArrayList<Agent> getConnected(Agent ag) {
     ArrayList<Agent> conAg = new ArrayList<Agent>();
@@ -85,9 +73,7 @@ class Pack {
   //-----------  Setters  -----------
   //---------------------------------
   
-  void resetBalancingCtr(){
-    this.balancingCtr = 0;
-  }
+  void resetBalancingCtr(){ this.balancingCtr = 0; }
   
   //---------------------------------
   //---------------------------------

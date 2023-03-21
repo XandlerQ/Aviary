@@ -43,13 +43,9 @@ class Resource {
   //-----------  Getters  -----------
   //---------------------------------
   
-  float getRes() {  //Returns current this.res value
-    return this.res;
-  }
+  float getRes() { return this.res; }
   
-  boolean empty() {  //Returns boolean for current this.res value being considered empty
-    return this.res <= 0;
-  }
+  boolean empty() { return this.res <= 0; }
   
   //---------------------------------
   //---------------------------------
@@ -58,17 +54,11 @@ class Resource {
   //-----------  Setters  -----------
   //---------------------------------
   
-  void setMaxRes(float maxRes) {  //Sets maximum resource amount
-    this.maxRes = maxRes;
-  }
+  void setMaxRes(float maxRes) { this.maxRes = maxRes; }
   
-  void setRepCtrPeak(int repCtrPeak) {  //Sets replenishment counter peak
-    this.repCtrPeak = repCtrPeak;
-  }
+  void setRepCtrPeak(int repCtrPeak) { this.repCtrPeak = repCtrPeak; }
   
-  void setResRepSpeed(float resRepSpeed) {  //Sets replenishment speed
-    this.resRepSpeed = resRepSpeed;
-  }  
+  void setResRepSpeed(float resRepSpeed) { this.resRepSpeed = resRepSpeed; }  
   
   //---------------------------------
   //---------------------------------

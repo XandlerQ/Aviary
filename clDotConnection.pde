@@ -23,6 +23,7 @@ class Dot {
   public void setX(float x) { this.x = x; }
   public void setY(float y) { this.y = y; }
   public void setXY(float x, float Y) { setX(x); setY(y); }
+  public void setXY(Dot other) { setX(other.getX()); setY(other.getY()); }
   
   @Override
   public boolean equals(Object obj){
@@ -49,9 +50,7 @@ class Connection {
     this.ag2 = ag2;
   }
   
-  boolean contains(Agent ag){
-    return this.ag1 == ag || this.ag2 == ag;
-  }
+  boolean contains(Agent ag){ return this.ag1 == ag || this.ag2 == ag; }
   
   Agent pairOf(Agent ag){
     if(contains(ag)){
@@ -63,13 +62,9 @@ class Connection {
     return null;
   }
   
-  Agent getFirst(){
-    return this.ag1;
-  }
+  Agent getFirst(){ return this.ag1; }
   
-  Agent getSecond(){
-    return this.ag2;
-  }
+  Agent getSecond(){ return this.ag2; }
   
   @Override
   public boolean equals(Object obj){
