@@ -56,7 +56,10 @@ class Resource {
   
   void setMaxRes(float maxRes) { this.maxRes = maxRes; }
   
-  void setRepCtrPeak(int repCtrPeak) { this.repCtrPeak = repCtrPeak; }
+  void setRepCtrPeak(int repCtrPeak) {
+    this.repCtrPeak = repCtrPeak;
+    normalizeRepCtrPeak();
+  }
   
   void setResRepSpeed(float resRepSpeed) { this.resRepSpeed = resRepSpeed; }  
   
