@@ -55,6 +55,9 @@ public class App extends PApplet {
         cp5.addBang("BgScreenshot")
                 .setPosition(1200 - 65, ORIGINY + DEFY + 120)
                 .setSize(45, 30);
+
+        PFont font = createFont("PressStart2P-Regular.ttf", 8);
+        textFont(font);
     }
 
     public void BgStart(){
