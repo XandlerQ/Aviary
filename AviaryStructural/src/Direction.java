@@ -39,7 +39,9 @@ public class Direction {
 
         if(dirs.size() == 1){
             resDir = dirs.get(0);
+            return resDir;
         }
+
         ArrayList<Double> xi = new ArrayList<>(dirs.size());
         ArrayList<Double> yi = new ArrayList<>(dirs.size());
 
@@ -71,7 +73,7 @@ public class Direction {
         return resDir;
     }
 
-    static double fixDir(double argDir){
+    static double normalizeDirection(double argDir){
         double dir = argDir;
         while(dir < 0){
             dir += 2 * Math.PI;

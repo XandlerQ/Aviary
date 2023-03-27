@@ -8,8 +8,8 @@ public class Agent {
 
     Color SPECIES_COLORS[] = {new Color(255, 0,0), new Color(45, 255, 0)};
 
-    AtomicInteger agentIdGen = new AtomicInteger(0);
-    private int id;
+    static AtomicInteger agentIdGen = new AtomicInteger(0);
+    private final int id;
     private int species;
 
     private Dot coordinates;
@@ -150,7 +150,8 @@ public class Agent {
     }
     void setBaseSpeed(double baseSpeed) { this.baseSpeed = baseSpeed; }
 
-
+    public void setAge(double age) { this.age = age; }
+    public void setMaxAge(double maxAge) { this.maxAge = maxAge; }
     void setAgeIncr(double ageIncr) { this.ageIncr = ageIncr; }
 
     void setEnergy(double energy) {
@@ -265,6 +266,8 @@ public class Agent {
 
         this.age += this.ageIncr;
         updateSpeed();
+
+        //System.out.println(speed);
 
         this.energy -= this.energyDecr * ((this.speed * this.speed) / (this.baseSpeed * this.baseSpeed));
 

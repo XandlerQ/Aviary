@@ -1,3 +1,5 @@
+import processing.core.PApplet;
+
 public class Dot {
     private double x;
     private double y;
@@ -24,6 +26,7 @@ public class Dot {
     public void setY(double y) { this.y = y; }
     public void setXY(double x, double y) { setX(x); setY(y); }
     public void setXY(Dot other) { setX(other.getX()); setY(other.getY()); }
+
 
     @Override
     public boolean equals(Object obj){

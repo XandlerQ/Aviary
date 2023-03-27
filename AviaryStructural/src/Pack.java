@@ -1,8 +1,13 @@
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Pack {
+
+    static AtomicInteger packIdGen = new AtomicInteger(0);
+
+    private final int id;
     private ArrayList<Agent> agents;
     private ArrayList<Connection> connections;
     private int species;
@@ -13,6 +18,7 @@ public class Pack {
     //---------------------------------------
 
     Pack() {
+        this.id = packIdGen.incrementAndGet();
         this.agents = new ArrayList<>();
         this.connections = new ArrayList<>();
         this.species = -1;
@@ -32,6 +38,8 @@ public class Pack {
         else
             return null;
     }
+
+    public int getId() { return id; }
 
     ArrayList<Agent> getAgents() { return this.agents; }
 
@@ -229,6 +237,16 @@ public class Pack {
         }
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        Pack arg = (Pack) obj;
+        return this.id == arg.id;
+    }
+
 
     //---------------------------------
     //---------------------------------
@@ -253,9 +271,9 @@ public class Pack {
             App.processingRef.strokeWeight(1);
             App.processingRef.line((float)(App.ORIGINX + ag1.getX()), (float)(App.ORIGINY + ag1.getY()), (float)(App.ORIGINX + ag2.getX()), (float)(App.ORIGINY + ag2.getY()));
         });
-
-        App.processingRef.circle((float)(App.ORIGINX + getAgent(0).getX()), (float)(App.ORIGINY + getAgent(0).getY()), 10);
-
+        App.processingRef.stroke(Color.CYAN.getRGB(),100);
+        App.processingRef.fill(Color.CYAN.getRGB(),100);
+        App.processingRef.circle((float)(App.ORIGINX + this.agents.get(0).getX()), (float)(App.ORIGINY + this.agents.get(0).getY()), 12);
     }
 
     //-----------------------------------

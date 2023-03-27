@@ -4,7 +4,7 @@ public class ResourceNode extends Resource {
 
     Color STD_RESNODE_COLOR = new Color(255, 170, 0);
     double STD_RESNODE_SIZE = 20;
-    AtomicInteger resIdGen = new AtomicInteger(0);
+    static AtomicInteger resIdGen = new AtomicInteger(0);
     private final int id;
     private Dot coordinates;
     private double size;
@@ -108,6 +108,7 @@ public class ResourceNode extends Resource {
 
 
     void render(){
+        recalculateSize();
         App.processingRef.noStroke();
         App.processingRef.fill(cl.getRGB(), 255);
         App.processingRef.circle((float)this.coordinates.getX(), (float)this.coordinates.getY(), 2);
