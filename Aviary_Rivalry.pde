@@ -6,7 +6,7 @@ import java.io.BufferedWriter;
 
 
 AviaryRivalry AV = null;
-Reporter REP = new Reporter(null);
+//Reporter REP = new Reporter(null);
 
 boolean pause = false;
 boolean firstRun = true;
@@ -25,7 +25,7 @@ boolean report = false;
 ControlP5 cp5;
 
 
-void setup(){
+void setup() {
    size(1300, 1300); 
    background(0);
    ellipseMode(CENTER);
@@ -465,17 +465,17 @@ void BgResetDist(){
 void BgStart(){
   background(0);
   AV = new AviaryRivalry();
-  REP.setAviary(AV);
-  REP.setRunStartTimeStamp();
+  //REP.setAviary(AV);
+  //REP.setRunStartTimeStamp();
   
-  if(firstRun && report){
+  /*if(firstRun && report){
     try{  
-     REP.initialReport();
+     //REP.initialReport();
     }
     catch(IOException e){
      print("CUM");
-    }
-  }
+    
+  }*/
   
   firstRun = false;
   
@@ -532,14 +532,14 @@ void draw(){
   if(finished){
     /*boolean autoRun = false;
 boolean report = true;*/
-    if(report){
+    /*if(report){
       try {
         REP.report();
       }
       catch(Exception e){
         print(e.getMessage());
       }
-    }
+    }*/
     if(autoRun){
       BgStart();
     }

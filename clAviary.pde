@@ -13,8 +13,8 @@ class AviaryRivalry {                                                           
   int popSp1Ctr;
   int popSp2Ctr;
   
-  Graph grSp1Pop;
-  Graph grSp2Pop;
+  //Graph grSp1Pop;
+  //Graph grSp2Pop;
   
   int infCtr = INFOREPCTRPEAK;
   
@@ -31,7 +31,9 @@ class AviaryRivalry {                                                           
     popSp2Ctr = INITAGENTAMOUNT2;
     
     for(int i = 0; i < INITAGENTAMOUNT1; i++){                                                //
-      agents.add(new Agent(0));
+      Agent ag = new Agent();
+      
+      agents.add(new Agent());
       
     }                                                                                 //Add agents 
     for(int i = 0; i < INITAGENTAMOUNT2; i++){                                                //
@@ -41,7 +43,7 @@ class AviaryRivalry {                                                           
     
     int graphWidth = 290;
     int graphHeight = 200;
-    
+    /*
     grSp1Pop = new Graph(DEFX + 6, 1);
     grSp1Pop.setSize(graphWidth,graphHeight);
     grSp1Pop.setType(1);
@@ -63,7 +65,7 @@ class AviaryRivalry {                                                           
     grSp2Pop.setTextColor(#FFD900);
     grSp2Pop.setBackgroundColor(#101010);
     grSp2Pop.setGraphTitle("Популяция зел. агентов");
-    
+    */
   }
   
   //Getters

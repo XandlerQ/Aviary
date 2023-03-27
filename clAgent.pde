@@ -201,7 +201,7 @@ class Agent {
   
   void eatCollected() {
     eat(this.collectedRes);
-    resetCollected();
+    resetCollectedRes();
   }
   
   //---------------------------------
@@ -268,7 +268,7 @@ class Agent {
      Random r = new Random();
      
      this.direction += -0.16 + (0.32) * r.nextFloat();
-     fixDir();
+     normalizeDirection();
      
      float newX = this.coordinates.getX() + this.speed * cos(this.direction);
      float newY = this.coordinates.getY() + this.speed * sin(this.direction);
@@ -278,7 +278,7 @@ class Agent {
         newY > DEFY - WALLTHICKNESS ||
         newY < WALLTHICKNESS) {
          direction += (float)(Math.PI);
-         fixDir();
+         normalizeDirection();
          newX = this.coordinates.getX() + this.speed * cos(this.direction);
          newY = this.coordinates.getY() + this.speed * sin(this.direction);
      }
