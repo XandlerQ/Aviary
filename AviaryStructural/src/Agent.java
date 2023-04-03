@@ -267,8 +267,6 @@ public class Agent {
         this.age += this.ageIncr;
         updateSpeed();
 
-        //System.out.println(speed);
-
         this.energy -= this.energyDecr * ((this.speed * this.speed) / (this.baseSpeed * this.baseSpeed));
 
         if(this.actCtr > 0) this.actCtr -= 1;

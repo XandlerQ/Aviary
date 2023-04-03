@@ -271,9 +271,6 @@ public class Pack {
             App.processingRef.strokeWeight(1);
             App.processingRef.line((float)(App.ORIGINX + ag1.getX()), (float)(App.ORIGINY + ag1.getY()), (float)(App.ORIGINX + ag2.getX()), (float)(App.ORIGINY + ag2.getY()));
         });
-        App.processingRef.stroke(Color.CYAN.getRGB(),100);
-        App.processingRef.fill(Color.CYAN.getRGB(),100);
-        App.processingRef.circle((float)(App.ORIGINX + this.agents.get(0).getX()), (float)(App.ORIGINY + this.agents.get(0).getY()), 12);
     }
 
     //-----------------------------------

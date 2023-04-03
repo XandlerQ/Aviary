@@ -24,6 +24,8 @@ public class TimeGraph {
     private double maxY;
     private double minY;
 
+    private int textSize;
+
     //Colors
 
     Color plainCl;
@@ -48,6 +50,7 @@ public class TimeGraph {
         this.dots = new ArrayList<Dot>();
         this.maxY = 0;
         this.minY = 0;
+        this.textSize = 12;
     }
 
     TimeGraph(int capacity) {
@@ -112,6 +115,34 @@ public class TimeGraph {
 
     void setMode(int Mode) { this.mode = mode; }
 
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
+    }
+
+    public void setPlainCl(Color plainCl) {
+        this.plainCl = plainCl;
+    }
+
+    public void setBorderCl(Color borderCl) {
+        this.borderCl = borderCl;
+    }
+
+    public void setDotCl(Color dotCl) {
+        this.dotCl = dotCl;
+    }
+
+    public void setLineCl(Color lineCl) {
+        this.lineCl = lineCl;
+    }
+
+    public void setLevelLineCl(Color levelLineCl) {
+        this.levelLineCl = levelLineCl;
+    }
+
+    public void setValueTextCl(Color valueTextCl) {
+        this.valueTextCl = valueTextCl;
+    }
+
     //---------------------------------
     //---------------------------------
 
@@ -121,7 +152,7 @@ public class TimeGraph {
 
     void addValue(double val) {
 
-        Dot newDot = new Dot(App.processingRef.millis() / 1000, val);
+        Dot newDot = new Dot(App.processingRef.millis() / 1000., val);
 
         if(filled) {
             if(mode == Mode.STATIONARY) return;
@@ -170,7 +201,15 @@ public class TimeGraph {
 
     Dot calcAbsCoordinates(int index) {
         Dot dot = this.dots.get(index);
-        double absoluteX = this.originX + this.dimX * (dot.getX() / this.dots.get(this.dots.size() - 1).getX());
+        double absoluteX;
+        if (index == 0) {
+            absoluteX = this.originX;
+        }
+        else {
+            absoluteX = this.originX + this.dimX *
+                    ((dot.getX() - this.dots.get(0).getX())
+                            / (this.dots.get(this.dots.size() - 1).getX() - this.dots.get(0).getX()));
+        }
         double absoluteY = this.originY + this.dimY * (1 - 0.8 * dot.getY() / (this.maxY - this.minY));
         return new Dot(absoluteX, absoluteY);
     }
@@ -204,7 +243,7 @@ public class TimeGraph {
         int maxX = App.processingRef.millis();
 
         Dot absoluteCoordinates;
-        Dot previousAbsoluteCoordinates = null;
+        Dot previousAbsoluteCoordinates = new Dot();
 
         for(int dotIdx = 0; dotIdx < this.dots.size(); dotIdx++) {
             Dot dot = this.dots.get(dotIdx);
@@ -228,7 +267,8 @@ public class TimeGraph {
     }
 
     void renderLevelLine() {
-        Dot lastDot = this.dots.get(this.dots.size() - 1);
+        if (this.dots.isEmpty()) return;
+
         Dot lastAbsoluteCoordinates = calcAbsCoordinates(this.dots.size() - 1);
 
         App.processingRef.strokeWeight(1);
@@ -239,16 +279,18 @@ public class TimeGraph {
     }
 
     void renderLastDotValue() {
+        if (this.dots.isEmpty()) return;
+
         Dot lastAbsoluteCoordinates = calcAbsCoordinates(this.dots.size() - 1);
 
         App.processingRef.fill(valueTextCl.getRGB());
-        App.processingRef.textSize(8);
-        App.processingRef.text((int)(lastAbsoluteCoordinates.getX()), (float)(this.originX + 5), (float)(lastAbsoluteCoordinates.getY() - 7));
+        App.processingRef.textSize(this.textSize);
+        App.processingRef.text((int)(this.dots.get(this.dots.size() - 1).getY()), (float)(this.originX + 5), (float)(lastAbsoluteCoordinates.getY() - 7));
     }
 
     void renderAxisScale() {
         App.processingRef.fill(valueTextCl.getRGB());
-        App.processingRef.textSize(8);
+        App.processingRef.textSize(this.textSize);
         App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - 30, this.originY + this.dimY - 4);
         App.processingRef.text((int)(this.maxY * 1.25), this.originX + 5, this.originY + 10);
     }

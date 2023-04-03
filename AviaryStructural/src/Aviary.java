@@ -13,6 +13,8 @@ public class Aviary {
     int popSp1Ctr;
     int popSp2Ctr;
 
+    TimeGraph pop1Gr;
+
 
     //Constructors
 
@@ -20,6 +22,15 @@ public class Aviary {
         this.net = Builder.buildResourceGroup();
         this.agents = Builder.buildAgentArray();
         packs = new ArrayList<>();
+
+        this.pop1Gr = new TimeGraph(300, 200, 200);
+        this.pop1Gr.setOrigin(App.ORIGINX + App.DEFX, 0);
+        this.pop1Gr.setPlainCl(new Color(0, 0, 0));
+        this.pop1Gr.setBorderCl(new Color(100, 100, 100));
+        this.pop1Gr.setDotCl(Color.RED);
+        this.pop1Gr.setLineCl(Color.RED);
+        this.pop1Gr.setLevelLineCl(Color.YELLOW);
+        this.pop1Gr.setValueTextCl(Color.WHITE);
     }
 
     //Getters
@@ -460,7 +471,9 @@ public class Aviary {
 
         if(rep){
             Agent child = Builder.buildAgent(argAg.getSpecies());
-            child.setCoordinates(argAg.getCoordinates());
+            child.setCoordinates(new Dot(argAg.getCoordinates()));
+            child.setAge(0);
+            child.updateSpeed();
             if(argAg.getSpecies() == 0)
                 popSp1Ctr++;
             else
@@ -468,7 +481,7 @@ public class Aviary {
 
             argAg.addToEnergy(-App.REPRODUCTCOST);
             agents.add(child);
-            Pack parentPack = getPack(argAg);
+            /*Pack parentPack = getPack(argAg);
             if(parentPack != null){
                 parentPack.addAgent(child);
             }
@@ -478,7 +491,7 @@ public class Aviary {
                 if(newPack.addAgent(child)){
                     packs.add(newPack);
                 }
-            }
+            }*/
         }
     }
 
@@ -537,7 +550,7 @@ public class Aviary {
             }
         }
 
-        //reproductList.parallelStream().forEach((ag) -> {reproduction(ag);});
+        reproductList.parallelStream().forEach((ag) -> {reproduction(ag);});
 
         packs.parallelStream().forEach((pack) -> {
             pack.collectedResDistribution();
@@ -557,9 +570,15 @@ public class Aviary {
         render();
         tick();
 
+        this.popSp1Ctr = this.agents.size();
+
+        this.pop1Gr.addValue(this.popSp1Ctr);
+
         if(popSp1Ctr == 0 || popSp2Ctr == 0){
             return true;
         }
+
+
 
         return false;
     }
@@ -578,18 +597,17 @@ public class Aviary {
     void renderAgent(){                                                                 //Renders agents
         agents.forEach((agent) -> agent.render());
     }
-/*
+
     void renderGraphs(){
-        grSp1Pop.render();
-        grSp2Pop.render();
-    }*/
+        this.pop1Gr.render();
+    }
 
     void render(){                                                    //Renders aviary
         App.processingRef.background(0);
         renderRes();
         renderPacks();
         renderAgent();
-        //renderGraphs();
+        renderGraphs();
     }
 
 
