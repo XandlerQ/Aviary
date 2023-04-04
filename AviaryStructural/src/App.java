@@ -20,7 +20,7 @@ public class App extends PApplet {
     int scrShCounter = 0;
 
     public void settings(){
-        size(1300, 1300);
+        size(2000, 1300);
 
     }
 
@@ -194,7 +194,7 @@ public class App extends PApplet {
     public static int QUADX = 5;
     public static int QUADY = 5;
 
-    public static int INITAGENTAMOUNT1 = 250;
+    public static int INITAGENTAMOUNT1 = 100;
     public static int INITAGENTAMOUNT2 = 0;
 
     public static boolean SYSSPAWN = true;

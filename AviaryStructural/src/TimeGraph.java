@@ -49,7 +49,7 @@ public class TimeGraph {
         this.mode = Mode.SCROLLING;
         this.dots = new ArrayList<Dot>();
         this.maxY = 0;
-        this.minY = 0;
+        this.minY = Double.MAX_VALUE;
         this.textSize = 12;
     }
 
@@ -91,6 +91,10 @@ public class TimeGraph {
         }
 
         return this.dots.get(index).getY();
+    }
+
+    double getLastValue() {
+        return this.dots.get(this.dots.size() - 1).getY();
     }
 
     //---------------------------------
@@ -171,8 +175,12 @@ public class TimeGraph {
         Dot firstDot = this.dots.get(0);
         double firstY = firstDot.getY();
         this.dots.remove(0);
-        if(firstY == this.minY) updateMinY();
-        if(firstY == this.maxY) updateMaxY();
+        if(firstY == this.minY) {
+            updateMinY();
+        }
+        if(firstY == this.maxY) {
+            updateMaxY();
+        }
     }
 
     void updateMinY() {
@@ -181,7 +189,9 @@ public class TimeGraph {
         for (Iterator<Dot> iter = this.dots.iterator(); iter.hasNext();){
             Dot dot = iter.next();
             double y = dot.getY();
-            if(y < newMinY) newMinY = y;
+            if(y < newMinY) {
+                newMinY = y;
+            }
         }
 
         this.minY = newMinY;
@@ -193,7 +203,9 @@ public class TimeGraph {
         for (Iterator<Dot> iter = this.dots.iterator(); iter.hasNext();){
             Dot dot = iter.next();
             double y = dot.getY();
-            if(y > newMaxY) newMaxY = y;
+            if(y > newMaxY) {
+                newMaxY = y;
+            }
         }
 
         this.maxY = newMaxY;
@@ -210,7 +222,13 @@ public class TimeGraph {
                     ((dot.getX() - this.dots.get(0).getX())
                             / (this.dots.get(this.dots.size() - 1).getX() - this.dots.get(0).getX()));
         }
-        double absoluteY = this.originY + this.dimY * (1 - 0.8 * dot.getY() / (this.maxY - this.minY));
+        double absoluteY;
+        if(this.minY != this.maxY) {
+            absoluteY = this.originY + this.dimY * (1 - 0.8 * (dot.getY() - this.minY) / (this.maxY - this.minY));
+        }
+        else {
+            absoluteY = this.originY + this.dimY;
+        }
         return new Dot(absoluteX, absoluteY);
     }
 
@@ -285,14 +303,15 @@ public class TimeGraph {
 
         App.processingRef.fill(valueTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
-        App.processingRef.text((int)(this.dots.get(this.dots.size() - 1).getY()), (float)(this.originX + 5), (float)(lastAbsoluteCoordinates.getY() - 7));
+        App.processingRef.text((int)(this.dots.get(this.dots.size() - 1).getY()), this.originX + this.textSize + 40, (float)(lastAbsoluteCoordinates.getY() - (this.textSize - 4)));
     }
 
     void renderAxisScale() {
         App.processingRef.fill(valueTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
-        App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - 30, this.originY + this.dimY - 4);
-        App.processingRef.text((int)(this.maxY * 1.25), this.originX + 5, this.originY + 10);
+        App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - (this.textSize + 20), this.originY + this.dimY - (this.textSize - 4));
+        App.processingRef.text((int)(this.maxY * 1.25), this.originX + 5, this.originY + this.textSize + 4);
+        App.processingRef.text((int)(this.minY), this.originX + 5, this.originY + this.dimY - (this.textSize - 4));
     }
 
     void render() {

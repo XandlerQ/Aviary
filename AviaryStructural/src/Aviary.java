@@ -23,14 +23,15 @@ public class Aviary {
         this.agents = Builder.buildAgentArray();
         packs = new ArrayList<>();
 
-        this.pop1Gr = new TimeGraph(300, 200, 200);
-        this.pop1Gr.setOrigin(App.ORIGINX + App.DEFX, 0);
+        this.pop1Gr = new TimeGraph(600, 400, 500);
+        this.pop1Gr.setOrigin(App.ORIGINX + App.DEFX, 5);
         this.pop1Gr.setPlainCl(new Color(0, 0, 0));
         this.pop1Gr.setBorderCl(new Color(100, 100, 100));
         this.pop1Gr.setDotCl(Color.RED);
         this.pop1Gr.setLineCl(Color.RED);
         this.pop1Gr.setLevelLineCl(Color.YELLOW);
         this.pop1Gr.setValueTextCl(Color.WHITE);
+        this.pop1Gr.setTextSize(8);
     }
 
     //Getters
