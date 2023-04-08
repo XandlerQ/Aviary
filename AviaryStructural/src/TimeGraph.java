@@ -323,7 +323,7 @@ public class TimeGraph {
         App.processingRef.fill(this.valueTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
         App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - (this.textSize + 20), this.originY + this.dimY - (this.textSize - 4));
-        App.processingRef.text((int)(this.maxY * 1.25), this.originX + 5, this.originY + this.textSize + 4);
+        App.processingRef.text((int)(this.maxY + 0.25 * (this.maxY - this.minY)), this.originX + 5, this.originY + this.textSize + 4);
         App.processingRef.text((int)(this.minY), this.originX + 5, this.originY + this.dimY - (this.textSize - 4));
     }
 

@@ -20,7 +20,7 @@ public class App extends PApplet {
     int scrShCounter = 0;
 
     public void settings(){
-        size(2000, 1300);
+        size(2000, 1200);
 
     }
 

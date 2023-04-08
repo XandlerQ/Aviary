@@ -98,7 +98,7 @@ public class Observer {
     }
 
     void fillTimeGraphs() {
-        TimeGraph pop1Gr = new TimeGraph(600, 400, 500);
+        TimeGraph pop1Gr = new TimeGraph(500, 400, 500);
         pop1Gr.setTitle("Population");
         pop1Gr.setOrigin(App.ORIGINX + App.DEFX, 5);
         pop1Gr.setPlainCl(new Color(0, 0, 0));
