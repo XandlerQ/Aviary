@@ -202,13 +202,13 @@ public class App extends PApplet {
     };
 
     public static Integer[] PROPERTY_AREA_VALUES = {
-            4, 3, 2, 1
+            4, 3, 2, 0
     };
 
     public static int INITAGENTAMOUNT1 = 100;
-    public static int INITAGENTAMOUNT2 = 100;
+    public static int INITAGENTAMOUNT2 = 0;
 
-    public static boolean SYSSPAWN = true;
+    public static boolean SYSSPAWN = false;
 
     public static double BASERES = 190;
     public static double RESREPSPEED = BASERES/360;

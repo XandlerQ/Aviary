@@ -1,10 +1,13 @@
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PropertyArea<Property> {
     public static enum PropertyType {
         VALENCE
     }
 
+    static AtomicInteger areaIdGen = new AtomicInteger(0);
+    private final int id;
     private double originX;
     private double originY;
     private double sideX;
@@ -19,6 +22,7 @@ public class PropertyArea<Property> {
     //--------------------------------------
 
     PropertyArea() {
+        this.id = areaIdGen.incrementAndGet();
         this.originX = 0;
         this.originY = 0;
         this.sideX = 0;
@@ -28,12 +32,11 @@ public class PropertyArea<Property> {
     }
 
     PropertyArea(double originX, double originY, double sideX, double sideY) {
+        this();
         this.originX = originX;
         this.originY = originY;
         this.sideX = sideX;
         this.sideY = sideY;
-        this.propertyType = PropertyType.VALENCE;
-        this.color = null;
     }
 
     //--------------------------------------
@@ -42,6 +45,11 @@ public class PropertyArea<Property> {
     //---------------------------------
     //-----------  Getters  -----------
     //---------------------------------
+
+
+    public int getId() {
+        return id;
+    }
 
     public double getOriginX() {
         return originX;
@@ -124,6 +132,16 @@ public class PropertyArea<Property> {
 
     boolean inArea(Agent agent) {
         return inArea(agent.getCoordinates());
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        PropertyArea<Property> arg = (PropertyArea<Property>) obj;
+        return this.id == arg.getId();
     }
 
     //---------------------------------

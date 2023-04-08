@@ -151,31 +151,30 @@ public class ResourceGroup {
         this.resNodes.forEach((node) -> {node.replenish();});
     }
 
-    ArrayList<ResourceNode> getVisibleResNodes(double posX, double posY, double radius){
+    ArrayList<ResourceNode> getVisibleResNodes(double x, double y, double radius){
 
-        if(posX > this.defX)
-            posX = this.defX;
-        if(posY > this.defY)
-            posY = this.defY;
+        if(x < 0) x = 0;
+        if(y < 0) y = 0;
+
+        if(x > this.defX) x = this.defX;
+        if(y > this.defY) y = this.defY;
 
         int posQuadX = 0;
-        posQuadX = (int)((posX - (posX % this.sideX)) / this.sideX);
-        if(posQuadX >= this.grCtX)
-            posQuadX = this.grCtX - 1;
+        posQuadX = (int)((x - (x % this.sideX)) / this.sideX);
+        if(posQuadX >= this.grCtX) posQuadX = this.grCtX - 1;
         int posQuadY = 0;
-        posQuadY = (int)((posY - (posY % this.sideY)) / this.sideY);
-        if(posQuadY >= this.grCtY)
-            posQuadY = this.grCtY - 1;
+        posQuadY = (int)((y - (y % this.sideY)) / this.sideY);
+        if(posQuadY >= this.grCtY) posQuadY = this.grCtY - 1;
 
         int moreL = 0;
         int moreR = 0;
         int moreT = 0;
         int moreB = 0;
 
-        double radiusOverlapL = posQuadX * this.sideX - (posX - radius);
-        double radiusOverlapR = (posX + radius) - (posQuadX + 1) * this.sideX;
-        double radiusOverlapT = posQuadY * this.sideY - (posY - radius);
-        double radiusOverlapB = (posY + radius) - (posQuadY + 1) * this.sideY;
+        double radiusOverlapL = posQuadX * this.sideX - (x - radius);
+        double radiusOverlapR = (x + radius) - (posQuadX + 1) * this.sideX;
+        double radiusOverlapT = posQuadY * this.sideY - (y - radius);
+        double radiusOverlapB = (y + radius) - (posQuadY + 1) * this.sideY;
 
         int quadLeftL = posQuadX;
         int quadLeftR = this.grCtX - (posQuadX + 1);
@@ -207,7 +206,7 @@ public class ResourceGroup {
             }
         }
 
-        ArrayList<ResourceNode> visibleResNodes = new ArrayList<ResourceNode>();
+        ArrayList<ResourceNode> visibleResNodes = new ArrayList<>();
 
         for(int i = posQuadX - moreL; i <= posQuadX + moreR; i++){
             for(int j = posQuadY - moreT; j <= posQuadY + moreB; j++){

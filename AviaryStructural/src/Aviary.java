@@ -303,9 +303,9 @@ public class Aviary {
         if(argAg.getConCount() == 0 && argAg.wellFed() && argAg.getLockedRes() == null && argAg.readyToAct()){
             loneAgentConnectionListen(argAg);
         }
-        if(argAg.getConCount() == 0 && argAg.getLockedRes() != null){
+        /*if(argAg.getConCount() == 0 && argAg.getLockedRes() != null){
             loneAgentResScream(argAg);
-        }
+        }*/
         if(argAg.getConCount() != 0){
             packAgentResListen(argAg);
         }
@@ -320,7 +320,10 @@ public class Aviary {
             Agent ag = iter.next();
             if(ag != argAg && ag.getSpecies() == argAg.getSpecies()){    //Different agent, same species
                 double dist = argAg.getDistTo(ag.getX(), ag.getY());
-                if(dist <= App.CONNECTDIST){
+                if(dist <= App.CONNECTDIST
+                        && (this.propertyGrid.getPropertyArea(argAg.getCoordinates())
+                        == this.propertyGrid.getPropertyArea(ag.getCoordinates()))
+                ){
                     Pack agPack = getPack(ag);
                     if(agPack != null){
                         if(agPack.addAgent(argAg)){
@@ -484,6 +487,16 @@ public class Aviary {
         }
     }
 
+    //------Property calculations------
+
+    void updateProperty(Agent agent) {
+        int areaValence = this.propertyGrid.getProperty(agent.getCoordinates());
+        if (agent.getValence() != areaValence) {
+            removeAgentFromPacks(agent);
+            agent.setValence(areaValence);
+        }
+    }
+
     //---------------Main---------------
 
     void tick(){                                                                        //Performes animation tick
@@ -509,7 +522,9 @@ public class Aviary {
                 directionDecision(ag);
                 scream(ag);
                 ag.step();
+                updateProperty(ag);
                 agResCollection(ag);
+
 
 
                 if(ag.getEnergy() > App.REPRODUCTCOST + App.SUFFENERGY && ag.getAge() >= App.REPRODUCTLOW && ag.getAge() <= App.REPRODUCTHIGH){

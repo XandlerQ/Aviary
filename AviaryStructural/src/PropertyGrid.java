@@ -128,6 +128,35 @@ public class PropertyGrid<Property> {
         }
     }
 
+    PropertyArea<Property> getPropertyArea(double x, double y) {
+        if(x < 0) x = 0;
+        if(y < 0) y = 0;
+
+        if(x > this.defX) x = this.defX;
+        if(y > this.defY) y = this.defY;
+
+        int posQuadX = 0;
+        posQuadX = (int)((x - (x % this.sideX)) / this.sideX);
+        if(posQuadX >= this.grCtX) posQuadX = this.grCtX - 1;
+        int posQuadY = 0;
+        posQuadY = (int)((y - (y % this.sideY)) / this.sideY);
+        if(posQuadY >= this.grCtY) posQuadY = this.grCtY - 1;
+
+        return this.propertyAreas.get(posQuadX * this.grCtY + posQuadY);
+    }
+
+    PropertyArea<Property> getPropertyArea(Dot coordinates) {
+        return getPropertyArea(coordinates.getX(), coordinates.getY());
+    }
+
+    Property getProperty(double x, double y) {
+        return getPropertyArea(x, y).getProperty();
+    }
+
+    Property getProperty(Dot coordinates) {
+        return getProperty(coordinates.getX(), coordinates.getY());
+    }
+
     //---------------------------------
     //---------------------------------
 
