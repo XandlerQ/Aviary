@@ -77,13 +77,18 @@ public class Aviary {
         return this.agents.size();
     }
 
-    int[] getPoplationInAreas() {
-        int areaPopulation[] = new int[4];
+    double[][] getDataInAreas() {
+        double areaData[][] = new double[3][4];
         for(Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext();) {
             Agent agent = iterator.next();
-            areaPopulation[this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())]++;
+            areaData[0][this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())] += 1;
+            areaData[1][this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())] += agent.getEnergy();
         }
-        return areaPopulation;
+        for(Iterator<Pack> iterator = this.packs.iterator(); iterator.hasNext();) {
+            Pack pack = iterator.next();
+            areaData[2][this.propertyGrid.getPropertyAreaIndex(pack.getPackCenter())] += 1;
+        }
+        return areaData;
     }
 
 

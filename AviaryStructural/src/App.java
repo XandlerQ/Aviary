@@ -20,7 +20,7 @@ public class App extends PApplet {
     int scrShCounter = 0;
 
     public void settings(){
-        size(2000, 1200);
+        size(2000, 1300);
 
     }
 
@@ -44,16 +44,16 @@ public class App extends PApplet {
 
         cp5.addBang("BgStart")
                 //.setLabel("Старт")
-                .setPosition(1200 - 65, ORIGINY + DEFY + 20)
+                .setPosition(65, ORIGINY + DEFY + 20)
                 .setSize(45, 30);
 
         cp5.addBang("BgPause")
                 //.setLabel("Пауза")
-                .setPosition(1200 - 65, ORIGINY + DEFY + 70)
+                .setPosition(65, ORIGINY + DEFY + 70)
                 .setSize(45, 30);
 
         cp5.addBang("BgScreenshot")
-                .setPosition(1200 - 65, ORIGINY + DEFY + 120)
+                .setPosition(65, ORIGINY + DEFY + 120)
                 .setSize(45, 30);
 
         PFont font = createFont("PressStart2P-Regular.ttf", 8);
@@ -258,6 +258,6 @@ public class App extends PApplet {
     public static double VISUALDIST = 65;
 
     //Graph counter
-    public static int INFOREPCTRPEAK = 60;
+    public static int INFOREPCTRPEAK = 30;
 }
 

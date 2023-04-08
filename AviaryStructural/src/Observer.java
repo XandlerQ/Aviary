@@ -221,8 +221,73 @@ public class Observer {
         this.timeGraphs.add(populationArea2Graph);
         this.timeGraphs.add(populationArea3Graph);
 
+        ScaleSynchronizer energyDensityScaleSynchronizer = new ScaleSynchronizer();
 
+        TimeGraph energyDensityArea0Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        energyDensityArea0Graph.setTitle("Area energy density");
+        energyDensityArea0Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea0Graph.setPlainCl(new Color(0, 0, 0, 0));
+        energyDensityArea0Graph.setBorderCl(new Color(100, 100, 100));
+        energyDensityArea0Graph.setDotCl(App.PROPERTY_AREA_COLORS[0]);
+        energyDensityArea0Graph.setLineCl(App.PROPERTY_AREA_COLORS[0]);
+        energyDensityArea0Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[0]);
+        energyDensityArea0Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[0]);
+        energyDensityArea0Graph.setScaleTextCl(Color.WHITE);
+        energyDensityArea0Graph.setTitleTextCl(Color.WHITE);
+        energyDensityArea0Graph.setTextSize(8);
+        energyDensityArea0Graph.setScaleSynchronizer(energyDensityScaleSynchronizer);
 
+        TimeGraph energyDensityArea1Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        energyDensityArea1Graph.setTitle("");
+        energyDensityArea1Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea1Graph.setPlainCl(new Color(0, 0, 0, 0));
+        energyDensityArea1Graph.setBorderCl(new Color(100, 100, 100));
+        energyDensityArea1Graph.setDotCl(App.PROPERTY_AREA_COLORS[1]);
+        energyDensityArea1Graph.setLineCl(App.PROPERTY_AREA_COLORS[1]);
+        energyDensityArea1Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[1]);
+        energyDensityArea1Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[1]);
+        energyDensityArea1Graph.setTextSize(8);
+        energyDensityArea1Graph.setRenderScale(false);
+        energyDensityArea1Graph.setRenderTitle(false);
+        energyDensityArea1Graph.setScaleSynchronizer(energyDensityScaleSynchronizer);
+
+        TimeGraph energyDensityArea2Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        energyDensityArea2Graph.setTitle("");
+        energyDensityArea2Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea2Graph.setPlainCl(new Color(0, 0, 0, 0));
+        energyDensityArea2Graph.setBorderCl(new Color(100, 100, 100));
+        energyDensityArea2Graph.setDotCl(App.PROPERTY_AREA_COLORS[2]);
+        energyDensityArea2Graph.setLineCl(App.PROPERTY_AREA_COLORS[2]);
+        energyDensityArea2Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[2]);
+        energyDensityArea2Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[2]);
+        energyDensityArea2Graph.setTextSize(8);
+        energyDensityArea2Graph.setRenderScale(false);
+        energyDensityArea2Graph.setRenderTitle(false);
+        energyDensityArea2Graph.setScaleSynchronizer(energyDensityScaleSynchronizer);
+
+        TimeGraph energyDensityArea3Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        energyDensityArea3Graph.setTitle("");
+        energyDensityArea3Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea3Graph.setPlainCl(new Color(0, 0, 0, 0));
+        energyDensityArea3Graph.setBorderCl(new Color(100, 100, 100));
+        energyDensityArea3Graph.setDotCl(App.PROPERTY_AREA_COLORS[3]);
+        energyDensityArea3Graph.setLineCl(App.PROPERTY_AREA_COLORS[3]);
+        energyDensityArea3Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[3]);
+        energyDensityArea3Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[3]);
+        energyDensityArea3Graph.setTextSize(8);
+        energyDensityArea3Graph.setRenderScale(false);
+        energyDensityArea3Graph.setRenderTitle(false);
+        energyDensityArea3Graph.setScaleSynchronizer(energyDensityScaleSynchronizer);
+
+        energyDensityScaleSynchronizer.addGraph(energyDensityArea0Graph);
+        energyDensityScaleSynchronizer.addGraph(energyDensityArea1Graph);
+        energyDensityScaleSynchronizer.addGraph(energyDensityArea2Graph);
+        energyDensityScaleSynchronizer.addGraph(energyDensityArea3Graph);
+
+        this.timeGraphs.add(energyDensityArea0Graph);
+        this.timeGraphs.add(energyDensityArea1Graph);
+        this.timeGraphs.add(energyDensityArea2Graph);
+        this.timeGraphs.add(energyDensityArea3Graph);
     }
 
     void addGraphData() {
@@ -231,11 +296,16 @@ public class Observer {
         }
         else {
             this.timeGraphs.get(0).addValue(aviaryReference.getPopulation());
-            int areaPopulation[] = aviaryReference.getPoplationInAreas();
-            this.timeGraphs.get(1).addValue(areaPopulation[0]);
-            this.timeGraphs.get(2).addValue(areaPopulation[1]);
-            this.timeGraphs.get(3).addValue(areaPopulation[2]);
-            this.timeGraphs.get(4).addValue(areaPopulation[3]);
+            double areaData[][] = aviaryReference.getDataInAreas();
+            this.timeGraphs.get(1).addValue(areaData[0][0]);
+            this.timeGraphs.get(2).addValue(areaData[0][1]);
+            this.timeGraphs.get(3).addValue(areaData[0][2]);
+            this.timeGraphs.get(4).addValue(areaData[0][3]);
+
+            this.timeGraphs.get(5).addValue(areaData[1][0] / areaData[0][0]);
+            this.timeGraphs.get(6).addValue(areaData[1][1] / areaData[0][1]);
+            this.timeGraphs.get(7).addValue(areaData[1][2] / areaData[0][2]);
+            this.timeGraphs.get(8).addValue(areaData[1][3] / areaData[0][3]);
 
             resetTimeGraphCtr();
         }
