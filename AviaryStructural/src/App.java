@@ -206,7 +206,7 @@ public class App extends PApplet {
     };
 
     public static int INITAGENTAMOUNT1 = 100;
-    public static int INITAGENTAMOUNT2 = 0;
+    public static int INITAGENTAMOUNT2 = 100;
 
     public static boolean SYSSPAWN = true;
 

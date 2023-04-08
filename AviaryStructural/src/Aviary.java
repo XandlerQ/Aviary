@@ -7,18 +7,14 @@ public class Aviary {
 
     Color rivalryCl = new Color(207, 0, 255);
     ResourceGroup resGroup;
-
     PropertyGrid<Integer> propertyGrid;
     ArrayList<Agent> agents;
     ArrayList<Pack> packs;
 
-    int popSp1Ctr;
-    int popSp2Ctr;
 
-    TimeGraph pop1Gr;
-
-
-    //Constructors
+    //--------------------------------------
+    //-----------  Constructors  -----------
+    //--------------------------------------
 
     Aviary () {
         this.resGroup = Builder.buildResourceGroup();
@@ -26,73 +22,37 @@ public class Aviary {
         this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
         this.agents = Builder.buildAgentArray();
         packs = new ArrayList<>();
-
-        this.pop1Gr = new TimeGraph(600, 400, 500);
-        this.pop1Gr.setOrigin(App.ORIGINX + App.DEFX, 5);
-        this.pop1Gr.setPlainCl(new Color(0, 0, 0));
-        this.pop1Gr.setBorderCl(new Color(100, 100, 100));
-        this.pop1Gr.setDotCl(Color.RED);
-        this.pop1Gr.setLineCl(Color.RED);
-        this.pop1Gr.setLevelLineCl(Color.YELLOW);
-        this.pop1Gr.setValueTextCl(Color.WHITE);
-        this.pop1Gr.setTextSize(8);
     }
 
-    //Getters
+    //--------------------------------------
+    //--------------------------------------
 
-    ResourceGroup getResGroup(){
+    //---------------------------------
+    //-----------  Getters  -----------
+    //---------------------------------
+
+
+    public Color getRivalryCl() {
+        return rivalryCl;
+    }
+
+    public ResourceGroup getResGroup() {
         return resGroup;
     }
 
-    int getPopSp1Ctr(){
-        return popSp1Ctr;
+    public PropertyGrid<Integer> getPropertyGrid() {
+        return propertyGrid;
     }
 
-    int getPopSp2Ctr(){
-        return popSp2Ctr;
+    public ArrayList<Agent> getAgents() {
+        return agents;
     }
 
-    int getSp1PackCount(){
-        int pckCount = 0;
-        for(Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
-            Pack pck = iter.next();
-            if(pck.getPackSpecies() == 0)
-                pckCount++;
-        }
-
-        return pckCount;
+    public ArrayList<Pack> getPacks() {
+        return packs;
     }
 
-    int getSp2PackCount(){
-        int pckCount = 0;
-        for(Iterator<Pack> iter = packs.iterator(); iter.hasNext();){
-            Pack pck = iter.next();
-            if(pck.getPackSpecies() == 1)
-                pckCount++;
-        }
-
-        return pckCount;
-    }
-
-    //Setters
-/*
-    void updateValences(){
-        agents.forEach((ag) -> {ag.updateValence();});
-    }
-
-    void updateMaxRes(){
-        net.updateMaxRes();
-    }
-
-    void updateResRepSpeed(){
-        net.updateResRepSpeed();
-    }
-
-    void updateRepDelay(){
-        net.updateRepDelay();
-    }*/
-
-    //Methods
+    //---------------------------------
 
     Pack getPack(Agent argAg){
 
@@ -107,6 +67,25 @@ public class Aviary {
         }
         return null;
     }
+
+
+    //---------------------------------
+    //---------------------------------
+
+    //---------------------------------
+    //-----------  Setters  -----------
+    //---------------------------------
+
+    public void setRivalryCl(Color rivalryCl) {
+        this.rivalryCl = rivalryCl;
+    }
+
+    //---------------------------------
+    //---------------------------------
+
+    //---------------------------------
+    //-----------  Methods  -----------
+    //---------------------------------
 
     void removeAgentFromPacks(Agent argAg){
         //int at = 0;
@@ -124,6 +103,48 @@ public class Aviary {
 
         }
         //println("maybe removed a pack, current pack count:", packs.size());
+    }
+
+    //------Resource calculations------
+
+    void agResourceLocking(Agent argAg){
+
+        ResourceNode lockedRes = argAg.getLockedRes();
+
+        if(lockedRes != null){
+            if(lockedRes.empty() || argAg.getDistTo(lockedRes.getCoordinates()) > App.VISUALDIST){
+                argAg.setLockedRes(null);
+                argAg.setStationary(false);
+            }
+        }
+        else{
+            if(argAg.getConCount() == 0 && argAg.wellFed()){
+                return;
+            }
+            ArrayList<ResourceNode> resources = resGroup.getVisibleResNodes(argAg.getX(), argAg.getY(), App.VISUALDIST);
+            double minDist = argAg.getDistTo(resources.get(0).getCoordinates()) + 1;
+            int minDistIdx = -1;
+            int idx = 0;
+            for(Iterator<ResourceNode> iter = resources.iterator(); iter.hasNext();){
+                ResourceNode res = iter.next();
+                if(!res.empty()){
+                    double currDist = argAg.getDistTo(res.getCoordinates());
+                    if(minDist > currDist){
+                        minDist = currDist;
+                        minDistIdx = idx;
+                    }
+                }
+                idx++;
+            }
+            if(minDistIdx != -1){
+                if(minDist <= App.VISUALDIST){
+                    ResourceNode foundRes = resources.get(minDistIdx);
+                    argAg.setLockedRes(foundRes);
+                    return;
+                }
+            }
+            argAg.setLockedRes(null);
+        }
     }
 
     void agResCollection(Agent argAg){
@@ -158,6 +179,8 @@ public class Aviary {
             argAg.setStationary(false);
         }
     }
+
+    //---Pack direction calculations---
 
     double getPackDirFar(Agent argAg){
 
@@ -223,6 +246,18 @@ public class Aviary {
         return packTooClose;
     }
 
+    //-----Direction calculations-----
+
+    double foodDirectionDecision(Agent argAg){
+
+        if(argAg.getLockedRes() != null){
+            return argAg.dirToFace(argAg.getLockedRes().getCoordinates());
+        }
+        else{
+            return -1;
+        }
+    }
+
     void directionDecision(Agent argAg){    //Direction decision for a single agent, for lone agents only food decisioning, for pack agents depending on locked bolean variable value either only food, or only pack
 
 
@@ -262,55 +297,7 @@ public class Aviary {
         }
     }
 
-    void agResourceLocking(Agent argAg){
-
-        ResourceNode lockedRes = argAg.getLockedRes();
-
-        if(lockedRes != null){
-            if(lockedRes.empty() || argAg.getDistTo(lockedRes.getCoordinates()) > App.VISUALDIST){
-                argAg.setLockedRes(null);
-                argAg.setStationary(false);
-            }
-        }
-        else{
-            if(argAg.getConCount() == 0 && argAg.wellFed()){
-                return;
-            }
-            ArrayList<ResourceNode> resources = resGroup.getVisibleResNodes(argAg.getX(), argAg.getY(), App.VISUALDIST);
-            double minDist = argAg.getDistTo(resources.get(0).getCoordinates()) + 1;
-            int minDistIdx = -1;
-            int idx = 0;
-            for(Iterator<ResourceNode> iter = resources.iterator(); iter.hasNext();){
-                ResourceNode res = iter.next();
-                if(!res.empty()){
-                    double currDist = argAg.getDistTo(res.getCoordinates());
-                    if(minDist > currDist){
-                        minDist = currDist;
-                        minDistIdx = idx;
-                    }
-                }
-                idx++;
-            }
-            if(minDistIdx != -1){
-                if(minDist <= App.VISUALDIST){
-                    ResourceNode foundRes = resources.get(minDistIdx);
-                    argAg.setLockedRes(foundRes);
-                    return;
-                }
-            }
-            argAg.setLockedRes(null);
-        }
-    }
-
-    double foodDirectionDecision(Agent argAg){
-
-        if(argAg.getLockedRes() != null){
-            return argAg.dirToFace(argAg.getLockedRes().getCoordinates());
-        }
-        else{
-            return -1;
-        }
-    }
+    //-------------Screams-------------
 
     void scream(Agent argAg){
         if(argAg.getConCount() == 0 && argAg.wellFed() && argAg.getLockedRes() == null && argAg.readyToAct()){
@@ -404,17 +391,7 @@ public class Aviary {
         });
     }
 
-    void fights(){
-        for(Iterator<Agent> iter1 = agents.iterator(); iter1.hasNext();){
-            Agent ag1 = iter1.next();
-            for(Iterator<Agent> iter2 = agents.iterator(); iter2.hasNext();){
-                Agent ag2 = iter2.next();
-                if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= App.FIGHTDIST){
-                    fight(ag1, ag2);
-                }
-            }
-        }
-    }
+    //-------------Rivalry-------------
 
     void fight(Agent argAg1, Agent argAg2){
 
@@ -455,10 +432,21 @@ public class Aviary {
         App.processingRef.stroke(rivalryCl.getRGB(),100);
         App.processingRef.strokeWeight(2);
         App.processingRef.line((float)(App.ORIGINX + argAg1.getX()), (float)(App.ORIGINY + argAg1.getY()), (float)(App.ORIGINX + argAg2.getX()), (float)(App.ORIGINY + argAg2.getY()));
-
-
-
     }
+
+    void fights(){
+        for(Iterator<Agent> iter1 = agents.iterator(); iter1.hasNext();){
+            Agent ag1 = iter1.next();
+            for(Iterator<Agent> iter2 = agents.iterator(); iter2.hasNext();){
+                Agent ag2 = iter2.next();
+                if(ag1.getSpecies() != ag2.getSpecies() && ag1.getDistTo(ag2.getX(), ag2.getY()) <= App.FIGHTDIST){
+                    fight(ag1, ag2);
+                }
+            }
+        }
+    }
+
+    //----------Reproduction----------
 
     void reproduction(Agent argAg){
         Random r = new Random();
@@ -479,10 +467,6 @@ public class Aviary {
             child.setCoordinates(new Dot(argAg.getCoordinates()));
             child.setAge(0);
             child.updateSpeed();
-            if(argAg.getSpecies() == 0)
-                popSp1Ctr++;
-            else
-                popSp2Ctr++;
 
             argAg.addToEnergy(-App.REPRODUCTCOST);
             agents.add(child);
@@ -500,19 +484,7 @@ public class Aviary {
         }
     }
 
-    /*void addPlotData(){
-        if(infCtr == INFOREPCTRPEAK){
-            if(INITAGENTAMOUNT1 != 0)
-                grSp1Pop.addTimePoint(popSp1Ctr);
-            if(INITAGENTAMOUNT2 != 0)
-                grSp2Pop.addTimePoint(popSp2Ctr);
-        }
-        infCtr++;
-
-        if(infCtr > INFOREPCTRPEAK){
-            infCtr = 0;
-        }
-    }*/
+    //---------------Main---------------
 
     void tick(){                                                                        //Performes animation tick
         ArrayList<Agent> reproductList = new ArrayList<>();
@@ -525,11 +497,6 @@ public class Aviary {
 
             if(ag.dead()){
                 removeAgentFromPacks(ag);
-                if(ag.getSpecies() == 0)
-                    popSp1Ctr--;
-                else
-                    popSp2Ctr--;
-
                 iter.remove();
                 //println("REMOVED DEAD AGENT, AGENT COUNT:", agents.size());
             }
@@ -575,21 +542,16 @@ public class Aviary {
         render();
         tick();
 
-        this.popSp1Ctr = this.agents.size();
-
-        this.pop1Gr.addValue(this.popSp1Ctr);
-
-        if(popSp1Ctr == 0 || popSp2Ctr == 0){
-            return true;
-        }
-
-
-
         return false;
     }
 
+    //---------------------------------
+    //---------------------------------
 
-    //Renderers
+
+    //-----------------------------------
+    //-----------  Renderers  -----------
+    //-----------------------------------
 
     void renderRes(){                                                                   //Renders resources
         resGroup.render();
@@ -605,18 +567,16 @@ public class Aviary {
         agents.forEach((agent) -> agent.render());
     }
 
-    void renderGraphs(){
-        this.pop1Gr.render();
-    }
-
     void render(){                                                    //Renders aviary
         App.processingRef.background(0);
         renderPropertyGrid();
         renderRes();
         renderPacks();
         renderAgent();
-        renderGraphs();
     }
+
+    //-----------------------------------
+    //-----------------------------------
 
 
 }
