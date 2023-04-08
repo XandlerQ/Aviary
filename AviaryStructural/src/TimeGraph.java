@@ -7,6 +7,8 @@ public class TimeGraph {
         SCROLLING, STATIONARY
     }
 
+    private String title;
+
     private int originX;
     private int originY;
 
@@ -41,6 +43,7 @@ public class TimeGraph {
     //---------------------------------------
 
     TimeGraph() {
+        this.title = null;
         this.originX = 0;
         this.originY = 0;
         this.dimX = 200;
@@ -76,6 +79,11 @@ public class TimeGraph {
     //-----------  Getters  -----------
     //---------------------------------
 
+
+    public String getTitle() {
+        return title;
+    }
+
     int getDimX() { return this.dimX; }
     int getDimY() { return this.dimY; }
 
@@ -103,6 +111,11 @@ public class TimeGraph {
     //---------------------------------
     //-----------  Setters  -----------
     //---------------------------------
+
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     void setOriginX(int originX) { this.originX = originX; }
     void setOriginY(int originY) { this.originY = originY; }
@@ -301,17 +314,23 @@ public class TimeGraph {
 
         Dot lastAbsoluteCoordinates = calcAbsCoordinates(this.dots.size() - 1);
 
-        App.processingRef.fill(valueTextCl.getRGB());
+        App.processingRef.fill(this.valueTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
         App.processingRef.text((int)(this.dots.get(this.dots.size() - 1).getY()), this.originX + this.textSize + 40, (float)(lastAbsoluteCoordinates.getY() - (this.textSize - 4)));
     }
 
     void renderAxisScale() {
-        App.processingRef.fill(valueTextCl.getRGB());
+        App.processingRef.fill(this.valueTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
         App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - (this.textSize + 20), this.originY + this.dimY - (this.textSize - 4));
         App.processingRef.text((int)(this.maxY * 1.25), this.originX + 5, this.originY + this.textSize + 4);
         App.processingRef.text((int)(this.minY), this.originX + 5, this.originY + this.dimY - (this.textSize - 4));
+    }
+
+    void renderTitle() {
+        App.processingRef.fill(this.valueTextCl.getRGB());
+        App.processingRef.textSize(this.textSize);
+        App.processingRef.text(this.title, this.originX + this.dimX - (this.title.length() * this.textSize + 4), this.originY + this.textSize + 4);
     }
 
     void render() {
@@ -320,6 +339,7 @@ public class TimeGraph {
         renderLevelLine();
         renderLastDotValue();
         renderAxisScale();
+        renderTitle();
     }
 
     //-----------------------------------

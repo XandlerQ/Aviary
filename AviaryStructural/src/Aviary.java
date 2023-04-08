@@ -11,6 +11,8 @@ public class Aviary {
     ArrayList<Agent> agents;
     ArrayList<Pack> packs;
 
+    Observer observer;
+
 
     //--------------------------------------
     //-----------  Constructors  -----------
@@ -21,7 +23,9 @@ public class Aviary {
         this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY, 2, 2);
         this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
         this.agents = Builder.buildAgentArray();
-        packs = new ArrayList<>();
+        this.packs = new ArrayList<>();
+        this.observer = new Observer(this);
+        observer.fillTimeGraphs();
     }
 
     //--------------------------------------
@@ -66,6 +70,10 @@ public class Aviary {
             }
         }
         return null;
+    }
+
+    int getPopulation() {
+        return this.agents.size();
     }
 
 
@@ -556,7 +564,7 @@ public class Aviary {
     boolean run(){                                                       //Main method                                                                           //Perform animation tick
         render();
         tick();
-
+        this.observer.addGraphData();
         return false;
     }
 
@@ -582,12 +590,17 @@ public class Aviary {
         agents.forEach((agent) -> agent.render());
     }
 
+    void renderObserver() {
+        this.observer.render();
+    }
+
     void render(){                                                    //Renders aviary
         App.processingRef.background(0);
         renderPropertyGrid();
         renderRes();
         renderPacks();
         renderAgent();
+        renderObserver();
     }
 
     //-----------------------------------
