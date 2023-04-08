@@ -47,6 +47,31 @@ public class Observer {
     int timeGraphCtr;
     int getTimeGraphCtrPeak;
 
+    //Data
+
+    int population;
+
+    int areaCount;
+    int valuesPerArea;
+    double[][] areaDataValues;
+
+//    int populationArea0;
+//    int populationArea1;
+//    int populationArea2;
+//    int populationArea3;
+//    double resourceArea0;
+//    double resourceArea1;
+//    double resourceArea2;
+//    double resourceArea3;
+//    double energyArea0;
+//    double energyArea1;
+//    double energyArea2;
+//    double energyArea3;
+//    double energyDensityArea0;
+//    double energyDensityArea1;
+//    double energyDensityArea2;
+//    double energyDensityArea3;
+
     //--------------------------------------
     //-----------  Constructors  -----------
     //--------------------------------------
@@ -56,12 +81,22 @@ public class Observer {
         this.timeGraphs = null;
         this.timeGraphCtr = 0;
         this.getTimeGraphCtrPeak = App.INFOREPCTRPEAK - 1;
+        this.areaCount = 0;
+        this.valuesPerArea = 0;
+        this.areaDataValues = null;
     }
 
     Observer(Aviary aviaryReference) {
         this();
         this.aviaryReference = aviaryReference;
         this.timeGraphs = new ArrayList<>();
+    }
+
+    Observer(Aviary aviaryReference, int areaCount, int valuesPerArea) {
+        this(aviaryReference);
+        this.areaCount = areaCount;
+        this.valuesPerArea = valuesPerArea;
+        this.areaDataValues = new double[areaCount][valuesPerArea];
     }
 
     //--------------------------------------
