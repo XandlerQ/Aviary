@@ -6,7 +6,9 @@ import java.util.Random;
 public class Aviary {
 
     Color rivalryCl = new Color(207, 0, 255);
-    ResourceGroup net;
+    ResourceGroup resGroup;
+
+    PropertyGrid<Integer> propertyGrid;
     ArrayList<Agent> agents;
     ArrayList<Pack> packs;
 
@@ -19,7 +21,9 @@ public class Aviary {
     //Constructors
 
     Aviary () {
-        this.net = Builder.buildResourceGroup();
+        this.resGroup = Builder.buildResourceGroup();
+        this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY, 2, 2);
+        this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
         this.agents = Builder.buildAgentArray();
         packs = new ArrayList<>();
 
@@ -36,8 +40,8 @@ public class Aviary {
 
     //Getters
 
-    ResourceGroup getNet(){
-        return net;
+    ResourceGroup getResGroup(){
+        return resGroup;
     }
 
     int getPopSp1Ctr(){
@@ -272,7 +276,7 @@ public class Aviary {
             if(argAg.getConCount() == 0 && argAg.wellFed()){
                 return;
             }
-            ArrayList<ResourceNode> resources = net.getVisibleResNodes(argAg.getX(), argAg.getY(), App.VISUALDIST);
+            ArrayList<ResourceNode> resources = resGroup.getVisibleResNodes(argAg.getX(), argAg.getY(), App.VISUALDIST);
             double minDist = argAg.getDistTo(resources.get(0).getCoordinates()) + 1;
             int minDistIdx = -1;
             int idx = 0;
@@ -482,7 +486,7 @@ public class Aviary {
 
             argAg.addToEnergy(-App.REPRODUCTCOST);
             agents.add(child);
-            /*Pack parentPack = getPack(argAg);
+            Pack parentPack = getPack(argAg);
             if(parentPack != null){
                 parentPack.addAgent(child);
             }
@@ -492,7 +496,7 @@ public class Aviary {
                 if(newPack.addAgent(child)){
                     packs.add(newPack);
                 }
-            }*/
+            }
         }
     }
 
@@ -513,7 +517,7 @@ public class Aviary {
     void tick(){                                                                        //Performes animation tick
         ArrayList<Agent> reproductList = new ArrayList<>();
 
-        net.replenishNodes();
+        resGroup.replenishNodes();
 
         for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
 
@@ -588,8 +592,10 @@ public class Aviary {
     //Renderers
 
     void renderRes(){                                                                   //Renders resources
-        net.render();
+        resGroup.render();
     }
+
+    void renderPropertyGrid() { this.propertyGrid.render(); }
 
     void renderPacks(){
         packs.forEach((pack) -> {pack.render();});
@@ -605,6 +611,7 @@ public class Aviary {
 
     void render(){                                                    //Renders aviary
         App.processingRef.background(0);
+        renderPropertyGrid();
         renderRes();
         renderPacks();
         renderAgent();

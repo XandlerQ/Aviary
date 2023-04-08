@@ -64,11 +64,10 @@ public class Builder {
     }
 
     public static ResourceGroup buildResourceGroup() {
-        ResourceGroup resGroup = new ResourceGroup(App.QUADX, App.QUADY, App.DEFX, App.DEFY, App.RESPERQUAD);
+        ResourceGroup resGroup = new ResourceGroup(App.DEFX, App.DEFY, App.QUADX, App.QUADY, App.RESPERQUAD);
         resGroup.fillResNodes(App.BASERES, 0.5, App.RESREPSPEED, App.RESREPCTRPEAK);
 
         return resGroup;
     }
-
 
 }

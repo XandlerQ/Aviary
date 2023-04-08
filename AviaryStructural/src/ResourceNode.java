@@ -111,9 +111,9 @@ public class ResourceNode extends Resource {
         recalculateSize();
         App.processingRef.noStroke();
         App.processingRef.fill(cl.getRGB(), 255);
-        App.processingRef.circle((float)this.coordinates.getX(), (float)this.coordinates.getY(), 2);
+        App.processingRef.circle(App.ORIGINX + (float)this.coordinates.getX(), App.ORIGINY + (float)this.coordinates.getY(), 2);
         App.processingRef.fill(cl.getRGB(), 150);
-        App.processingRef.circle((float)this.coordinates.getX(), (float)this.coordinates.getY(), (float)size);
+        App.processingRef.circle(App.ORIGINX + (float)this.coordinates.getX(), App.ORIGINY + (float)this.coordinates.getY(), (float)size);
     }
 
     //-----------------------------------

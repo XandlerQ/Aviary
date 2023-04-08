@@ -6,10 +6,10 @@ public class ResourceGroup {
 
     Color STD_RES_GR_NET_COLOR = new Color(255, 170, 0);
 
-    private int grCtX;  //Amount of areas along X axis
-    private int grCtY;  //Amount of areas along Y axis
     private double defX;  //Group dimension along X axis
     private double defY;  //Group dimension along Y axis
+    private int grCtX;  //Amount of areas along X axis
+    private int grCtY;  //Amount of areas along Y axis
     private double sideX;  //Area dimension along X axis
     private double sideY;  //Area dimension along Y axis
 
@@ -22,10 +22,10 @@ public class ResourceGroup {
     //---------------------------------------
 
     ResourceGroup() {
-        this.grCtX = 0;
-        this.grCtY = 0;
         this.defX = 0;
         this.defY = 0;
+        this.grCtX = 0;
+        this.grCtY = 0;
         this.sideX = 0;
         this.sideY = 0;
 
@@ -34,11 +34,11 @@ public class ResourceGroup {
         this.resCount = 0;
     }
 
-    ResourceGroup(int grCtX, int grCtY, double defX, double defY, int density) {
-        this.grCtX = grCtX;
-        this.grCtY = grCtY;
+    ResourceGroup(double defX, double defY, int grCtX, int grCtY, int density) {
         this.defX = defX;
         this.defY = defY;
+        this.grCtX = grCtX;
+        this.grCtY = grCtY;
         this.sideX = defX / grCtX;
         this.sideY = defY / grCtY;
 
@@ -57,7 +57,42 @@ public class ResourceGroup {
     //-----------  Getters  -----------
     //---------------------------------
 
-    ArrayList<ResourceNode> getResourceNodes(){ return resNodes; }
+
+    public double getDefX() {
+        return defX;
+    }
+
+    public double getDefY() {
+        return defY;
+    }
+
+    public int getGrCtX() {
+        return grCtX;
+    }
+
+    public int getGrCtY() {
+        return grCtY;
+    }
+
+    public double getSideX() {
+        return sideX;
+    }
+
+    public double getSideY() {
+        return sideY;
+    }
+
+    public ArrayList<ResourceNode> getResNodes() {
+        return resNodes;
+    }
+
+    public int getDensity() {
+        return density;
+    }
+
+    public int getResCount() {
+        return resCount;
+    }
 
     //---------------------------------
     //---------------------------------
@@ -65,6 +100,7 @@ public class ResourceGroup {
     //---------------------------------
     //-----------  Setters  -----------
     //---------------------------------
+
 
     void setNodesMaxRes(double maxRes){
         this.resNodes.forEach((node) -> {node.setMaxRes(maxRes);});
@@ -197,10 +233,12 @@ public class ResourceGroup {
         App.processingRef.stroke(STD_RES_GR_NET_COLOR.getRGB(), 100);
         App.processingRef.strokeWeight(2);
         for(int i = 0; i < this.grCtX + 1; i++){
-            App.processingRef.line((float)(i * this.sideX), 0, (float)(i * this.sideX), (float)(this.defY));
+            App.processingRef.line(App.ORIGINX + (float)(i * this.sideX), App.ORIGINY,
+                    App.ORIGINX + (float)(i * this.sideX), App.ORIGINY + (float)(this.defY));
         }
         for(int j = 0; j < this.grCtY + 1; j++){
-            App.processingRef.line(0, (float)(j * this.sideY), (float)(this.defX), (float)(j * this.sideY));
+            App.processingRef.line(App.ORIGINX, App.ORIGINY + (float)(j * this.sideY),
+                    App.ORIGINX + (float)(this.defX), App.ORIGINY + (float)(j * this.sideY));
         }
     }
 

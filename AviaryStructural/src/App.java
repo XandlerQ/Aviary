@@ -183,8 +183,8 @@ public class App extends PApplet {
 
     // Config variables
 
-    public static int ORIGINX = 3;
-    public static int ORIGINY = 3;
+    public static int ORIGINX = 5;
+    public static int ORIGINY = 5;
 
     public static int DEFX = 1000;
     public static int DEFY = 1000;
@@ -193,6 +193,17 @@ public class App extends PApplet {
 
     public static int QUADX = 5;
     public static int QUADY = 5;
+
+    public static Color[] PROPERTY_AREA_COLORS = {
+            new Color(255, 134, 125),
+            new Color(250, 236, 127),
+            new Color(157, 245, 132),
+            new Color(137, 250, 235)
+    };
+
+    public static Integer[] PROPERTY_AREA_VALUES = {
+            4, 3, 2, 1
+    };
 
     public static int INITAGENTAMOUNT1 = 100;
     public static int INITAGENTAMOUNT2 = 0;

@@ -6,7 +6,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Agent {
 
-    Color SPECIES_COLORS[] = {new Color(255, 0,0), new Color(45, 255, 0)};
+    static Color speciesColors[] = {
+            new Color(255, 0,0),
+            new Color(45, 255, 0),
+            new Color(252, 223, 3),
+            new Color(3, 252, 240)
+    };
+
 
     static AtomicInteger agentIdGen = new AtomicInteger(0);
     private final int id;
@@ -316,15 +322,15 @@ public class Agent {
 
     void render()
     {
-        App.processingRef.stroke(SPECIES_COLORS[this.species].getRGB());
+        App.processingRef.stroke(speciesColors[this.species].getRGB());
         App.processingRef.strokeWeight(1);
-        if (this.energy >= this.suffEnergy) App.processingRef.fill(SPECIES_COLORS[this.species].getRGB(), 150);
+        if (this.energy >= this.suffEnergy) App.processingRef.fill(speciesColors[this.species].getRGB(), 150);
         else App.processingRef.fill(0);
 
         App.processingRef.circle((float)(App.ORIGINX + this.coordinates.getX()), (float)(App.ORIGINY + this.coordinates.getY()), 4);
-        App.processingRef.line((float)(App.ORIGINX + this.coordinates.getX()), (float)(App.ORIGINY + this.coordinates.getY()),
+        /*App.processingRef.line((float)(App.ORIGINX + this.coordinates.getX()), (float)(App.ORIGINY + this.coordinates.getY()),
                 (float)(App.ORIGINX + this.coordinates.getX() + 6 * Math.cos(direction)), (float)(App.ORIGINY + this.coordinates.getY() + 6 * Math.sin(direction))
-        );
+        );*/
     }
 
     //-----------------------------------
