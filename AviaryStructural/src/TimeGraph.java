@@ -20,8 +20,12 @@ public class TimeGraph {
     private boolean filled;
 
     private Mode mode;
+    private boolean renderScale;
+    private boolean renderTitle;
 
     private ArrayList<Dot> dots;
+
+    private ScaleSynchronizer scaleSynchronizer;
 
     private double maxY;
     private double minY;
@@ -36,6 +40,8 @@ public class TimeGraph {
     Color lineCl;
     Color levelLineCl;
     Color valueTextCl;
+    Color titleTextCl;
+    Color scaleTextCl;
 
 
     //--------------------------------------
@@ -50,7 +56,10 @@ public class TimeGraph {
         this.dimY = 100;
         this.capacity = 0;
         this.mode = Mode.SCROLLING;
+        this.renderScale = true;
+        this.renderTitle = true;
         this.dots = new ArrayList<Dot>();
+        this.scaleSynchronizer = null;
         this.maxY = 0;
         this.minY = Double.MAX_VALUE;
         this.textSize = 12;
@@ -101,6 +110,14 @@ public class TimeGraph {
         return this.dots.get(index).getY();
     }
 
+    public double getMinY() {
+        return minY;
+    }
+
+    public double getMaxY() {
+        return maxY;
+    }
+
     double getLastValue() {
         return this.dots.get(this.dots.size() - 1).getY();
     }
@@ -125,12 +142,32 @@ public class TimeGraph {
         this.originY = originY;
     }
 
-    void setDimX(int dimX) { this.dimX = dimX; }
-    void setDimY(int dimY) { this.dimY = dimY; }
+    public void setDimX(int dimX) { this.dimX = dimX; }
+    public void setDimY(int dimY) { this.dimY = dimY; }
 
-    void setCapacity(int capacity) { this.capacity = capacity; }
+    public void setCapacity(int capacity) { this.capacity = capacity; }
 
-    void setMode(int Mode) { this.mode = mode; }
+    public void setMode(int Mode) { this.mode = mode; }
+
+    public void setRenderScale(boolean renderScale) {
+        this.renderScale = renderScale;
+    }
+
+    public void setRenderTitle(boolean renderTitle) {
+        this.renderTitle = renderTitle;
+    }
+
+    public void setScaleSynchronizer(ScaleSynchronizer scaleSynchronizer) {
+        this.scaleSynchronizer = scaleSynchronizer;
+    }
+
+    public void setMinY(double minY) {
+        this.minY = minY;
+    }
+
+    public void setMaxY(double maxY) {
+        this.maxY = maxY;
+    }
 
     public void setTextSize(int textSize) {
         this.textSize = textSize;
@@ -160,6 +197,13 @@ public class TimeGraph {
         this.valueTextCl = valueTextCl;
     }
 
+    public void setTitleTextCl(Color titleTextCl) {
+        this.titleTextCl = titleTextCl;
+    }
+
+    public void setScaleTextCl(Color scaleTextCl) {
+        this.scaleTextCl = scaleTextCl;
+    }
     //---------------------------------
     //---------------------------------
 
@@ -180,8 +224,14 @@ public class TimeGraph {
 
         if(this.dots.size() == capacity) filled = true;
 
-        if(this.maxY < val) this.maxY = val;
-        if(this.minY > val) this.minY = val;
+        if(this.maxY < val) {
+            this.maxY = val;
+            if(this.scaleSynchronizer != null) this.scaleSynchronizer.syncScale();
+        }
+        if(this.minY > val) {
+            this.minY = val;
+            if(this.scaleSynchronizer != null) this.scaleSynchronizer.syncScale();
+        }
     }
 
     void removeFirstDot() {
@@ -208,6 +258,7 @@ public class TimeGraph {
         }
 
         this.minY = newMinY;
+        if(this.scaleSynchronizer != null) this.scaleSynchronizer.syncScale();
     }
 
     void updateMaxY() {
@@ -222,6 +273,8 @@ public class TimeGraph {
         }
 
         this.maxY = newMaxY;
+        if(this.scaleSynchronizer != null) this.scaleSynchronizer.syncScale();
+
     }
 
     Dot calcAbsCoordinates(int index) {
@@ -265,8 +318,8 @@ public class TimeGraph {
 
     void renderPlain() {
         App.processingRef.strokeWeight(1);
-        App.processingRef.stroke(this.borderCl.getRGB());
-        App.processingRef.fill(this.plainCl.getRGB());
+        App.processingRef.stroke(this.borderCl.getRGB(), this.borderCl.getAlpha());
+        App.processingRef.fill(this.plainCl.getRGB(), this.plainCl.getAlpha());
         App.processingRef.rect(this.originX, this.originY, this.dimX, this.dimY);
     }
 
@@ -320,7 +373,7 @@ public class TimeGraph {
     }
 
     void renderAxisScale() {
-        App.processingRef.fill(this.valueTextCl.getRGB());
+        App.processingRef.fill(this.scaleTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
         App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - (this.textSize + 20), this.originY + this.dimY - (this.textSize - 4));
         App.processingRef.text((float)(this.maxY + 0.25 * (this.maxY - this.minY)), this.originX + 5, this.originY + this.textSize + 4);
@@ -328,7 +381,7 @@ public class TimeGraph {
     }
 
     void renderTitle() {
-        App.processingRef.fill(this.valueTextCl.getRGB());
+        App.processingRef.fill(this.titleTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
         App.processingRef.text(this.title, this.originX + this.dimX - (this.title.length() * this.textSize + 4), this.originY + this.textSize + 4);
     }
@@ -338,8 +391,8 @@ public class TimeGraph {
         renderDotsLine();
         renderLevelLine();
         renderLastDotValue();
-        renderAxisScale();
-        renderTitle();
+        if(renderScale) renderAxisScale();
+        if(renderTitle) renderTitle();
     }
 
     //-----------------------------------

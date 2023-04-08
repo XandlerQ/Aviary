@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.time.chrono.JapaneseEra;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -74,6 +75,15 @@ public class Aviary {
 
     int getPopulation() {
         return this.agents.size();
+    }
+
+    int[] getPoplationInAreas() {
+        int areaPopulation[] = new int[4];
+        for(Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext();) {
+            Agent agent = iterator.next();
+            areaPopulation[this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())]++;
+        }
+        return areaPopulation;
     }
 
 

@@ -128,7 +128,7 @@ public class PropertyGrid<Property> {
         }
     }
 
-    PropertyArea<Property> getPropertyArea(double x, double y) {
+    int getPropertyAreaIndex(double x, double y) {
         if(x < 0) x = 0;
         if(y < 0) y = 0;
 
@@ -142,11 +142,19 @@ public class PropertyGrid<Property> {
         posQuadY = (int)((y - (y % this.sideY)) / this.sideY);
         if(posQuadY >= this.grCtY) posQuadY = this.grCtY - 1;
 
-        return this.propertyAreas.get(posQuadX * this.grCtY + posQuadY);
+        return posQuadX * this.grCtY + posQuadY;
+    }
+
+    int getPropertyAreaIndex(Dot coordinates) {
+        return getPropertyAreaIndex(coordinates.getX(), coordinates.getY());
+    }
+
+    PropertyArea<Property> getPropertyArea(double x, double y) {
+        return this.propertyAreas.get(getPropertyAreaIndex(x, y));
     }
 
     PropertyArea<Property> getPropertyArea(Dot coordinates) {
-        return getPropertyArea(coordinates.getX(), coordinates.getY());
+        return this.propertyAreas.get(getPropertyAreaIndex(coordinates));
     }
 
     Property getProperty(double x, double y) {
