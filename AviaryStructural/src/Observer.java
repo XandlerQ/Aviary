@@ -133,9 +133,9 @@ public class Observer {
     }
 
     void fillTimeGraphs() {
-        int graphDimX = 500;
-        int graphDimY = 400;
-        int graphCapacity = 500;
+        int graphDimX = 495;
+        int graphDimY = 300;
+        int graphCapacity = 495;
 
         TimeGraph populationGraph = new TimeGraph(graphDimX, graphDimY, graphCapacity);
         populationGraph.setTitle("Population");
@@ -225,7 +225,7 @@ public class Observer {
 
         TimeGraph energyDensityArea0Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
         energyDensityArea0Graph.setTitle("Area energy density");
-        energyDensityArea0Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea0Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 5);
         energyDensityArea0Graph.setPlainCl(new Color(0, 0, 0, 0));
         energyDensityArea0Graph.setBorderCl(new Color(100, 100, 100));
         energyDensityArea0Graph.setDotCl(App.PROPERTY_AREA_COLORS[0]);
@@ -239,7 +239,7 @@ public class Observer {
 
         TimeGraph energyDensityArea1Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
         energyDensityArea1Graph.setTitle("");
-        energyDensityArea1Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea1Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 5);
         energyDensityArea1Graph.setPlainCl(new Color(0, 0, 0, 0));
         energyDensityArea1Graph.setBorderCl(new Color(100, 100, 100));
         energyDensityArea1Graph.setDotCl(App.PROPERTY_AREA_COLORS[1]);
@@ -253,7 +253,7 @@ public class Observer {
 
         TimeGraph energyDensityArea2Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
         energyDensityArea2Graph.setTitle("");
-        energyDensityArea2Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea2Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 5);
         energyDensityArea2Graph.setPlainCl(new Color(0, 0, 0, 0));
         energyDensityArea2Graph.setBorderCl(new Color(100, 100, 100));
         energyDensityArea2Graph.setDotCl(App.PROPERTY_AREA_COLORS[2]);
@@ -267,7 +267,7 @@ public class Observer {
 
         TimeGraph energyDensityArea3Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
         energyDensityArea3Graph.setTitle("");
-        energyDensityArea3Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 10);
+        energyDensityArea3Graph.setOrigin(App.ORIGINX + App.DEFX, 2 * graphDimY + 5);
         energyDensityArea3Graph.setPlainCl(new Color(0, 0, 0, 0));
         energyDensityArea3Graph.setBorderCl(new Color(100, 100, 100));
         energyDensityArea3Graph.setDotCl(App.PROPERTY_AREA_COLORS[3]);
@@ -288,6 +288,58 @@ public class Observer {
         this.timeGraphs.add(energyDensityArea1Graph);
         this.timeGraphs.add(energyDensityArea2Graph);
         this.timeGraphs.add(energyDensityArea3Graph);
+
+        ScaleSynchronizer packScaleSynchronizer = new ScaleSynchronizer();
+
+        TimeGraph packArea0Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        packArea0Graph.setTitle("Area pack count");
+        packArea0Graph.setOrigin(App.ORIGINX + App.DEFX, 3 * graphDimY + 5);
+        packArea0Graph.setPlainCl(new Color(0, 0, 0, 0));
+        packArea0Graph.setBorderCl(new Color(100, 100, 100));
+        packArea0Graph.setDotCl(App.PROPERTY_AREA_COLORS[0]);
+        packArea0Graph.setLineCl(App.PROPERTY_AREA_COLORS[0]);
+        packArea0Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[0]);
+        packArea0Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[0]);
+        packArea0Graph.setScaleTextCl(Color.WHITE);
+        packArea0Graph.setTitleTextCl(Color.WHITE);
+        packArea0Graph.setTextSize(8);
+        packArea0Graph.setScaleSynchronizer(packScaleSynchronizer);
+
+        TimeGraph packArea1Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        packArea1Graph.setTitle("");
+        packArea1Graph.setOrigin(App.ORIGINX + App.DEFX, 3 * graphDimY + 5);
+        packArea1Graph.setPlainCl(new Color(0, 0, 0, 0));
+        packArea1Graph.setBorderCl(new Color(100, 100, 100));
+        packArea1Graph.setDotCl(App.PROPERTY_AREA_COLORS[1]);
+        packArea1Graph.setLineCl(App.PROPERTY_AREA_COLORS[1]);
+        packArea1Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[1]);
+        packArea1Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[1]);
+        packArea1Graph.setTextSize(8);
+        packArea1Graph.setRenderScale(false);
+        packArea1Graph.setRenderTitle(false);
+        packArea1Graph.setScaleSynchronizer(packScaleSynchronizer);
+
+        TimeGraph packArea2Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
+        packArea2Graph.setTitle("");
+        packArea2Graph.setOrigin(App.ORIGINX + App.DEFX, 3 * graphDimY + 5);
+        packArea2Graph.setPlainCl(new Color(0, 0, 0, 0));
+        packArea2Graph.setBorderCl(new Color(100, 100, 100));
+        packArea2Graph.setDotCl(App.PROPERTY_AREA_COLORS[2]);
+        packArea2Graph.setLineCl(App.PROPERTY_AREA_COLORS[2]);
+        packArea2Graph.setLevelLineCl(App.PROPERTY_AREA_COLORS[2]);
+        packArea2Graph.setValueTextCl(App.PROPERTY_AREA_COLORS[2]);
+        packArea2Graph.setTextSize(8);
+        packArea2Graph.setRenderScale(false);
+        packArea2Graph.setRenderTitle(false);
+        packArea2Graph.setScaleSynchronizer(packScaleSynchronizer);
+
+        packScaleSynchronizer.addGraph(packArea0Graph);
+        packScaleSynchronizer.addGraph(packArea1Graph);
+        packScaleSynchronizer.addGraph(packArea2Graph);
+
+        this.timeGraphs.add(packArea0Graph);
+        this.timeGraphs.add(packArea1Graph);
+        this.timeGraphs.add(packArea2Graph);
     }
 
     void addGraphData() {
@@ -306,6 +358,10 @@ public class Observer {
             this.timeGraphs.get(6).addValue(areaData[1][1] / areaData[0][1]);
             this.timeGraphs.get(7).addValue(areaData[1][2] / areaData[0][2]);
             this.timeGraphs.get(8).addValue(areaData[1][3] / areaData[0][3]);
+
+            this.timeGraphs.get(9).addValue(areaData[2][0]);
+            this.timeGraphs.get(10).addValue(areaData[2][1]);
+            this.timeGraphs.get(11).addValue(areaData[2][2]);
 
             resetTimeGraphCtr();
         }
