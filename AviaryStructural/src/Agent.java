@@ -113,6 +113,7 @@ public class Agent {
 
     double getHunger() { return this.maxEnergy - this.energy; }
     boolean wellFed() { return this.energy >= this.suffEnergy; }
+    boolean wellFedLone() { return this.energy >= this.maxEnergy * 0.8; }
 
     ResourceNode getLockedRes() { return this.lockedRes; }
     double getCollectedRes() { return this.collectedRes; }
@@ -357,7 +358,7 @@ public class Agent {
     {
         App.processingRef.stroke(speciesColors[this.species].getRGB());
         App.processingRef.strokeWeight(1);
-        if (this.energy >= this.suffEnergy) App.processingRef.fill(speciesColors[this.species].getRGB(), 150);
+        if (this.energy >= this.suffEnergy) App.processingRef.fill((new Color(255, 170, 0)).getRGB(), 150);
         else App.processingRef.fill(0);
 
         App.processingRef.circle((float)(App.ORIGINX + this.coordinates.getX()), (float)(App.ORIGINY + this.coordinates.getY()), 4);

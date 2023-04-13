@@ -41,10 +41,6 @@ public class Builder {
             );
         }
 
-        PropertyGrid<Integer> propertyGrid = aviaryRef.getPropertyGrid();
-        ag.setValence(propertyGrid.getProperty(ag.getCoordinates()));
-        ag.setPropertyAreaIndex(propertyGrid.getPropertyAreaIndex(ag.getCoordinates()));
-
         ag.setDirection(2 * Math.PI * r.nextDouble());
         if (species == 0) ag.setBaseSpeed(App.BASESPEED1);
         else ag.setBaseSpeed(App.BASESPEED2);

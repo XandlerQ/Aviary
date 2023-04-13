@@ -11,6 +11,7 @@ public class PropertyGrid<Property> {
 
     private double sideX;
     private double sideY;
+    private Dot intersection;
 
     ArrayList<PropertyArea<Property>> propertyAreas;
 
@@ -26,16 +27,18 @@ public class PropertyGrid<Property> {
         this.grCtY = 0;
         this.sideX = 0;
         this.sideY = 0;
+        this.intersection = null;
         this.propertyAreas = null;
     }
 
-    PropertyGrid(double defX, double defY, int grCtX, int grCtY) {
+    PropertyGrid(double defX, double defY) {
         this.defX = defX;
         this.defY = defY;
-        this.grCtX = grCtX;
-        this.grCtY = grCtY;
-        this.sideX = defX / grCtX;
-        this.sideY = defY / grCtY;
+        this.grCtX = 2;
+        this.grCtY = 2;
+        this.sideX = defX / this.grCtX;
+        this.sideY = defY / this.grCtY;
+        this.intersection = new Dot(this.defX / this.grCtX, this.defY / this.grCtY);
         this.propertyAreas = new ArrayList<>(grCtX * grCtY);
     }
 
@@ -68,6 +71,10 @@ public class PropertyGrid<Property> {
 
     public double getSideY() {
         return sideY;
+    }
+
+    public Dot getIntersection() {
+        return intersection;
     }
 
     public ArrayList<PropertyArea<Property>> getPropertyAreas() {
@@ -129,6 +136,8 @@ public class PropertyGrid<Property> {
         this.propertyAreas.get(3).setOriginY(dot.getY());
         this.propertyAreas.get(3).setSideX(this.defX - dot.getX());
         this.propertyAreas.get(3).setSideY(this.defY - dot.getY());
+
+        this.intersection = dot;
     }
 
     //---------------------------------
@@ -160,15 +169,22 @@ public class PropertyGrid<Property> {
         if(x > this.defX) x = this.defX;
         if(y > this.defY) y = this.defY;
 
-        int index = 0;
-
-        for(Iterator<PropertyArea<Property>> iterator = this.propertyAreas.iterator(); iterator.hasNext();) {
-            PropertyArea<Property> propertyArea = iterator.next();
-            if(propertyArea.inArea(x, y)) break;
-            else index++;
+        if(x <= this.intersection.getX()) {
+            if(y <= this.intersection.getY()) {
+                return 0;
+            }
+            else {
+                return 1;
+            }
         }
-        if(index >= 4) return 0;
-        return index;
+        else {
+            if(y <= this.intersection.getY()) {
+                return 2;
+            }
+            else {
+                return 3;
+            }
+        }
     }
 
     int getPropertyAreaIndex(Dot coordinates) {

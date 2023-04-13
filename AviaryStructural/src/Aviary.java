@@ -21,9 +21,9 @@ public class Aviary {
 
     Aviary () {
         this.resGroup = Builder.buildResourceGroup();
-        this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY, 2, 2);
+        this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY);
         this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
-        //this.propertyGrid.setIntersection(new Dot(600, 600));
+        this.propertyGrid.setIntersection(new Dot(700, 700));
         this.agents = Builder.buildAgentArray(this);
         this.packs = new ArrayList<>();
         this.observer = new Observer(this);
@@ -142,7 +142,7 @@ public class Aviary {
             }
         }
         else{
-            if(argAg.getConCount() == 0 && argAg.wellFed()){
+            if(argAg.getConCount() == 0 && argAg.wellFedLone()){
                 return;
             }
             ArrayList<ResourceNode> resources = resGroup.getVisibleResNodes(argAg.getX(), argAg.getY(), App.VISUALDIST);
@@ -379,7 +379,7 @@ public class Aviary {
                     && ag.getSpecies() == argAg.getSpecies()
                     && distance < App.SCRHEARDIST){
                 if(ag.getValence() == 0){
-                    if(!ag.wellFed()){
+                    if(!ag.wellFedLone()){
                         ag.face(argAg.getCoordinates());
                     }
                 }
@@ -497,6 +497,7 @@ public class Aviary {
 
             argAg.addToEnergy(-App.REPRODUCTCOST);
             agents.add(child);
+            if(argAg.topCon() || argAg.getValence() == 0) return;
             Pack parentPack = getPack(argAg);
             if(parentPack != null){
                 parentPack.addAgent(child);
@@ -516,11 +517,6 @@ public class Aviary {
     void updateProperty(Agent agent) {
         int propertyAreaIndex = this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates());
         if (agent.getPropertyAreaIndex() != propertyAreaIndex) {
-            if(agent.getEnergy() <= App.PAYMENT * 2) {
-                agent.stepBack();
-                agent.face(this.propertyGrid.getPropertyArea(agent.getPropertyAreaIndex()).getAreaCenter());
-                return;
-            }
             int areaValence = this.propertyGrid.getProperty(agent.getCoordinates());
             removeAgentFromPacks(agent);
             agent.setValence(areaValence);
@@ -535,12 +531,12 @@ public class Aviary {
                 }
             }
             if(newAreaPopulation <= 0) return;
+            double payment = App.PAYMENTRATIO * agent.getEnergy();
             for(Iterator<Agent> iterator = newAreaAgents.iterator(); iterator.hasNext();) {
                 Agent ag = iterator.next();
-                ag.addToEnergy(App.PAYMENT / newAreaPopulation);
+                ag.addToEnergy(payment / newAreaPopulation);
             }
-            agent.addToEnergy(-App.PAYMENT);
-            System.out.println("Paid to area " + propertyAreaIndex);
+            agent.addToEnergy(-payment);
         }
     }
 
