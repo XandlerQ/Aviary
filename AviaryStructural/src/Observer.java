@@ -135,7 +135,7 @@ public class Observer {
     void fillTimeGraphs() {
         int graphDimX = 495;
         int graphDimY = 300;
-        int graphCapacity = 495;
+        int graphCapacity = 198;
 
         TimeGraph populationGraph = new TimeGraph(graphDimX, graphDimY, graphCapacity);
         populationGraph.setTitle("Population");

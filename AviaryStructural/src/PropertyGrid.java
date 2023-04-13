@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class PropertyGrid<Property> {
 
@@ -110,6 +111,26 @@ public class PropertyGrid<Property> {
         this.sideY = this.defY / this.grCtY;
     }
 
+    void setIntersection(Dot dot) {
+        if (this.propertyAreas.size() != 4) return;
+
+        this.propertyAreas.get(0).setSideX(dot.getX());
+        this.propertyAreas.get(0).setSideY(dot.getY());
+
+        this.propertyAreas.get(1).setOriginY(dot.getY());
+        this.propertyAreas.get(1).setSideX(dot.getX());
+        this.propertyAreas.get(1).setSideY(this.defY - dot.getY());
+
+        this.propertyAreas.get(2).setOriginX(dot.getX());
+        this.propertyAreas.get(2).setSideX(this.defX - dot.getX());
+        this.propertyAreas.get(2).setSideY(dot.getY());
+
+        this.propertyAreas.get(3).setOriginX(dot.getX());
+        this.propertyAreas.get(3).setOriginY(dot.getY());
+        this.propertyAreas.get(3).setSideX(this.defX - dot.getX());
+        this.propertyAreas.get(3).setSideY(this.defY - dot.getY());
+    }
+
     //---------------------------------
     //---------------------------------
 
@@ -128,6 +149,10 @@ public class PropertyGrid<Property> {
         }
     }
 
+    PropertyArea<Property> getPropertyArea(int propertyAreaIndex) {
+        return this.propertyAreas.get(propertyAreaIndex);
+    }
+
     int getPropertyAreaIndex(double x, double y) {
         if(x < 0) x = 0;
         if(y < 0) y = 0;
@@ -135,14 +160,15 @@ public class PropertyGrid<Property> {
         if(x > this.defX) x = this.defX;
         if(y > this.defY) y = this.defY;
 
-        int posQuadX = 0;
-        posQuadX = (int)((x - (x % this.sideX)) / this.sideX);
-        if(posQuadX >= this.grCtX) posQuadX = this.grCtX - 1;
-        int posQuadY = 0;
-        posQuadY = (int)((y - (y % this.sideY)) / this.sideY);
-        if(posQuadY >= this.grCtY) posQuadY = this.grCtY - 1;
+        int index = 0;
 
-        return posQuadX * this.grCtY + posQuadY;
+        for(Iterator<PropertyArea<Property>> iterator = this.propertyAreas.iterator(); iterator.hasNext();) {
+            PropertyArea<Property> propertyArea = iterator.next();
+            if(propertyArea.inArea(x, y)) break;
+            else index++;
+        }
+        if(index >= 4) return 0;
+        return index;
     }
 
     int getPropertyAreaIndex(Dot coordinates) {

@@ -205,6 +205,8 @@ public class App extends PApplet {
             4, 3, 2, 0
     };
 
+    public static double PAYMENT = 10;
+
     public static int INITAGENTAMOUNT1 = 100;
     public static int INITAGENTAMOUNT2 = 0;
 
@@ -212,7 +214,7 @@ public class App extends PApplet {
 
     public static double BASERES = 190;
     public static double RESREPSPEED = BASERES/360;
-    public static int RESPERQUAD = 3;
+    public static int RESPERQUAD = 6;
     public static int RESREPCTRPEAK = 240;
 
     //  Agent settings

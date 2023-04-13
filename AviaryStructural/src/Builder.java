@@ -3,23 +3,23 @@ import java.util.Random;
 
 public class Builder {
 
-    public static ArrayList<Agent> buildAgentArray() {
+    public static ArrayList<Agent> buildAgentArray(Aviary aviaryRef) {
         ArrayList<Agent> agents = new ArrayList<>(App.INITAGENTAMOUNT1 + App.INITAGENTAMOUNT2);
 
         Random r = new Random();
 
         for (int i = 0; i < App.INITAGENTAMOUNT1; i++) {
-            agents.add(buildAgent(0));
+            agents.add(buildAgent(0, aviaryRef));
         }
 
         for (int i = 0; i < App.INITAGENTAMOUNT2; i++) {
-            agents.add(buildAgent(1));
+            agents.add(buildAgent(1, aviaryRef));
         }
 
         return agents;
     }
 
-    public static Agent buildAgent(int species) {
+    public static Agent buildAgent(int species, Aviary aviaryRef) {
         Random r = new Random();
 
         Agent ag = new Agent();
@@ -40,6 +40,11 @@ public class Builder {
                     App.DEFY / 10 + (4 * App.DEFY / 5) * r.nextFloat()
             );
         }
+
+        PropertyGrid<Integer> propertyGrid = aviaryRef.getPropertyGrid();
+        ag.setValence(propertyGrid.getProperty(ag.getCoordinates()));
+        ag.setPropertyAreaIndex(propertyGrid.getPropertyAreaIndex(ag.getCoordinates()));
+
         ag.setDirection(2 * Math.PI * r.nextDouble());
         if (species == 0) ag.setBaseSpeed(App.BASESPEED1);
         else ag.setBaseSpeed(App.BASESPEED2);
@@ -49,7 +54,7 @@ public class Builder {
         ag.setAgeIncr(App.AGEPERSTEP);
 
         ag.setMaxEnergy(App.MAXENERGY);
-        ag.setEnergy(App.SUFFENERGY / 2 + App.SUFFENERGY * r.nextDouble());
+        ag.setEnergy(App.SUFFENERGY + App.SUFFENERGY * r.nextDouble());
         ag.setSuffEnergy(App.SUFFENERGY);
 
         if (species == 0) ag.setEnergyDecr(App.NRGPERSTEP1);

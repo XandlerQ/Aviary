@@ -36,6 +36,7 @@ public class Agent {
     private double collectedRes;
 
     private int valence;
+    private int propertyAreaIndex;
     private int conCount;
     private double lastHeardAge;
 
@@ -71,6 +72,7 @@ public class Agent {
         this.collectedRes = 0;
 
         this.valence = 0;
+        this.propertyAreaIndex = -1;
         this.conCount = 0;
         this.lastHeardAge = -1;
 
@@ -116,6 +118,11 @@ public class Agent {
     double getCollectedRes() { return this.collectedRes; }
 
     int getValence() { return this.valence; }
+
+    public int getPropertyAreaIndex() {
+        return propertyAreaIndex;
+    }
+
     int getConCount() { return this.conCount; }
     double getLastHeardAge() { return this.lastHeardAge; }
     boolean topCon() { return this.conCount >= this.valence; }
@@ -175,6 +182,11 @@ public class Agent {
     void resetCollectedRes() { this.collectedRes = 0; }
 
     void setValence(int valence) { this.valence = valence; }
+
+    public void setPropertyAreaIndex(int propertyAreaIndex) {
+        this.propertyAreaIndex = propertyAreaIndex;
+    }
+
     void setLastHeardAge(double age) { this.lastHeardAge = age; }
     void resetLastHeardAge() { this.lastHeardAge = -1; }
     void resetConCount() { this.conCount = 0; }
@@ -187,6 +199,27 @@ public class Agent {
     void setStationary(boolean stationary) { this.stationary = stationary; }
     void lock() { this.stationary = true; }
     void unlock() { this.stationary = false; }
+    void turnAround() {
+        this.direction += Math.PI;
+        normalizeDirection();
+    }
+
+    void stepBack() {
+        double newX = this.coordinates.getX() - 1.5 * this.speed * Math.cos(this.direction);
+        double newY = this.coordinates.getY() - 1.5 * this.speed * Math.sin(this.direction);
+
+        if(newX > App.DEFX - App.WALLTHICKNESS ||
+                newX < App.WALLTHICKNESS ||
+                newY > App.DEFY - App.WALLTHICKNESS ||
+                newY < App.WALLTHICKNESS) {
+            direction += (double)(Math.PI);
+            normalizeDirection();
+            newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
+            newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
+        }
+
+        this.setCoordinates(newX, newY);
+    }
 
     //---------------------------------
     //---------------------------------

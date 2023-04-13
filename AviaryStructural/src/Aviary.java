@@ -23,7 +23,8 @@ public class Aviary {
         this.resGroup = Builder.buildResourceGroup();
         this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY, 2, 2);
         this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
-        this.agents = Builder.buildAgentArray();
+        //this.propertyGrid.setIntersection(new Dot(600, 600));
+        this.agents = Builder.buildAgentArray(this);
         this.packs = new ArrayList<>();
         this.observer = new Observer(this);
         observer.fillTimeGraphs();
@@ -489,7 +490,7 @@ public class Aviary {
         }
 
         if(rep){
-            Agent child = Builder.buildAgent(argAg.getSpecies());
+            Agent child = Builder.buildAgent(argAg.getSpecies(), this);
             child.setCoordinates(new Dot(argAg.getCoordinates()));
             child.setAge(0);
             child.updateSpeed();
@@ -513,10 +514,33 @@ public class Aviary {
     //------Property calculations------
 
     void updateProperty(Agent agent) {
-        int areaValence = this.propertyGrid.getProperty(agent.getCoordinates());
-        if (agent.getValence() != areaValence) {
+        int propertyAreaIndex = this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates());
+        if (agent.getPropertyAreaIndex() != propertyAreaIndex) {
+            if(agent.getEnergy() <= App.PAYMENT * 2) {
+                agent.stepBack();
+                agent.face(this.propertyGrid.getPropertyArea(agent.getPropertyAreaIndex()).getAreaCenter());
+                return;
+            }
+            int areaValence = this.propertyGrid.getProperty(agent.getCoordinates());
             removeAgentFromPacks(agent);
             agent.setValence(areaValence);
+            agent.setPropertyAreaIndex(propertyAreaIndex);
+            int newAreaPopulation = 0;
+            ArrayList<Agent> newAreaAgents = new ArrayList<>();
+            for(Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext();) {
+                Agent ag = iterator.next();
+                if(ag.getPropertyAreaIndex() == propertyAreaIndex) {
+                    newAreaPopulation++;
+                    newAreaAgents.add(ag);
+                }
+            }
+            if(newAreaPopulation <= 0) return;
+            for(Iterator<Agent> iterator = newAreaAgents.iterator(); iterator.hasNext();) {
+                Agent ag = iterator.next();
+                ag.addToEnergy(App.PAYMENT / newAreaPopulation);
+            }
+            agent.addToEnergy(-App.PAYMENT);
+            System.out.println("Paid to area " + propertyAreaIndex);
         }
     }
 
@@ -544,8 +568,8 @@ public class Aviary {
 
                 directionDecision(ag);
                 scream(ag);
-                ag.step();
                 updateProperty(ag);
+                ag.step();
                 agResCollection(ag);
 
 
