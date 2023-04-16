@@ -177,6 +177,10 @@ public class App extends PApplet {
         }
     }
 
+//    public void mouseClicked() {
+//        if(AV != null) System.out.println(AV.getPropertyGrid().getPropertyAreaIndex(mouseX - App.ORIGINX, mouseY - App.ORIGINY));
+//    }
+
     public static void main(String... args){
         PApplet.main("App");
     }
@@ -204,8 +208,8 @@ public class App extends PApplet {
     public static Integer[] PROPERTY_AREA_VALUES = {
             4, 3, 2, 0
     };
-
-    public static double PAYMENTRATIO = 0.5;
+    public static boolean PAYMENT = false;
+    public static double PAYMENTRATIO = 0.33;
 
     public static int INITAGENTAMOUNT1 = 100;
     public static int INITAGENTAMOUNT2 = 0;
@@ -222,7 +226,7 @@ public class App extends PApplet {
     public static double BASESPEED2 = 1.6;
 
     public static double BASEMAXAGE = 3600;
-    public static double AGEPERSTEP = 0;
+    public static double AGEPERSTEP = 1;
 
     public static double SUFFENERGY = 25;
     public static double MAXENERGY = 50;
@@ -235,7 +239,7 @@ public class App extends PApplet {
     public static double RESECOLLECTEDPERSTEP = 1.0;
 
     //  Reproduction settings
-    public static double REPRODUCTLOW = 1440;
+    public static double REPRODUCTLOW = 1000;
     public static double REPRODUCTHIGH = 3000;
     public static double REPRODUCTPROB1 = 0.0015;
     public static double REPRODUCTPROB2 = 0.0015;

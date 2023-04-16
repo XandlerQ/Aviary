@@ -257,6 +257,9 @@ public class Pack {
     //-----------------------------------
 
     void render(){
+        App.processingRef.stroke(Color.RED.getRGB(),50);
+        App.processingRef.fill(Color.WHITE.getRGB(),50);
+        App.processingRef.circle(App.ORIGINX + (float)this.agents.get(0).getX(), App.ORIGINY + (float)this.agents.get(0).getY(), 10);
         connections.forEach((con) -> {
             Agent ag1 = con.getFirst();
             Agent ag2 = con.getSecond();
@@ -271,6 +274,7 @@ public class Pack {
             App.processingRef.strokeWeight(1);
             App.processingRef.line((float)(App.ORIGINX + ag1.getX()), (float)(App.ORIGINY + ag1.getY()), (float)(App.ORIGINX + ag2.getX()), (float)(App.ORIGINY + ag2.getY()));
         });
+
     }
 
     //-----------------------------------

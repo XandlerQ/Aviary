@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.time.chrono.JapaneseEra;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -23,8 +22,8 @@ public class Aviary {
         this.resGroup = Builder.buildResourceGroup();
         this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY);
         this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
-        this.propertyGrid.setIntersection(new Dot(700, 700));
-        this.agents = Builder.buildAgentArray(this);
+        //this.propertyGrid.setIntersection(new Dot(700, 700));
+        this.agents = Builder.buildAgentArray();
         this.packs = new ArrayList<>();
         this.observer = new Observer(this);
         observer.fillTimeGraphs();
@@ -80,6 +79,13 @@ public class Aviary {
 
     double[][] getDataInAreas() {
         double areaData[][] = new double[3][4];
+
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 4; j++) {
+                areaData[i][j] = 0.;
+            }
+        }
+
         for(Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext();) {
             Agent agent = iterator.next();
             areaData[0][this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())] += 1;
@@ -490,7 +496,8 @@ public class Aviary {
         }
 
         if(rep){
-            Agent child = Builder.buildAgent(argAg.getSpecies(), this);
+
+            Agent child = Builder.buildAgent(argAg.getSpecies());
             child.setCoordinates(new Dot(argAg.getCoordinates()));
             child.setAge(0);
             child.updateSpeed();
@@ -521,22 +528,24 @@ public class Aviary {
             removeAgentFromPacks(agent);
             agent.setValence(areaValence);
             agent.setPropertyAreaIndex(propertyAreaIndex);
-            int newAreaPopulation = 0;
-            ArrayList<Agent> newAreaAgents = new ArrayList<>();
-            for(Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext();) {
-                Agent ag = iterator.next();
-                if(ag.getPropertyAreaIndex() == propertyAreaIndex) {
-                    newAreaPopulation++;
-                    newAreaAgents.add(ag);
+            if(App.PAYMENT) {
+                int newAreaPopulation = 0;
+                ArrayList<Agent> newAreaAgents = new ArrayList<>();
+                for (Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext(); ) {
+                    Agent ag = iterator.next();
+                    if (ag.getPropertyAreaIndex() == propertyAreaIndex) {
+                        newAreaPopulation++;
+                        newAreaAgents.add(ag);
+                    }
                 }
+                if (newAreaPopulation <= 0) return;
+                double payment = App.PAYMENTRATIO * agent.getEnergy();
+                for (Iterator<Agent> iterator = newAreaAgents.iterator(); iterator.hasNext(); ) {
+                    Agent ag = iterator.next();
+                    ag.addToEnergy(payment / newAreaPopulation);
+                }
+                agent.addToEnergy(-payment);
             }
-            if(newAreaPopulation <= 0) return;
-            double payment = App.PAYMENTRATIO * agent.getEnergy();
-            for(Iterator<Agent> iterator = newAreaAgents.iterator(); iterator.hasNext();) {
-                Agent ag = iterator.next();
-                ag.addToEnergy(payment / newAreaPopulation);
-            }
-            agent.addToEnergy(-payment);
         }
     }
 
@@ -572,6 +581,7 @@ public class Aviary {
 
                 if(ag.getEnergy() > App.REPRODUCTCOST + App.SUFFENERGY && ag.getAge() >= App.REPRODUCTLOW && ag.getAge() <= App.REPRODUCTHIGH){
                     reproductList.add(ag);
+
                 }
 
                 if(ag.getConCount() == 0){
@@ -580,9 +590,9 @@ public class Aviary {
             }
         }
 
-        reproductList.parallelStream().forEach((ag) -> {reproduction(ag);});
+        reproductList.forEach((ag) -> {reproduction(ag);});
 
-        packs.parallelStream().forEach((pack) -> {
+        packs.forEach((pack) -> {
             pack.collectedResDistribution();
             pack.energyDepletion();
         });

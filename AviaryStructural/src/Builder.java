@@ -3,23 +3,23 @@ import java.util.Random;
 
 public class Builder {
 
-    public static ArrayList<Agent> buildAgentArray(Aviary aviaryRef) {
+    public static ArrayList<Agent> buildAgentArray() {
         ArrayList<Agent> agents = new ArrayList<>(App.INITAGENTAMOUNT1 + App.INITAGENTAMOUNT2);
 
         Random r = new Random();
 
         for (int i = 0; i < App.INITAGENTAMOUNT1; i++) {
-            agents.add(buildAgent(0, aviaryRef));
+            agents.add(buildAgent(0));
         }
 
         for (int i = 0; i < App.INITAGENTAMOUNT2; i++) {
-            agents.add(buildAgent(1, aviaryRef));
+            agents.add(buildAgent(1));
         }
 
         return agents;
     }
 
-    public static Agent buildAgent(int species, Aviary aviaryRef) {
+    public static Agent buildAgent(int species) {
         Random r = new Random();
 
         Agent ag = new Agent();
