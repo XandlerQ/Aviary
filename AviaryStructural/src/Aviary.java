@@ -19,14 +19,7 @@ public class Aviary {
     //--------------------------------------
 
     Aviary () {
-        this.resGroup = Builder.buildResourceGroup();
-        this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY);
-        this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
-        //this.propertyGrid.setIntersection(new Dot(700, 700));
-        this.agents = Builder.buildAgentArray();
-        this.packs = new ArrayList<>();
-        this.observer = new Observer(this);
-        observer.fillTimeGraphs();
+        initialize();
     }
 
     //--------------------------------------
@@ -551,10 +544,25 @@ public class Aviary {
 
     //---------------Main---------------
 
-    void tick(){                                                                        //Performes animation tick
+    void initialize() {
+        this.resGroup = Builder.buildResourceGroup();
+        this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY);
+        this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
+        //this.propertyGrid.setIntersection(new Dot(700, 700));
+        this.agents = Builder.buildAgentArray();
+        this.packs = new ArrayList<>();
+        this.observer = new Observer(this);
+        observer.fillTimeGraphs();
+    }
+
+    void preProcedure() {
+        resGroup.replenishNodes();
+    }
+
+    void mainProcedure() {
         ArrayList<Agent> reproductList = new ArrayList<>();
 
-        resGroup.replenishNodes();
+
 
         for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
 
@@ -563,7 +571,6 @@ public class Aviary {
             if(ag.dead()){
                 removeAgentFromPacks(ag);
                 iter.remove();
-                //println("REMOVED DEAD AGENT, AGENT COUNT:", agents.size());
             }
             else{
 
@@ -591,7 +598,9 @@ public class Aviary {
         }
 
         reproductList.forEach((ag) -> {reproduction(ag);});
+    }
 
+    void postProcedure() {
         packs.forEach((pack) -> {
             pack.collectedResDistribution();
             pack.energyDepletion();
@@ -603,14 +612,27 @@ public class Aviary {
             ag.resetCollectedRes();
             ag.resetLastHeardAge();
         });
+    }
 
+    boolean endPredicate() {
+        return false;
+    }
+
+    void deinitialize() {
+
+    }
+
+    void tick(){
+        preProcedure();
+        mainProcedure();
+        postProcedure();
     }
 
     boolean run(){                                                       //Main method                                                                           //Perform animation tick
         render();
         tick();
         this.observer.addGraphData();
-        return false;
+        return endPredicate();
     }
 
     //---------------------------------

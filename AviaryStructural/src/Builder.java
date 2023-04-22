@@ -45,8 +45,8 @@ public class Builder {
         if (species == 0) ag.setBaseSpeed(App.BASESPEED1);
         else ag.setBaseSpeed(App.BASESPEED2);
 
-        ag.setAge(App.BASEMAXAGE * r.nextDouble());
-        ag.setMaxAge(App.BASEMAXAGE);
+        ag.setAge(2 * App.BASEMAXAGE * r.nextDouble() / 3);
+        ag.setMaxAge(4 * App.BASEMAXAGE / 5 + 2 * App.BASEMAXAGE * r.nextDouble() / 5);
         ag.setAgeIncr(App.AGEPERSTEP);
 
         ag.setMaxEnergy(App.MAXENERGY);

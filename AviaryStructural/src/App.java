@@ -224,6 +224,7 @@ public class App extends PApplet {
     //  Agent settings
     public static double BASESPEED1 = 1.6;
     public static double BASESPEED2 = 1.6;
+    public static double SPEEDAGECOEFF = 1;
 
     public static double BASEMAXAGE = 3600;
     public static double AGEPERSTEP = 1;

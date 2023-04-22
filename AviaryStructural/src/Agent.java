@@ -205,23 +205,6 @@ public class Agent {
         normalizeDirection();
     }
 
-    void stepBack() {
-        double newX = this.coordinates.getX() - 1.5 * this.speed * Math.cos(this.direction);
-        double newY = this.coordinates.getY() - 1.5 * this.speed * Math.sin(this.direction);
-
-        if(newX > App.DEFX - App.WALLTHICKNESS ||
-                newX < App.WALLTHICKNESS ||
-                newY > App.DEFY - App.WALLTHICKNESS ||
-                newY < App.WALLTHICKNESS) {
-            direction += (double)(Math.PI);
-            normalizeDirection();
-            newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
-            newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
-        }
-
-        this.setCoordinates(newX, newY);
-    }
-
     //---------------------------------
     //---------------------------------
 
@@ -271,7 +254,7 @@ public class Agent {
 
     void updateSpeed() {
         this.speed = this.baseSpeed
-                - (this.baseSpeed / 4)
+                - App.SPEEDAGECOEFF * (this.baseSpeed / 4)
                 * (4 * (this.age - this.maxAge/2) * (this.age - this.maxAge/2) / (this.maxAge * this.maxAge));
     }
 
