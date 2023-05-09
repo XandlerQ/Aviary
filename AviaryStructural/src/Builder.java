@@ -71,4 +71,11 @@ public class Builder {
         return resGroup;
     }
 
+    public static ResourceGrid buildResourceGrid() {
+        ResourceGrid resGrid = new ResourceGrid(App.DEFX, App.DEFY, App.QUADX, App.QUADY);
+        resGrid.fillResources(App.BASERES, 0.5, App.RESREPSPEED, App.RESREPCTRPEAK);
+
+        return resGrid;
+    }
+
 }

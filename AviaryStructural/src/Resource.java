@@ -43,6 +43,10 @@ public class Resource {
 
     double getRes() { return this.res; }
 
+    public double getMaxRes() {
+        return maxRes;
+    }
+
     boolean empty() { return this.res <= 0; }
 
     //---------------------------------

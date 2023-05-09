@@ -37,8 +37,14 @@ this.pop1Gr = new TimeGraph(600, 400, 500);
     }
  */
 
+import processing.data.Table;
+
 import java.awt.*;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 public class Observer {
 
@@ -49,28 +55,16 @@ public class Observer {
 
     //Data
 
-    int population;
+    double aviaryData[][];
+    int reportCtr;
+    int reportCtrPeak;
+    ArrayList<String> reportDataHeaders;
 
-    int areaCount;
-    int valuesPerArea;
-    double[][] areaDataValues;
-
-//    int populationArea0;
-//    int populationArea1;
-//    int populationArea2;
-//    int populationArea3;
-//    double resourceArea0;
-//    double resourceArea1;
-//    double resourceArea2;
-//    double resourceArea3;
-//    double energyArea0;
-//    double energyArea1;
-//    double energyArea2;
-//    double energyArea3;
-//    double energyDensityArea0;
-//    double energyDensityArea1;
-//    double energyDensityArea2;
-//    double energyDensityArea3;
+    String reportFileName;
+    File reportFile;
+    FileWriter fw;
+    BufferedWriter bw;
+    PrintWriter pw;
 
     //--------------------------------------
     //-----------  Constructors  -----------
@@ -80,10 +74,9 @@ public class Observer {
         this.aviaryReference = null;
         this.timeGraphs = null;
         this.timeGraphCtr = 0;
-        this.timeGraphCtrPeak = App.INFOREPCTRPEAK - 1;
-        this.areaCount = 0;
-        this.valuesPerArea = 0;
-        this.areaDataValues = null;
+        this.timeGraphCtrPeak = App.GRAPHDATACTRPEAK - 1;
+        this.reportCtr = 0;
+        this.reportCtrPeak = App.REPORTCTRPEAK - 1;
     }
 
     Observer(Aviary aviaryReference) {
@@ -94,9 +87,6 @@ public class Observer {
 
     Observer(Aviary aviaryReference, int areaCount, int valuesPerArea) {
         this(aviaryReference);
-        this.areaCount = areaCount;
-        this.valuesPerArea = valuesPerArea;
-        this.areaDataValues = new double[areaCount][valuesPerArea];
     }
 
     //--------------------------------------
@@ -121,6 +111,14 @@ public class Observer {
         this.aviaryReference = aviaryReference;
     }
 
+    public void setReportDataHeaders(ArrayList<String> reportDataHeaders) {
+        this.reportDataHeaders = reportDataHeaders;
+    }
+
+    public void setReportFileName(String reportFileName) {
+        this.reportFileName = reportFileName;
+    }
+
     //---------------------------------
     //---------------------------------
 
@@ -132,6 +130,8 @@ public class Observer {
         this.timeGraphCtr = this.timeGraphCtrPeak;
     }
 
+    void resetReportCtr() { this.reportCtr = this.reportCtrPeak; }
+
     void fillTimeGraphs() {
         int graphDimX = 495;
         int graphDimY = 300;
@@ -140,15 +140,16 @@ public class Observer {
         TimeGraph populationGraph = new TimeGraph(graphDimX, graphDimY, graphCapacity);
         populationGraph.setTitle("Population");
         populationGraph.setOrigin(App.ORIGINX + App.DEFX, 5);
-        populationGraph.setPlainCl(new Color(0, 0, 0, 0));
+        populationGraph.setPlainCl(new Color(255, 255, 255));
         populationGraph.setBorderCl(new Color(100, 100, 100));
         populationGraph.setDotCl(Color.RED);
         populationGraph.setLineCl(Color.RED);
-        populationGraph.setLevelLineCl(Color.YELLOW);
-        populationGraph.setValueTextCl(Color.WHITE);
-        populationGraph.setTitleTextCl(Color.WHITE);
-        populationGraph.setScaleTextCl(Color.WHITE);
+        populationGraph.setLevelLineCl(Color.RED);
+        populationGraph.setValueTextCl(Color.BLACK);
+        populationGraph.setTitleTextCl(Color.BLACK);
+        populationGraph.setScaleTextCl(Color.BLACK);
         populationGraph.setTextSize(8);
+        populationGraph.setInteger(true);
 
         this.timeGraphs.add(populationGraph);
 
@@ -167,7 +168,9 @@ public class Observer {
         populationArea0Graph.setScaleTextCl(Color.WHITE);
         populationArea0Graph.setTitleTextCl(Color.WHITE);
         populationArea0Graph.setTextSize(8);
+        populationArea0Graph.setInteger(true);
         populationArea0Graph.setScaleSynchronizer(populationScaleSynchronizer);
+
 
         TimeGraph populationArea1Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
         populationArea1Graph.setTitle("");
@@ -181,6 +184,7 @@ public class Observer {
         populationArea1Graph.setTextSize(8);
         populationArea1Graph.setRenderScale(false);
         populationArea1Graph.setRenderTitle(false);
+        populationArea1Graph.setInteger(true);
         populationArea1Graph.setScaleSynchronizer(populationScaleSynchronizer);
 
         TimeGraph populationArea2Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
@@ -195,6 +199,7 @@ public class Observer {
         populationArea2Graph.setTextSize(8);
         populationArea2Graph.setRenderScale(false);
         populationArea2Graph.setRenderTitle(false);
+        populationArea2Graph.setInteger(true);
         populationArea2Graph.setScaleSynchronizer(populationScaleSynchronizer);
 
         TimeGraph populationArea3Graph = new TimeGraph(graphDimX * 2, graphDimY, graphCapacity);
@@ -209,6 +214,7 @@ public class Observer {
         populationArea3Graph.setTextSize(8);
         populationArea3Graph.setRenderScale(false);
         populationArea3Graph.setRenderTitle(false);
+        populationArea3Graph.setInteger(true);
         populationArea3Graph.setScaleSynchronizer(populationScaleSynchronizer);
 
         populationScaleSynchronizer.addGraph(populationArea0Graph);
@@ -342,28 +348,126 @@ public class Observer {
         this.timeGraphs.add(packArea2Graph);
     }
 
+    void observeAviaryData() {
+        this.aviaryData = aviaryReference.getDataInAreas();
+    }
+
     void addGraphData() {
         if(this.timeGraphCtr > 0) {
             this.timeGraphCtr--;
         }
         else {
+            observeAviaryData();
+
             this.timeGraphs.get(0).addValue(aviaryReference.getPopulation());
-            double areaData[][] = aviaryReference.getDataInAreas();
-            this.timeGraphs.get(1).addValue(areaData[0][0]);
-            this.timeGraphs.get(2).addValue(areaData[0][1]);
-            this.timeGraphs.get(3).addValue(areaData[0][2]);
-            this.timeGraphs.get(4).addValue(areaData[0][3]);
+            this.timeGraphs.get(1).addValue(aviaryData[0][0]);
+            this.timeGraphs.get(2).addValue(aviaryData[0][1]);
+            this.timeGraphs.get(3).addValue(aviaryData[0][2]);
+            this.timeGraphs.get(4).addValue(aviaryData[0][3]);
 
-            this.timeGraphs.get(5).addValue(areaData[1][0] / areaData[0][0]);
-            this.timeGraphs.get(6).addValue(areaData[1][1] / areaData[0][1]);
-            this.timeGraphs.get(7).addValue(areaData[1][2] / areaData[0][2]);
-            this.timeGraphs.get(8).addValue(areaData[1][3] / areaData[0][3]);
+            if (aviaryData[0][0] != 0) this.timeGraphs.get(5).addValue(aviaryData[1][0] / aviaryData[0][0]);
+            else this.timeGraphs.get(5).addValue(0);
+            if (aviaryData[0][1] != 0) this.timeGraphs.get(6).addValue(aviaryData[1][1] / aviaryData[0][1]);
+            else this.timeGraphs.get(6).addValue(0);
+            if (aviaryData[0][2] != 0) this.timeGraphs.get(7).addValue(aviaryData[1][2] / aviaryData[0][2]);
+            else this.timeGraphs.get(7).addValue(0);
+            if (aviaryData[0][3] != 0) this.timeGraphs.get(8).addValue(aviaryData[1][3] / aviaryData[0][3]);
+            else this.timeGraphs.get(8).addValue(0);
 
-            this.timeGraphs.get(9).addValue(areaData[2][0]);
-            this.timeGraphs.get(10).addValue(areaData[2][1]);
-            this.timeGraphs.get(11).addValue(areaData[2][2]);
+            this.timeGraphs.get(9).addValue(aviaryData[2][0]);
+            this.timeGraphs.get(10).addValue(aviaryData[2][1]);
+            this.timeGraphs.get(11).addValue(aviaryData[2][2]);
 
             resetTimeGraphCtr();
+        }
+    }
+
+    String formTimeStampFileName(){
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
+        Date currentTimeStamp = new Date();
+        String timeStampFileName = "report_" + sdfDate.format(currentTimeStamp);
+
+        return timeStampFileName;
+    }
+
+    void writeDataHeaders() {
+        this.reportFile = new File("reports\\" + this.reportFileName + ".csv");
+
+        if (!this.reportFile.exists()) {
+            try {
+                this.reportFile.createNewFile();
+            }
+            catch (IOException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+        String dataHeadersString = new String();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Iterator<String> iterator = this.reportDataHeaders.iterator(); iterator.hasNext();) {
+            stringBuilder.append(iterator.next());
+            if (iterator.hasNext()) stringBuilder.append(", ");
+            else stringBuilder.append("\n");
+        }
+
+        dataHeadersString = stringBuilder.toString();
+
+        try {
+            this.fw = new FileWriter(this.reportFile, true);
+            this.bw = new BufferedWriter(this.fw);
+            this.pw = new PrintWriter(this.bw);
+
+            pw.write(dataHeadersString);
+
+            this.pw.close();
+            this.bw.close();
+            this.fw.close();
+        }
+        catch (IOException e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    void report() {
+        if(this.reportCtr > 0) {
+            this.reportCtr--;
+        }
+        else {
+            String reportString = new String();
+            StringBuilder stringBuilder = new StringBuilder();
+            observeAviaryData();
+            stringBuilder.append(aviaryReference.getPopulation()).append(", ");
+            stringBuilder.append(aviaryData[0][0]).append(", ");
+            stringBuilder.append(aviaryData[0][1]).append(", ");
+            stringBuilder.append(aviaryData[0][2]).append(", ");
+            stringBuilder.append(aviaryData[0][3]).append(", ");
+            stringBuilder.append(aviaryData[1][0] / aviaryData[0][0]).append(", ");
+            stringBuilder.append(aviaryData[1][1] / aviaryData[0][1]).append(", ");
+            stringBuilder.append(aviaryData[1][2] / aviaryData[0][2]).append(", ");
+            stringBuilder.append(aviaryData[1][3] / aviaryData[0][3]).append(", ");
+            stringBuilder.append(aviaryData[2][0]).append(", ");
+            stringBuilder.append(aviaryData[2][1]).append(", ");
+            stringBuilder.append(aviaryData[2][2]).append("\n");
+
+            reportString = stringBuilder.toString();
+
+            try {
+                this.fw = new FileWriter(this.reportFile, true);
+                this.bw = new BufferedWriter(this.fw);
+                this.pw = new PrintWriter(this.bw);
+
+                pw.write(reportString);
+
+                this.pw.close();
+                this.bw.close();
+                this.fw.close();
+            }
+            catch (IOException e) {
+                System.out.println(e.toString());
+            }
+
+            resetReportCtr();
         }
     }
 

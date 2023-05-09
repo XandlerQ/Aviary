@@ -130,9 +130,9 @@ public class ResourceGroup {
     }
 
     void fillResNodes(double maxRes, double fraction, double resRepSpeed, int repCtrPeak) {
-        for(int i = 0; i < grCtX; i++){
-            for(int j = 0; j < grCtY; j++){
-                for (int k = 0; k < density; k++){
+        for(int i = 0; i < this.grCtX; i++){
+            for(int j = 0; j < this.grCtY; j++){
+                for (int k = 0; k < this.density; k++){
                     this.resNodes.add(
                             new ResourceNode(
                                     maxRes,

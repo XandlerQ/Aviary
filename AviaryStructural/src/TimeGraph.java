@@ -22,6 +22,7 @@ public class TimeGraph {
     private Mode mode;
     private boolean renderScale;
     private boolean renderTitle;
+    private boolean integer;
 
     private ArrayList<Dot> dots;
 
@@ -58,6 +59,7 @@ public class TimeGraph {
         this.mode = Mode.SCROLLING;
         this.renderScale = true;
         this.renderTitle = true;
+        this.integer = false;
         this.dots = new ArrayList<Dot>();
         this.scaleSynchronizer = null;
         this.maxY = 0;
@@ -155,6 +157,10 @@ public class TimeGraph {
 
     public void setRenderTitle(boolean renderTitle) {
         this.renderTitle = renderTitle;
+    }
+
+    public void setInteger(boolean integer) {
+        this.integer = integer;
     }
 
     public void setScaleSynchronizer(ScaleSynchronizer scaleSynchronizer) {
@@ -369,15 +375,22 @@ public class TimeGraph {
 
         App.processingRef.fill(this.valueTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
-        App.processingRef.text((float)(this.dots.get(this.dots.size() - 1).getY()), this.originX + this.textSize + 40, (float)(lastAbsoluteCoordinates.getY() - (this.textSize - 4)));
+        if (this.integer) App.processingRef.text((int)(this.dots.get(this.dots.size() - 1).getY()), this.originX + this.textSize + 40, (float)(lastAbsoluteCoordinates.getY() - (this.textSize - 4)));
+        else App.processingRef.text((float)(this.dots.get(this.dots.size() - 1).getY()), this.originX + this.textSize + 40, (float)(lastAbsoluteCoordinates.getY() - (this.textSize - 4)));
     }
 
     void renderAxisScale() {
         App.processingRef.fill(this.scaleTextCl.getRGB());
         App.processingRef.textSize(this.textSize);
         App.processingRef.text(App.processingRef.millis()/1000, this.originX + this.dimX - (this.textSize + 20), this.originY + this.dimY - (this.textSize - 4));
-        App.processingRef.text((float)(this.maxY + 0.25 * (this.maxY - this.minY)), this.originX + 5, this.originY + this.textSize + 4);
-        App.processingRef.text((float)(this.minY), this.originX + 5, this.originY + this.dimY - (this.textSize - 4));
+        if (this.integer) {
+            App.processingRef.text((int) (this.maxY + 0.25 * (this.maxY - this.minY)), this.originX + 5, this.originY + this.textSize + 4);
+            App.processingRef.text((int) (this.minY), this.originX + 5, this.originY + this.dimY - (this.textSize - 4));
+        }
+        else {
+            App.processingRef.text((float) (this.maxY + 0.25 * (this.maxY - this.minY)), this.originX + 5, this.originY + this.textSize + 4);
+            App.processingRef.text((float) (this.minY), this.originX + 5, this.originY + this.dimY - (this.textSize - 4));
+        }
     }
 
     void renderTitle() {

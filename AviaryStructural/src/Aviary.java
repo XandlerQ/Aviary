@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -7,6 +8,7 @@ public class Aviary {
 
     Color rivalryCl = new Color(207, 0, 255);
     ResourceGroup resGroup;
+    ResourceGrid resGrid;
     PropertyGrid<Integer> propertyGrid;
     ArrayList<Agent> agents;
     ArrayList<Pack> packs;
@@ -19,6 +21,12 @@ public class Aviary {
     //--------------------------------------
 
     Aviary () {
+        this.resGroup = null;
+        this.resGrid = null;
+        this.propertyGrid = null;
+        this.agents = null;
+        this.packs = null;
+        this.observer = null;
         initialize();
     }
 
@@ -283,7 +291,6 @@ public class Aviary {
 
     void directionDecision(Agent argAg){    //Direction decision for a single agent, for lone agents only food decisioning, for pack agents depending on locked bolean variable value either only food, or only pack
 
-
         double packDirClose = getPackDirClose(argAg);
         double packDirFar = getPackDirFar(argAg);
 
@@ -542,27 +549,98 @@ public class Aviary {
         }
     }
 
+    void shiftIntersection() {
+        double areaData[][] = new double[3][4];
+
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 4; j++) {
+                areaData[i][j] = 0.;
+            }
+        }
+
+        for(Iterator<Agent> iterator = this.agents.iterator(); iterator.hasNext();) {
+            Agent agent = iterator.next();
+            areaData[0][this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())] += 1;
+            areaData[1][this.propertyGrid.getPropertyAreaIndex(agent.getCoordinates())] += agent.getEnergy();
+        }
+
+        for(int j = 0; j < 4; j++) {
+            if(areaData[0][j] != 0) areaData[2][j] = areaData[1][j] / areaData[0][j];
+            else areaData[2][j] = 0;
+        }
+
+        double intersectionX = (double)App.DEFX / 2;
+        double intersectionY = (double)App.DEFY / 2;
+
+        //Energy density
+//        if (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3] != 0) {
+//            intersectionX = (double)App.DEFX / 10 + 0.8 * (double)App.DEFX * (areaData[2][0] + areaData[2][1]) / (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3]);
+//            intersectionY = (double)App.DEFX / 10 + 0.8 * (double)App.DEFY * (areaData[2][0] + areaData[2][2]) / (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3]);
+//        }
+        //Population
+//        if (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3] != 0) {
+//            intersectionX = (double)App.DEFX / 10 + 0.8 * (double)App.DEFX * (areaData[0][0] + areaData[0][1]) / (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3]);
+//            intersectionY = (double)App.DEFX / 10 + 0.8 * (double)App.DEFY * (areaData[0][0] + areaData[0][2]) / (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3]);
+//        }
+        //Energy
+        if (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3] != 0) {
+            intersectionX = (double)App.DEFX / 10 + 0.8 * (double)App.DEFX * (areaData[1][0] + areaData[1][1]) / (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3]);
+            intersectionY = (double)App.DEFX / 10 + 0.8 * (double)App.DEFY * (areaData[1][0] + areaData[1][2]) / (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3]);
+        }
+
+        Dot intersection = new Dot();
+
+        double speed = 0.1;
+
+        intersection.setX(this.propertyGrid.getIntersection().getX() + (intersectionX - this.propertyGrid.getIntersection().getX()) * speed);
+        intersection.setY(this.propertyGrid.getIntersection().getY() + (intersectionY - this.propertyGrid.getIntersection().getY()) * speed);
+
+        this.propertyGrid.setIntersection(intersection);
+    }
+
     //---------------Main---------------
 
     void initialize() {
         this.resGroup = Builder.buildResourceGroup();
+        //this.resGrid = Builder.buildResourceGrid();
         this.propertyGrid = new PropertyGrid<>(App.DEFX, App.DEFY);
         this.propertyGrid.fillPropertyAreas(App.PROPERTY_AREA_VALUES, App.PROPERTY_AREA_COLORS);
         //this.propertyGrid.setIntersection(new Dot(700, 700));
         this.agents = Builder.buildAgentArray();
         this.packs = new ArrayList<>();
         this.observer = new Observer(this);
-        observer.fillTimeGraphs();
+        this.observer.fillTimeGraphs();
+        this.observer.setReportFileName(this.observer.formTimeStampFileName());
+
+        ArrayList<String> reportDataHeaders = new ArrayList<>();
+        reportDataHeaders.add("Population");
+
+        reportDataHeaders.add("Population area 0");
+        reportDataHeaders.add("Population area 1");
+        reportDataHeaders.add("Population area 2");
+        reportDataHeaders.add("Population area 3");
+
+        reportDataHeaders.add("Energy density area 0");
+        reportDataHeaders.add("Energy density area 1");
+        reportDataHeaders.add("Energy density area 2");
+        reportDataHeaders.add("Energy density area 3");
+
+        reportDataHeaders.add("Pack count area 0");
+        reportDataHeaders.add("Pack count area 1");
+        reportDataHeaders.add("Pack count area 2");
+
+        this.observer.setReportDataHeaders(reportDataHeaders);
+        this.observer.writeDataHeaders();
     }
 
     void preProcedure() {
+        //resGrid.replenish();
         resGroup.replenishNodes();
+        shiftIntersection();
     }
 
     void mainProcedure() {
         ArrayList<Agent> reproductList = new ArrayList<>();
-
-
 
         for (Iterator<Agent> iter = agents.iterator(); iter.hasNext();){
 
@@ -632,6 +710,7 @@ public class Aviary {
         render();
         tick();
         this.observer.addGraphData();
+        this.observer.report();
         return endPredicate();
     }
 
@@ -644,7 +723,9 @@ public class Aviary {
     //-----------------------------------
 
     void renderRes(){                                                                   //Renders resources
-        resGroup.render();
+
+        if(this.resGroup != null) this.resGroup.render();
+        if(this.resGrid != null) this.resGrid.render();
     }
 
     void renderPropertyGrid() { this.propertyGrid.render(); }

@@ -265,6 +265,9 @@ public class App extends PApplet {
     public static double VISUALDIST = 65;
 
     //Graph counter
-    public static int INFOREPCTRPEAK = 30;
+    public static int GRAPHDATACTRPEAK = 30;
+
+    public static int REPORTCTRPEAK = 60;
+
 }
 
