@@ -37,8 +37,6 @@ this.pop1Gr = new TimeGraph(600, 400, 500);
     }
  */
 
-import processing.data.Table;
-
 import java.awt.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -429,7 +427,7 @@ public class Observer {
         }
     }
 
-    void report() {
+    void reportRow() {
         if(this.reportCtr > 0) {
             this.reportCtr--;
         }

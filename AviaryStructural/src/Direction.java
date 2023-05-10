@@ -1,3 +1,5 @@
+import processing.core.PApplet;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -82,5 +84,17 @@ public class Direction {
             dir -= 2 * Math.PI;
         }
         return dir;
+    }
+
+    static double directionFromTo(Dot from, Dot to) {
+        double distance = Dot.distanceBetween(from, to);
+
+        if(distance == 0) {
+            return -1;
+        }
+
+        double direction = Math.acos((to.getX() - from.getX()) / distance);
+        if(to.getY() > from.getY()) return direction;
+        else return 2 * Math.PI - direction;
     }
 }

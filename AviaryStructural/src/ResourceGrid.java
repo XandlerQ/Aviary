@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 public class ResourceGrid {
 
@@ -60,6 +61,18 @@ public class ResourceGrid {
     public int getResCount() {
         return resCount;
     }
+    public Resource getResourceAtIndex(int index) {
+        if (index < 0 || index >= this.resources.size()) return null;
+        return this.resources.get(index);
+    }
+
+    public Resource getResourceAtCell(int i, int j) {
+        if (i < 0 || i >= this.grCtX ||
+        j < 0 || j >= this.grCtY) {
+            return null;
+        }
+        return this.resources.get(i * this.grCtY + j);
+    }
 
     //---------------------------------
     //---------------------------------
@@ -106,6 +119,85 @@ public class ResourceGrid {
         this.resources.forEach((res) -> {res.replenish();});
     }
 
+    double getGradientDirection(Dot dot) {
+        Random r = new Random();
+        double gradientDirection = 2 * Math.PI * r.nextDouble();
+
+        double sideX = this.defX / this.grCtX;
+        double sideY = this.defY / this.grCtY;
+
+        double x = dot.getX();
+        double y = dot.getY();
+
+        int iDot = (int)(x / sideX);
+        int jDot = (int)(y / sideY);
+
+        int iSpan = App.GRADIENTREFINEMENT;
+        int jSpan = App.GRADIENTREFINEMENT;
+
+        int iOrigin = Math.max(0, iDot - iSpan);
+        int jOrigin = Math.max(0, jDot - jSpan);
+
+        int iTarget = Math.min(this.grCtX - 1, iDot + iSpan);
+        int jTarget = Math.min(this.grCtY - 1, jDot + jSpan);
+
+        double resLeft = 0,
+                resRight = 0,
+                resTop = 0,
+                resBottom = 0;
+
+        for (int i = iOrigin; i <= iDot; i++) {
+            for (int j = jOrigin; j <= jTarget; j++) {
+                resLeft += getResourceAtCell(i, j).getRes()
+                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        for (int i = iDot; i <= iTarget; i++) {
+            for (int j = jOrigin; j <= jTarget; j++) {
+                resRight += getResourceAtCell(i, j).getRes()
+                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        for (int i = iOrigin; i <= iTarget; i++) {
+            for (int j = jOrigin; j <= jDot; j++) {
+                resTop += getResourceAtCell(i, j).getRes()
+                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        for (int i = iOrigin; i <= iTarget; i++) {
+            for (int j = jDot; j <= jTarget; j++) {
+                resBottom += getResourceAtCell(i, j).getRes()
+                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        double shiftX = resRight - resLeft;
+        double shiftY = resBottom - resTop;
+
+        Dot gradientDot = new Dot(dot.getX() + shiftX, dot.getY() + shiftY);
+
+        gradientDirection = Direction.directionFromTo(dot, gradientDot);
+
+        return gradientDirection;
+    }
+
+    double resourceWithdraw(Dot dot, double amount) {
+        double sideX = this.defX / this.grCtX;
+        double sideY = this.defY / this.grCtY;
+
+        double x = dot.getX();
+        double y = dot.getY();
+
+        int iDot = (int)((x - x % sideX) / sideX);
+        int jDot = (int)((y - y % sideY) / sideY);
+
+        Resource resource = getResourceAtCell(iDot, jDot);
+        return resource.lowerRes(amount);
+    }
+
     //---------------------------------
     //---------------------------------
 
@@ -118,7 +210,7 @@ public class ResourceGrid {
         for (Iterator<Resource> iterator = this.resources.iterator(); iterator.hasNext();) {
             Resource res = iterator.next();
             float alpha = (float)(res.getRes() / res.getMaxRes());
-            App.processingRef.stroke(STD_RES_COLOR.getRGB(), 255 * alpha / 4);
+            App.processingRef.stroke(STD_RES_COLOR.getRGB(), 0);
             App.processingRef.fill(STD_RES_COLOR.getRGB(), 255 * alpha / 4);
             double sideX = this.defX / this.grCtX;
             double sideY = this.defY / this.grCtY;

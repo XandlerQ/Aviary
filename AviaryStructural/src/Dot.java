@@ -27,6 +27,13 @@ public class Dot {
     public void setXY(double x, double y) { setX(x); setY(y); }
     public void setXY(Dot other) { setX(other.getX()); setY(other.getY()); }
 
+    public static double distanceBetween(Dot dot1, Dot dot2) {
+        return Math.sqrt(
+                (dot1.getX() - dot2.getX()) * (dot1.getX() - dot2.getX())
+                        + (dot1.getY() - dot2.getY()) * (dot1.getY() - dot2.getY())
+        );
+    }
+
 
     @Override
     public boolean equals(Object obj){

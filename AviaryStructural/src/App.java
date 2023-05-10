@@ -63,6 +63,7 @@ public class App extends PApplet {
     public void BgStart(){
         background(0);
         AV = new Aviary();
+        AV.initialize();
 
         firstRun = false;
 
@@ -138,6 +139,7 @@ public class App extends PApplet {
                 firstRun = false;
                 background(0);
                 AV = new Aviary();
+                AV.initialize();
                 if(pause){
                     fill(0, 80);
                     stroke(0, 0);
@@ -164,6 +166,7 @@ public class App extends PApplet {
                         firstRun = false;
                         background(0);
                         AV = new Aviary();
+                        AV.initialize();
                         pause = false;
                     }
                 }
@@ -195,9 +198,15 @@ public class App extends PApplet {
 
     public static double WALLTHICKNESS = 1;
 
-    public static int QUADX = 5;
-    public static int QUADY = 5;
+//    public static int QUADX = 5;
+//    public static int QUADY = 5;
+    public static int QUADX = 80;
+    public static int QUADY = 80;
 
+    public enum SHIFTINTERSECTIONMODES {
+        STATIC, POPULATION, ENERGY, ENERGYDENSITY
+    }
+    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.STATIC;
     public static Color[] PROPERTY_AREA_COLORS = {
             new Color(255, 134, 125),
             new Color(250, 236, 127),
@@ -208,6 +217,8 @@ public class App extends PApplet {
     public static Integer[] PROPERTY_AREA_VALUES = {
             4, 3, 2, 0
     };
+
+    public static boolean LOCKEDAREAS = false;
     public static boolean PAYMENT = false;
     public static double PAYMENTRATIO = 0.33;
 
@@ -216,7 +227,13 @@ public class App extends PApplet {
 
     public static boolean SYSSPAWN = false;
 
-    public static double BASERES = 190;
+    public enum RESOURCETYPES {
+        DISCRETE, PLAIN
+    }
+
+    public static RESOURCETYPES RESTYPE = RESOURCETYPES.PLAIN;
+
+    public static double BASERES = 5;
     public static double RESREPSPEED = BASERES/360;
     public static int RESPERQUAD = 4;
     public static int RESREPCTRPEAK = 240;
@@ -247,6 +264,7 @@ public class App extends PApplet {
     public static double REPRODUCTCOST = 5.0;
 
     //  Fight settings
+    public static boolean FIGHTS = false;
     public static double NRGPERFIGHT = 1.0;
 
     //  Pack energy depletion settings
@@ -263,10 +281,14 @@ public class App extends PApplet {
     public static double PACKCOMDIST = 80;
     public static double FIGHTDIST = 40;
     public static double VISUALDIST = 65;
+    public static int GRADIENTREFINEMENT = 4;
 
-    //Graph counter
+    //Behavioural settings
+    public static boolean LONERESSCREAM = false;
+
+    //Data report
     public static int GRAPHDATACTRPEAK = 30;
-
+    public static boolean REPORTTOFILE = false;
     public static int REPORTCTRPEAK = 60;
 
 }

@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class TimeGraph {
-    public static enum Mode {
+    public enum Mode {
         SCROLLING, STATIONARY
     }
 

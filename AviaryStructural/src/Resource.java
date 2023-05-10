@@ -95,7 +95,7 @@ public class Resource {
             this.repCtr = this.repCtrPeak;  //As soon as resource is withdrawn, delay replenishment by this.repCtrPeak frames
             return taken;  //Return maximum possible resource withdraw
         }
-        else{  //If amount is less than currently stored resource amount
+        else {  //If amount is less than currently stored resource amount
             this.res -= amount;  //Lower resource currently stored by amount
             this.repCtr = this.repCtrPeak;  //As soon as resource is withdrawn, delay replenishment by this.repCtrPeak frames
             return amount;  //Return withdrawn amount

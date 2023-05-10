@@ -36,7 +36,7 @@ public class Agent {
     private double collectedRes;
 
     private int valence;
-    private int propertyAreaIndex;
+    private PropertyArea propertyArea;
     private int conCount;
     private double lastHeardAge;
 
@@ -72,7 +72,7 @@ public class Agent {
         this.collectedRes = 0;
 
         this.valence = 0;
-        this.propertyAreaIndex = -1;
+        this.propertyArea = null;
         this.conCount = 0;
         this.lastHeardAge = -1;
 
@@ -120,8 +120,8 @@ public class Agent {
 
     int getValence() { return this.valence; }
 
-    public int getPropertyAreaIndex() {
-        return propertyAreaIndex;
+    public PropertyArea getPropertyArea() {
+        return propertyArea;
     }
 
     int getConCount() { return this.conCount; }
@@ -141,7 +141,7 @@ public class Agent {
 
     //---------------------------------
 
-    double getDistTo(double x, double y) { return PApplet.dist((float)this.coordinates.getX(), (float)this.coordinates.getY(), (float)x, (float)y); }
+    double getDistTo(double x, double y) { return Dot.distanceBetween(this.coordinates, new Dot(x, y)); }
     double getDistTo(Dot dot) { return getDistTo(dot.getX(), dot.getY()); }
 
     double getEnergyOver() { return this.energy - this.maxEnergy; }
@@ -184,8 +184,8 @@ public class Agent {
 
     void setValence(int valence) { this.valence = valence; }
 
-    public void setPropertyAreaIndex(int propertyAreaIndex) {
-        this.propertyAreaIndex = propertyAreaIndex;
+    public void setPropertyArea(PropertyArea propertyArea) {
+        this.propertyArea = propertyArea;
     }
 
     void setLastHeardAge(double age) { this.lastHeardAge = age; }
@@ -266,7 +266,7 @@ public class Agent {
     }
 
     double dirToFace(double x, double y) {
-        double distance = PApplet.dist((float)this.coordinates.getX(), (float)this.coordinates.getY(), (float)x, (float)y);
+        double distance = Dot.distanceBetween(this.coordinates, new Dot(x, y));
 
         if(distance == 0) {
             Random r = new Random();
@@ -305,14 +305,33 @@ public class Agent {
         double newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
         double newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
 
-        if(newX > App.DEFX - App.WALLTHICKNESS ||
-                newX < App.WALLTHICKNESS ||
-                newY > App.DEFY - App.WALLTHICKNESS ||
-                newY < App.WALLTHICKNESS) {
-            direction += (double)(Math.PI);
-            normalizeDirection();
-            newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
-            newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
+        if(App.LOCKEDAREAS && this.propertyArea != null) {
+
+            double prAreaOriginX = this.propertyArea.getOriginX();
+            double prAreaOriginY = this.propertyArea.getOriginY();
+            double prAreaSideX = this.propertyArea.getSideX();
+            double prAreaSideY = this.propertyArea.getSideY();
+
+            if (newX > prAreaOriginX + prAreaSideX - App.WALLTHICKNESS ||
+                    newX < prAreaOriginX + App.WALLTHICKNESS ||
+                    newY > prAreaOriginY + prAreaSideY - App.WALLTHICKNESS ||
+                    newY < prAreaOriginY + App.WALLTHICKNESS) {
+                direction += Math.PI;
+                normalizeDirection();
+                newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
+                newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
+            }
+        }
+        else {
+            if (newX > App.DEFX - App.WALLTHICKNESS ||
+                    newX < App.WALLTHICKNESS ||
+                    newY > App.DEFY - App.WALLTHICKNESS ||
+                    newY < App.WALLTHICKNESS) {
+                direction += Math.PI;
+                normalizeDirection();
+                newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
+                newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
+            }
         }
 
         this.setCoordinates(newX, newY);
