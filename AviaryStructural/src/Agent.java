@@ -316,7 +316,7 @@ public class Agent {
                     newX < prAreaOriginX + App.WALLTHICKNESS ||
                     newY > prAreaOriginY + prAreaSideY - App.WALLTHICKNESS ||
                     newY < prAreaOriginY + App.WALLTHICKNESS) {
-                direction += Math.PI;
+                direction = Direction.directionFromTo(this.coordinates, this.propertyArea.getAreaCenter());
                 normalizeDirection();
                 newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
                 newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
@@ -327,7 +327,7 @@ public class Agent {
                     newX < App.WALLTHICKNESS ||
                     newY > App.DEFY - App.WALLTHICKNESS ||
                     newY < App.WALLTHICKNESS) {
-                direction += Math.PI;
+                direction = Direction.directionFromTo(this.coordinates, new Dot(App.DEFX / 2, App.DEFY / 2));
                 normalizeDirection();
                 newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
                 newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);

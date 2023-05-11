@@ -101,7 +101,6 @@ public class Aviary {
         return areaData;
     }
 
-
     //---------------------------------
     //---------------------------------
 
@@ -304,7 +303,13 @@ public class Aviary {
             }
         }
         else {
-            double direction = this.resGrid.getGradientDirection(agent.getCoordinates());
+            double direction;
+            if (App.LOCKEDAREAS) {
+                direction = this.resGrid.getGradientDirectionIntersection(agent.getCoordinates(), this.propertyGrid.getIntersection());
+            }
+            else {
+                direction = this.resGrid.getGradientDirection(agent.getCoordinates());
+            }
             if (direction != -1) return Direction.directionAddition(agent.getDirection(), direction);
             else return -1;
         }

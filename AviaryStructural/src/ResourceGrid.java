@@ -119,9 +119,122 @@ public class ResourceGrid {
         this.resources.forEach((res) -> {res.replenish();});
     }
 
+    double getGradientDirectionIntersection(Dot dot, Dot intersection) {
+        double gradientDirection;
+
+        double sideX = this.defX / this.grCtX;
+        double sideY = this.defY / this.grCtY;
+
+        double x = dot.getX();
+        double y = dot.getY();
+
+        int iDot = (int)(x / sideX);
+        int jDot = (int)(y / sideY);
+
+        int iIntersection = (int)(intersection.getX() / sideX);
+        int jIntersection = (int)(intersection.getY() / sideY);
+
+        int areaIndex;
+
+        if (iDot <= iIntersection) {
+            if (jDot <= jIntersection) areaIndex = 0;
+            else areaIndex = 1;
+        }
+        else {
+            if (jDot <= jIntersection) areaIndex = 2;
+            else areaIndex = 3;
+        }
+
+        int iSpan = App.GRADIENTREFINEMENT;
+        int jSpan = App.GRADIENTREFINEMENT;
+
+        int iOrigin = 0,
+                jOrigin = 0,
+                iTarget = 0,
+                jTarget = 0;
+
+        switch (areaIndex) {
+            case 0 -> {
+                iOrigin = Math.max(0, iDot - iSpan);
+                jOrigin = Math.max(0, jDot - jSpan);
+
+                iTarget = Math.min(iDot + iSpan, iIntersection - 1);
+                jTarget = Math.min(jDot + jSpan, jIntersection - 1);
+            }
+            case 1 -> {
+                iOrigin = Math.max(0, iDot - iSpan);
+                jOrigin = Math.max(jIntersection + 1, jDot - jSpan);
+
+                iTarget = Math.min(iDot + iSpan, iIntersection - 1);
+                jTarget = Math.min(jDot + jSpan, this.grCtY - 1);
+            }
+            case 2 -> {
+                iOrigin = Math.max(iIntersection + 1, iDot - iSpan);
+                jOrigin = Math.max(0, jDot - jSpan);
+
+                iTarget = Math.min(iDot + iSpan, this.grCtX - 1);
+                jTarget = Math.min(jDot + jSpan, jIntersection - 1);
+            }
+            case 3 -> {
+                iOrigin = Math.max(iIntersection + 1, iDot - iSpan);
+                jOrigin = Math.max(jIntersection + 1, jDot - jSpan);
+
+                iTarget = Math.min(iDot + iSpan, this.grCtX - 1);
+                jTarget = Math.min(jDot + jSpan, this.grCtY - 1);
+            }
+        }
+
+
+        double resLeft = 0,
+                resRight = 0,
+                resTop = 0,
+                resBottom = 0;
+
+        for (int i = iOrigin; i < iDot; i++) {
+            for (int j = jOrigin; j <= jTarget; j++) {
+                resLeft += getResourceAtCell(i, j).getRes()
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        for (int i = iDot + 1; i <= iTarget; i++) {
+            for (int j = jOrigin; j <= jTarget; j++) {
+                resRight += getResourceAtCell(i, j).getRes()
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        for (int i = iOrigin; i <= iTarget; i++) {
+            for (int j = jOrigin; j < jDot; j++) {
+                resTop += getResourceAtCell(i, j).getRes()
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        for (int i = iOrigin; i <= iTarget; i++) {
+            for (int j = jDot + 1; j <= jTarget; j++) {
+                resBottom += getResourceAtCell(i, j).getRes()
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
+            }
+        }
+
+        double shiftX = resRight - resLeft;
+        double shiftY = resBottom - resTop;
+
+        if (Math.abs(shiftX) <= 2 * App.BASERES) shiftX = 0;
+        if (Math.abs(shiftY) <= 2 * App.BASERES) shiftY = 0;
+
+        if (shiftX == 0 && shiftY == 0) return -1;
+
+        Dot gradientDot = new Dot(dot.getX() + shiftX, dot.getY() + shiftY);
+
+        gradientDirection = Direction.directionFromTo(dot, gradientDot);
+
+        return gradientDirection;
+    }
+
     double getGradientDirection(Dot dot) {
-        Random r = new Random();
-        double gradientDirection = 2 * Math.PI * r.nextDouble();
+        double gradientDirection;
 
         double sideX = this.defX / this.grCtX;
         double sideY = this.defY / this.grCtY;
@@ -146,36 +259,41 @@ public class ResourceGrid {
                 resTop = 0,
                 resBottom = 0;
 
-        for (int i = iOrigin; i <= iDot; i++) {
+        for (int i = iOrigin; i < iDot; i++) {
             for (int j = jOrigin; j <= jTarget; j++) {
                 resLeft += getResourceAtCell(i, j).getRes()
-                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
             }
         }
 
-        for (int i = iDot; i <= iTarget; i++) {
+        for (int i = iDot + 1; i <= iTarget; i++) {
             for (int j = jOrigin; j <= jTarget; j++) {
                 resRight += getResourceAtCell(i, j).getRes()
-                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
             }
         }
 
         for (int i = iOrigin; i <= iTarget; i++) {
-            for (int j = jOrigin; j <= jDot; j++) {
+            for (int j = jOrigin; j < jDot; j++) {
                 resTop += getResourceAtCell(i, j).getRes()
-                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
             }
         }
 
         for (int i = iOrigin; i <= iTarget; i++) {
-            for (int j = jDot; j <= jTarget; j++) {
+            for (int j = jDot + 1; j <= jTarget; j++) {
                 resBottom += getResourceAtCell(i, j).getRes()
-                        / (Math.abs(i - iDot) / iSpan + Math.abs(j - jDot) / jSpan + 1);
+                        / ((double)Math.abs(i - iDot) / iSpan + (double)Math.abs(j - jDot) / jSpan + 1);
             }
         }
 
         double shiftX = resRight - resLeft;
         double shiftY = resBottom - resTop;
+
+        if (Math.abs(shiftX) <= 2 * App.BASERES) shiftX = 0;
+        if (Math.abs(shiftY) <= 2 * App.BASERES) shiftY = 0;
+
+        if (shiftX == 0 && shiftY == 0) return -1;
 
         Dot gradientDot = new Dot(dot.getX() + shiftX, dot.getY() + shiftY);
 

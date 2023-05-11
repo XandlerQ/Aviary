@@ -78,6 +78,7 @@ public class PropertyArea<Property> {
     public Color getColor() {
         return color;
     }
+
     public Dot getAreaCenter() {
         return new Dot(this.originX + this.sideX / 2, this.originY + this.sideY / 2);
     }

@@ -197,16 +197,16 @@ public class App extends PApplet {
     public static int DEFY = 1000;
 
     public static double WALLTHICKNESS = 1;
+    public static int QUADX = 5;
+    public static int QUADY = 5;
 
-//    public static int QUADX = 5;
-//    public static int QUADY = 5;
-    public static int QUADX = 80;
-    public static int QUADY = 80;
+    public static int PLAINX = 100;
+    public static int PLAINY = 100;
 
     public enum SHIFTINTERSECTIONMODES {
         STATIC, POPULATION, ENERGY, ENERGYDENSITY
     }
-    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.STATIC;
+    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.ENERGY;
     public static Color[] PROPERTY_AREA_COLORS = {
             new Color(255, 134, 125),
             new Color(250, 236, 127),
@@ -218,8 +218,8 @@ public class App extends PApplet {
             4, 3, 2, 0
     };
 
-    public static boolean LOCKEDAREAS = false;
-    public static boolean PAYMENT = false;
+    public static boolean LOCKEDAREAS = true;
+    public static boolean PAYMENT = true;
     public static double PAYMENTRATIO = 0.33;
 
     public static int INITAGENTAMOUNT1 = 100;
@@ -231,9 +231,9 @@ public class App extends PApplet {
         DISCRETE, PLAIN
     }
 
-    public static RESOURCETYPES RESTYPE = RESOURCETYPES.PLAIN;
+    public static RESOURCETYPES RESTYPE = RESOURCETYPES.DISCRETE;
 
-    public static double BASERES = 5;
+    public static double BASERES = 190;
     public static double RESREPSPEED = BASERES/360;
     public static int RESPERQUAD = 4;
     public static int RESREPCTRPEAK = 240;
