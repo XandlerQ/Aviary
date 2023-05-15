@@ -302,6 +302,39 @@ public class ResourceGrid {
         return gradientDirection;
     }
 
+    double[] getResourceInAreas(PropertyGrid propertyGrid) {
+        double[] resourceInAres = new double[4];
+
+        for (int i = 0; i < 4; i++) {
+            resourceInAres[i] = 0;
+        }
+
+        double sideX = this.defX / this.grCtX;
+        double sideY = this.defY / this.grCtY;
+        int index = 0;
+        for (Iterator<Resource> iterator = this.resources.iterator(); iterator.hasNext();) {
+            Resource resource = iterator.next();
+            float alpha = (float)(resource.getRes() / resource.getMaxRes());
+            App.processingRef.stroke(STD_RES_COLOR.getRGB(), 0);
+            App.processingRef.fill(STD_RES_COLOR.getRGB(), 255 * alpha / 4);
+
+            int j = index % this.grCtY;
+            int i = (index - j) / this.grCtY;
+
+            double originX = i * sideX + App.ORIGINX;
+            double originY = j * sideY + App.ORIGINY;
+
+            double centerX = originX + sideX / 2;
+            double centerY = originY + sideY / 2;
+
+            resourceInAres[propertyGrid.getPropertyAreaIndex(centerX, centerY)] += resource.getRes();
+
+            index++;
+        }
+
+        return resourceInAres;
+    }
+
     double resourceWithdraw(Dot dot, double amount) {
         double sideX = this.defX / this.grCtX;
         double sideY = this.defY / this.grCtY;
@@ -324,14 +357,15 @@ public class ResourceGrid {
     //-----------------------------------
 
     void render() {
+        double sideX = this.defX / this.grCtX;
+        double sideY = this.defY / this.grCtY;
         int index = 0;
         for (Iterator<Resource> iterator = this.resources.iterator(); iterator.hasNext();) {
             Resource res = iterator.next();
             float alpha = (float)(res.getRes() / res.getMaxRes());
             App.processingRef.stroke(STD_RES_COLOR.getRGB(), 0);
             App.processingRef.fill(STD_RES_COLOR.getRGB(), 255 * alpha / 4);
-            double sideX = this.defX / this.grCtX;
-            double sideY = this.defY / this.grCtY;
+
             int j = index % this.grCtY;
             int i = (index - j) / this.grCtY;
 

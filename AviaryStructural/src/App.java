@@ -20,7 +20,7 @@ public class App extends PApplet {
     int scrShCounter = 0;
 
     public void settings(){
-        size(2000, 1210);
+        size(2000, 1200);
 
     }
 
@@ -118,6 +118,9 @@ public class App extends PApplet {
             if(autoRun){
                 BgStart();
             }
+            else {
+                BgPause();
+            }
         }
 
         if(scrShCounter > 0){
@@ -206,7 +209,7 @@ public class App extends PApplet {
     public enum SHIFTINTERSECTIONMODES {
         STATIC, POPULATION, ENERGY, ENERGYDENSITY
     }
-    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.ENERGY;
+    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.STATIC;
     public static Color[] PROPERTY_AREA_COLORS = {
             new Color(255, 134, 125),
             new Color(250, 236, 127),
@@ -218,7 +221,7 @@ public class App extends PApplet {
             4, 3, 2, 0
     };
 
-    public static boolean LOCKEDAREAS = true;
+    public static boolean LOCKEDAREAS = false;
     public static boolean PAYMENT = true;
     public static double PAYMENTRATIO = 0.33;
 
@@ -231,9 +234,9 @@ public class App extends PApplet {
         DISCRETE, PLAIN
     }
 
-    public static RESOURCETYPES RESTYPE = RESOURCETYPES.DISCRETE;
+    public static RESOURCETYPES RESTYPE = RESOURCETYPES.PLAIN;
 
-    public static double BASERES = 190;
+    public static double BASERES = 2;
     public static double RESREPSPEED = BASERES/360;
     public static int RESPERQUAD = 4;
     public static int RESREPCTRPEAK = 240;
@@ -257,7 +260,7 @@ public class App extends PApplet {
     public static double RESECOLLECTEDPERSTEP = 1.0;
 
     //  Reproduction settings
-    public static double REPRODUCTLOW = 1000;
+    public static double REPRODUCTLOW = 1440;
     public static double REPRODUCTHIGH = 3000;
     public static double REPRODUCTPROB1 = 0.0015;
     public static double REPRODUCTPROB2 = 0.0015;
@@ -288,7 +291,7 @@ public class App extends PApplet {
 
     //Data report
     public static int GRAPHDATACTRPEAK = 30;
-    public static boolean REPORTTOFILE = false;
+    public static boolean REPORTTOFILE = true;
     public static int REPORTCTRPEAK = 60;
 
 }

@@ -81,7 +81,7 @@ public class Aviary {
     }
 
     double[][] getDataInAreas() {
-        double areaData[][] = new double[3][4];
+        double areaData[][] = new double[4][4];
 
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 4; j++) {
@@ -97,6 +97,19 @@ public class Aviary {
         for(Iterator<Pack> iterator = this.packs.iterator(); iterator.hasNext();) {
             Pack pack = iterator.next();
             areaData[2][this.propertyGrid.getPropertyAreaIndex(pack.getPackCenter())] += 1;
+        }
+
+        if (App.RESTYPE == App.RESOURCETYPES.PLAIN && this.resGrid != null) {
+            double[] resourceInAreas = this.resGrid.getResourceInAreas(this.propertyGrid);
+            for (int i = 0; i < 4; i++) {
+                areaData[3][i] = resourceInAreas[i];
+            }
+        }
+        else if (App.RESTYPE == App.RESOURCETYPES.DISCRETE && this.resGroup != null) {
+            double[] resourceInAreas = this.resGroup.getResourceInAreas(this.propertyGrid);
+            for (int i = 0; i < 4; i++) {
+                areaData[3][i] = resourceInAreas[i];
+            }
         }
         return areaData;
     }
@@ -669,7 +682,8 @@ public class Aviary {
         this.observer = new Observer(this);
         this.observer.fillTimeGraphs();
         if (App.REPORTTOFILE) {
-            this.observer.setReportFileName(this.observer.formTimeStampFileName());
+            this.observer.setDataReportFileName(this.observer.formTimeStampDataFileName());
+            this.observer.setParameterReportFileName(this.observer.formTimeStampParametersFileName());
 
             ArrayList<String> reportDataHeaders = new ArrayList<>();
             reportDataHeaders.add("Population");
@@ -688,8 +702,15 @@ public class Aviary {
             reportDataHeaders.add("Pack count area 1");
             reportDataHeaders.add("Pack count area 2");
 
+            reportDataHeaders.add("Resource area 0");
+            reportDataHeaders.add("Resource area 1");
+            reportDataHeaders.add("Resource area 2");
+            reportDataHeaders.add("Resource area 3");
+
             this.observer.setReportDataHeaders(reportDataHeaders);
             this.observer.writeDataHeaders();
+
+            this.observer.parameterReport();
         }
     }
 
@@ -751,7 +772,7 @@ public class Aviary {
     }
 
     boolean endPredicate() {
-        return false;
+        return App.processingRef.millis() / (1000 * 60) >= 5;
     }
 
     void deinitialize() {

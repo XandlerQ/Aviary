@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 public class ResourceGroup {
@@ -120,6 +121,22 @@ public class ResourceGroup {
     //---------------------------------
     //-----------  Methods  -----------
     //---------------------------------
+
+    double[] getResourceInAreas(PropertyGrid propertyGrid) {
+        double[] resourceInAres = new double[4];
+
+        for (int i = 0; i < 4; i++) {
+            resourceInAres[i] = 0;
+        }
+
+        for (Iterator<ResourceNode> iterator = this.resNodes.iterator(); iterator.hasNext();) {
+            ResourceNode resourceNode = iterator.next();
+
+            resourceInAres[propertyGrid.getPropertyAreaIndex(resourceNode.getCoordinates())] += resourceNode.getRes();
+        }
+
+        return resourceInAres;
+    }
 
     Dot getRndCoordInArea(double origX, double origY, double sideX, double sideY) {
         Random r = new Random();
