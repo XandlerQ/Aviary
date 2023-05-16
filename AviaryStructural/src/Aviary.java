@@ -373,16 +373,16 @@ public class Aviary {
                     return;
                 }
 
+                double foodDir = foodDirectionDecision(agent);
+                if (foodDir != -1) {
+                    agent.setDirection(foodDir);
+                    return;
+                }
+
                 Pack packToClose = getSameSpeciesClosestUncomPack(agent);
 
                 if (packToClose != null) {
                     agent.setDirection(agent.dirToFace(packToClose.getPackCenter()) + Math.PI);
-                    return;
-                }
-
-                double foodDir = foodDirectionDecision(agent);
-                if (foodDir != -1) {
-                    agent.setDirection(foodDir);
                 }
             }
         }
@@ -657,7 +657,7 @@ public class Aviary {
 
         Dot intersection = new Dot();
 
-        double speed = 0.1;
+        double speed = 0.03;
 
         intersection.setX(this.propertyGrid.getIntersection().getX() + (intersectionX - this.propertyGrid.getIntersection().getX()) * speed);
         intersection.setY(this.propertyGrid.getIntersection().getY() + (intersectionY - this.propertyGrid.getIntersection().getY()) * speed);

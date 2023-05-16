@@ -136,12 +136,12 @@ public class ResourceGrid {
 
         int areaIndex;
 
-        if (iDot <= iIntersection) {
-            if (jDot <= jIntersection) areaIndex = 0;
+        if (dot.getX() <= intersection.getX()) {
+            if (dot.getY() <= intersection.getY()) areaIndex = 0;
             else areaIndex = 1;
         }
         else {
-            if (jDot <= jIntersection) areaIndex = 2;
+            if (dot.getY() <= intersection.getY()) areaIndex = 2;
             else areaIndex = 3;
         }
 
