@@ -108,7 +108,7 @@ public class App extends PApplet {
 
         if(!pause){
             if(AV != null){
-
+                background(0);
                 finished = AV.run();
                 fill(Color.WHITE.getRGB()); text((int)(frameRate),5,10);
             }
@@ -193,6 +193,8 @@ public class App extends PApplet {
 
     // Config variables
 
+    public static boolean RENDER = false;
+
     public static int ORIGINX = 5;
     public static int ORIGINY = 5;
 
@@ -209,7 +211,7 @@ public class App extends PApplet {
     public enum SHIFTINTERSECTIONMODES { ////////////////////////////////////////////////////////////////////
         STATIC, POPULATION, ENERGY, ENERGYDENSITY
     }
-    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.ENERGY;
+    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.STATIC;
     public static Color[] PROPERTY_AREA_COLORS = {
             new Color(255, 134, 125),
             new Color(250, 236, 127),
@@ -218,7 +220,7 @@ public class App extends PApplet {
     };
 
     public static Integer[] PROPERTY_AREA_VALUES = {
-            4, 3, 2, 0
+            30, 20, 10, 2
     };
 
     public static boolean LOCKEDAREAS = true; ///////////////////////////////////////////////////////////////////
@@ -236,7 +238,7 @@ public class App extends PApplet {
 
     public static RESOURCETYPES RESTYPE = RESOURCETYPES.PLAIN;
 
-    public static double BASERES = 2;
+    public static double BASERES = 8.0;
     public static double RESREPSPEED = BASERES/360;
     public static int RESPERQUAD = 4;
     public static int RESREPCTRPEAK = 240;
@@ -271,7 +273,7 @@ public class App extends PApplet {
     public static double NRGPERFIGHT = 1.0;
 
     //  Pack energy depletion settings
-    public static double NRGFORCONPERSTEP = 0.03;
+    public static double NRGFORCONPERSTEP = 0.003;
 
     //  Action counter
     public static int ACTCTRPEAK = 15;

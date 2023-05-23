@@ -25,19 +25,19 @@ public class Builder {
         Agent ag = new Agent();
         ag.setSpecies(species);
         if (species == 1) {
-            if (App.SYSSPAWN) ag.setCoordinates(App.DEFX / 10 + (2 * App.DEFX / 5) * r.nextDouble(),
-                    App.DEFY / 10 + (4 * App.DEFY / 5) * r.nextFloat()
+            if (App.SYSSPAWN) ag.setCoordinates(App.DEFX / 20 + (9 * App.DEFX / 20) * r.nextDouble(),
+                    App.DEFY / 20 + (9 * App.DEFY / 10) * r.nextFloat()
             );
-            else ag.setCoordinates(App.DEFX / 10 + (4 * App.DEFX / 5) * r.nextDouble(),
-                    App.DEFY / 10 + (4 * App.DEFY / 5) * r.nextFloat()
+            else ag.setCoordinates(App.DEFX / 20 + (9 * App.DEFX / 10) * r.nextDouble(),
+                    App.DEFY / 20 + (9 * App.DEFY / 10) * r.nextFloat()
             );
         }
         else {
-            if (App.SYSSPAWN) ag.setCoordinates(9 * App.DEFX / 10 - (2 * App.DEFX / 5) * r.nextDouble(),
-                    App.DEFY / 10 + (4 * App.DEFY / 5) * r.nextFloat()
+            if (App.SYSSPAWN) ag.setCoordinates(19 * App.DEFX / 20 - (9 * App.DEFX / 20) * r.nextDouble(),
+                    App.DEFY / 20 + (9 * App.DEFY / 10) * r.nextFloat()
             );
-            else ag.setCoordinates(App.DEFX / 10 + (4 * App.DEFX / 5) * r.nextDouble(),
-                    App.DEFY / 10 + (4 * App.DEFY / 5) * r.nextFloat()
+            else ag.setCoordinates(App.DEFX / 20 + (9 * App.DEFX / 10) * r.nextDouble(),
+                    App.DEFY / 20 + (9 * App.DEFY / 10) * r.nextFloat()
             );
         }
 

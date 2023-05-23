@@ -50,6 +50,7 @@ public class Observer {
     ArrayList<TimeGraph> timeGraphs;
     int timeGraphCtr;
     int timeGraphCtrPeak;
+    int reportRowCtr;
 
     //Data
 
@@ -74,6 +75,7 @@ public class Observer {
         this.timeGraphs = null;
         this.timeGraphCtr = 0;
         this.timeGraphCtrPeak = App.GRAPHDATACTRPEAK - 1;
+        this.reportRowCtr = 0;
         this.aviaryData = null;
         this.reportCtr = 0;
         this.reportCtrPeak = App.REPORTCTRPEAK - 1;
@@ -105,6 +107,10 @@ public class Observer {
 
     public Aviary getAviaryReference() {
         return aviaryReference;
+    }
+
+    public int getReportRowCtr() {
+        return reportRowCtr;
     }
 
     //---------------------------------
@@ -665,6 +671,7 @@ public class Observer {
             }
 
             resetReportCtr();
+            this.reportRowCtr++;
         }
     }
 

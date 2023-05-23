@@ -14,7 +14,7 @@ public class Aviary {
     PropertyGrid<Integer> propertyGrid;
     ArrayList<Agent> agents;
     ArrayList<Pack> packs;
-
+    int tk = 0;
     Observer observer;
 
 
@@ -712,6 +712,8 @@ public class Aviary {
 
             this.observer.parameterReport();
         }
+
+        this.propertyGrid.setIntersection(new Dot(750,250));
     }
 
     void preProcedure() {
@@ -769,10 +771,14 @@ public class Aviary {
             ag.resetCollectedRes();
             ag.resetLastHeardAge();
         });
+        this.observer.addGraphData();
+        if (App.REPORTTOFILE) this.observer.reportRow();
+
+        this.tk++;
     }
 
     boolean endPredicate() {
-        return App.processingRef.millis() / (1000 * 60) >= 5;
+        return this.observer.getReportRowCtr() >= 600;
     }
 
     void deinitialize() {
@@ -786,10 +792,8 @@ public class Aviary {
     }
 
     boolean run(){                                                       //Main method                                                                           //Perform animation tick
-        render();
+        if(App.RENDER) render();
         tick();
-        this.observer.addGraphData();
-        if (App.REPORTTOFILE) this.observer.reportRow();
         return endPredicate();
     }
 
