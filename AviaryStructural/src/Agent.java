@@ -34,6 +34,7 @@ public class Agent {
 
     private ResourceNode lockedRes;
     private double collectedRes;
+    private double seenRes;
 
     private int valence;
     private PropertyArea propertyArea;
@@ -70,6 +71,7 @@ public class Agent {
 
         this.lockedRes = null;
         this.collectedRes = 0;
+        this.seenRes = 0;
 
         this.valence = 0;
         this.propertyArea = null;
@@ -118,6 +120,10 @@ public class Agent {
     ResourceNode getLockedRes() { return this.lockedRes; }
     double getCollectedRes() { return this.collectedRes; }
 
+    public double getSeenRes() {
+        return seenRes;
+    }
+
     int getValence() { return this.valence; }
 
     public PropertyArea getPropertyArea() {
@@ -162,6 +168,7 @@ public class Agent {
         this.direction = direction;
         normalizeDirection();
     }
+
     void setBaseSpeed(double baseSpeed) { this.baseSpeed = baseSpeed; }
 
     public void setAge(double age) { this.age = age; }
@@ -179,8 +186,14 @@ public class Agent {
 
     void setLockedRes(ResourceNode resNode) { this.lockedRes = resNode; }
     void setCollectedRes(double collectedRes) { this.collectedRes = collectedRes; }
+
+    public void setSeenRes(double seenRes) {
+        this.seenRes = seenRes;
+    }
+
     void collect(double res) { this.collectedRes += res; }
     void resetCollectedRes() { this.collectedRes = 0; }
+    void resetSeenRes() { this.seenRes = 0; }
 
     void setValence(int valence) { this.valence = valence; }
 
@@ -282,6 +295,7 @@ public class Agent {
 
     void face(double x, double y) { this.direction = dirToFace(x, y); }
     void face(Dot dot) { this.direction = dirToFace(dot); }
+    void adjustDirectionTo(Dot dot) { this.direction = Direction.directionAddition(this.direction, dirToFace(dot)); }
 
     //---------------------------------
 
@@ -320,6 +334,12 @@ public class Agent {
                 normalizeDirection();
                 newX = this.coordinates.getX() + this.speed * Math.cos(this.direction);
                 newY = this.coordinates.getY() + this.speed * Math.sin(this.direction);
+            }
+            if (newX > App.DEFX - App.WALLTHICKNESS ||
+                    newX < App.WALLTHICKNESS ||
+                    newY > App.DEFY - App.WALLTHICKNESS ||
+                    newY < App.WALLTHICKNESS) {
+                return;
             }
         }
         else {

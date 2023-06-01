@@ -208,7 +208,7 @@ public class Aviary {
                         agent.setLockedRes(null);
                         agent.setStationary(false);
                     } else {
-                        agent.collect(lockedRes.lowerRes(App.RESECOLLECTEDPERSTEP));
+                        agent.collect(lockedRes.lowerRes(Math.min(hunger, App.RESECOLLECTEDPERSTEP)));
                         agent.setStationary(true);
                     }
                 } else {
@@ -226,16 +226,22 @@ public class Aviary {
         else {
             if (agent.getConCount() == 0) {
                 double hunger = agent.getHunger();
-                agent.collect(this.resGrid.resourceWithdraw(agent.getCoordinates(), hunger));
+                agent.collect(this.resGrid.resourceWithdraw(agent.getCoordinates(), Math.min(hunger, App.RESECOLLECTEDPERSTEP)));
             }
             else {
-                Pack pack = getPack(agent);
-                if (pack != null) {
-                    double packHunger = getPack(agent).getMedHunger();
-                    agent.collect(this.resGrid.resourceWithdraw(agent.getCoordinates(), packHunger));
-                }
+                packResCollection(agent);
             }
         }
+    }
+
+    void packResCollection(Agent agent) {
+        Pack pack = getPack(agent);
+        if(pack == null) return;
+        double packHunger = pack.getMedHunger();
+        int conCount = agent.getConCount();
+        int extent = (int)(((double)conCount / App.PROPERTY_AREA_VALUES[0]) * App.GRADIENTREFINEMENT);
+        double resourceWithdrawn = this.resGrid.resourceWithdraw(agent.getCoordinates(), this.propertyGrid.getIntersection(), Math.min(packHunger, App.RESECOLLECTEDPERSTEP), extent);
+        agent.collect(resourceWithdrawn);
     }
 
     //---Pack direction calculations---
@@ -315,17 +321,21 @@ public class Aviary {
                 return -1;
             }
         }
-        else {
+        else if (this.resType == App.RESOURCETYPES.PLAIN){
             double direction;
             if (App.LOCKEDAREAS) {
-                direction = this.resGrid.getGradientDirectionIntersection(agent.getCoordinates(), this.propertyGrid.getIntersection());
+                direction = this.resGrid.getGradientDirectionIntersection(agent, this.propertyGrid.getIntersection());
             }
             else {
-                direction = this.resGrid.getGradientDirection(agent.getCoordinates());
+                direction = this.resGrid.getGradientDirection(agent);
             }
-            if (direction != -1) return Direction.directionAddition(agent.getDirection(), direction);
+            if (direction != -1) {
+                return Direction.directionAddition(agent.getDirection(), direction);
+            }
             else return -1;
         }
+
+        return -1;
     }
 
     void directionDecision(Agent agent){    //Direction decision for a single agent, for lone agents only food decisioning, for pack agents depending on locked bolean variable value either only food, or only pack
@@ -372,12 +382,12 @@ public class Aviary {
                     agent.setDirection(packDirClose);
                     return;
                 }
-
                 double foodDir = foodDirectionDecision(agent);
                 if (foodDir != -1) {
                     agent.setDirection(foodDir);
                     return;
                 }
+
 
                 Pack packToClose = getSameSpeciesClosestUncomPack(agent);
 
@@ -397,7 +407,7 @@ public class Aviary {
         if(agent.getConCount() == 0 && agent.getLockedRes() != null && App.LONERESSCREAM && this.resType == App.RESOURCETYPES.DISCRETE){
             loneAgentResScream(agent);
         }
-        if(agent.getConCount() != 0 && this.resType == App.RESOURCETYPES.DISCRETE){
+        if(agent.getConCount() != 0){
             packAgentResListen(agent);
         }
     }
@@ -461,28 +471,49 @@ public class Aviary {
         if(argPack == null)
             return;
         ArrayList<Agent> connAg = argPack.getConnected(agent);
-        connAg.forEach((ag) -> {
-            if (ag.getLockedRes() != null) {
-                if (agent.getLockedRes() == null) {
-                    if (agent.getLastHeardAge() < ag.getAge()) {
-                        agent.face(ag.getCoordinates());
-                        agent.setLastHeardAge(ag.getAge());
-                    }
-                }
-                else {
-                    if (agent.getLockedRes() != ag.getLockedRes()) {
-                        if (agent.getAge() < ag.getAge()){
-                            if (agent.getLastHeardAge() < ag.getAge()) {
-                                agent.setLastHeardAge(ag.getAge());
-                                agent.setLockedRes(null);
-                                agent.setStationary(false);
-                                agent.face(ag.getCoordinates());
+        if (App.RESTYPE == App.RESOURCETYPES.DISCRETE) {
+            connAg.forEach((ag) -> {
+                if (ag.getLockedRes() != null) {
+                    if (agent.getLockedRes() == null) {
+                        if (agent.getLastHeardAge() < ag.getAge()) {
+                            agent.face(ag.getCoordinates());
+                            agent.setLastHeardAge(ag.getAge());
+                        }
+                    } else {
+                        if (agent.getLockedRes() != ag.getLockedRes()) {
+                            if (agent.getAge() < ag.getAge()) {
+                                if (agent.getLastHeardAge() < ag.getAge()) {
+                                    agent.setLastHeardAge(ag.getAge());
+                                    agent.setLockedRes(null);
+                                    agent.setStationary(false);
+                                    agent.face(ag.getCoordinates());
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+
+//        else if (App.RESTYPE == App.RESOURCETYPES.PLAIN) {
+//            if (agent.getValence() == App.PROPERTY_AREA_VALUES[0]) {
+//                Dot gradientVector = new Dot(0, 0);
+//                for (Iterator<Agent> iterator = connAg.iterator(); iterator.hasNext(); ) {
+//                    Agent ag = iterator.next();
+//                    double seen = ag.getSeenRes();
+//                    double distance = agent.getDistTo(ag.getCoordinates());
+//                    if (seen != 0 && distance >= App.COMDIST && seen > agent.getSeenRes()) {
+//                        gradientVector.addToThis(
+//                                agent.getCoordinates().vectorTo(ag.getCoordinates())
+//                                        .normalizeThis()
+//                                        //.multiplyThis(seen / (App.BASERES))
+//                                        .multiplyThis(seen * App.PACKDIST / (distance * App.BASERES))
+//                        );
+//                    }
+//                }
+//                if (agent.readyToAct()) agent.adjustDirectionTo(agent.getCoordinates().add(gradientVector));
+//            }
+//        }
     }
 
     //-------------Rivalry-------------
@@ -558,7 +589,7 @@ public class Aviary {
 
         if(rep){
 
-            Agent child = Builder.buildAgent(argAg.getSpecies());
+            Agent child = Builder.buildAgent(argAg.getSpecies(), 0, 0, App.DEFX, App.DEFY);
             child.setCoordinates(new Dot(argAg.getCoordinates()));
             child.setAge(0);
             child.updateSpeed();
@@ -636,21 +667,22 @@ public class Aviary {
 
         switch (this.shiftIntersection) {
             case POPULATION -> {
+                //(double)App.DEFX / 10 + 0.8 *
                 if (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3] != 0) {
-                    intersectionX = (double)App.DEFX / 10 + 0.8 * (double)App.DEFX * (areaData[0][0] + areaData[0][1]) / (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3]);
-                    intersectionY = (double)App.DEFX / 10 + 0.8 * (double)App.DEFY * (areaData[0][0] + areaData[0][2]) / (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3]);
+                    intersectionX = (double)App.DEFX * (areaData[0][0] + areaData[0][1]) / (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3]);
+                    intersectionY = (double)App.DEFY * (areaData[0][0] + areaData[0][2]) / (areaData[0][0] + areaData[0][1] + areaData[0][2] + areaData[0][3]);
                 }
             }
             case ENERGY -> {
                 if (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3] != 0) {
-                    intersectionX = (double)App.DEFX / 10 + 0.8 * (double)App.DEFX * (areaData[1][0] + areaData[1][1]) / (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3]);
-                    intersectionY = (double)App.DEFX / 10 + 0.8 * (double)App.DEFY * (areaData[1][0] + areaData[1][2]) / (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3]);
+                    intersectionX = (double)App.DEFX * (areaData[1][0] + areaData[1][1]) / (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3]);
+                    intersectionY = (double)App.DEFY * (areaData[1][0] + areaData[1][2]) / (areaData[1][0] + areaData[1][1] + areaData[1][2] + areaData[1][3]);
                 }
             }
             case ENERGYDENSITY -> {
                 if (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3] != 0) {
-                    intersectionX = (double)App.DEFX / 10 + 0.8 * (double)App.DEFX * (areaData[2][0] + areaData[2][1]) / (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3]);
-                    intersectionY = (double)App.DEFX / 10 + 0.8 * (double)App.DEFY * (areaData[2][0] + areaData[2][2]) / (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3]);
+                    intersectionX = (double)App.DEFX * (areaData[2][0] + areaData[2][1]) / (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3]);
+                    intersectionY = (double)App.DEFY * (areaData[2][0] + areaData[2][2]) / (areaData[2][0] + areaData[2][1] + areaData[2][2] + areaData[2][3]);
                 }
             }
         }
@@ -712,8 +744,6 @@ public class Aviary {
 
             this.observer.parameterReport();
         }
-
-        this.propertyGrid.setIntersection(new Dot(750,250));
     }
 
     void preProcedure() {
@@ -739,8 +769,9 @@ public class Aviary {
             }
 
             directionDecision(ag);
-            scream(ag);
             agResCollection(ag);
+            scream(ag);
+
             updateProperty(ag);
             ag.step();
 
@@ -770,6 +801,7 @@ public class Aviary {
         agents.forEach((ag) -> {
             ag.resetCollectedRes();
             ag.resetLastHeardAge();
+            ag.resetSeenRes();
         });
         this.observer.addGraphData();
         if (App.REPORTTOFILE) this.observer.reportRow();
@@ -778,11 +810,19 @@ public class Aviary {
     }
 
     boolean endPredicate() {
-        return this.observer.getReportRowCtr() >= 600;
+        Dot intersection = this.propertyGrid.getIntersection();
+        double x = intersection.getX();
+        double y = intersection.getY();
+        return this.observer.getReportRowCtr() >= 600
+                || (x <= 0.00001 && y <= 0.00001)
+                || (x <= 0.00001 && y >= App.DEFY - 0.00001)
+                || (x >= App.DEFX - 0.00001 && y <= 0.00001)
+                || (x >= App.DEFX - 0.00001 && y >= App.DEFY - 0.00001)
+                || (getPopulation() <= 0);
     }
 
     void deinitialize() {
-
+        if (App.REPORTTOFILE) this.observer.finalReport();
     }
 
     void tick(){
@@ -792,9 +832,11 @@ public class Aviary {
     }
 
     boolean run(){                                                       //Main method                                                                           //Perform animation tick
-        if(App.RENDER) render();
+        render();
         tick();
-        return endPredicate();
+        boolean end = endPredicate();
+        if (end) deinitialize();
+        return end;
     }
 
     //---------------------------------
@@ -827,10 +869,12 @@ public class Aviary {
     void render(){                                                    //Renders aviary
         App.processingRef.background(0);
         renderPropertyGrid();
-        renderRes();
-        renderPacks();
-        renderAgent();
-        renderObserver();
+        if(App.RENDER) {
+            renderRes();
+            renderPacks();
+            renderAgent();
+        }
+        //renderObserver();
     }
 
     //-----------------------------------

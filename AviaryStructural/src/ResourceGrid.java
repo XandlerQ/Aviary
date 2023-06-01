@@ -119,14 +119,14 @@ public class ResourceGrid {
         this.resources.forEach((res) -> {res.replenish();});
     }
 
-    double getGradientDirectionIntersection(Dot dot, Dot intersection) {
+    double getGradientDirectionIntersection(Agent agent, Dot intersection) {
         double gradientDirection;
 
         double sideX = this.defX / this.grCtX;
         double sideY = this.defY / this.grCtY;
 
-        double x = dot.getX();
-        double y = dot.getY();
+        double x = agent.getX();
+        double y = agent.getY();
 
         int iDot = (int)(x / sideX);
         int jDot = (int)(y / sideY);
@@ -136,12 +136,12 @@ public class ResourceGrid {
 
         int areaIndex;
 
-        if (dot.getX() <= intersection.getX()) {
-            if (dot.getY() <= intersection.getY()) areaIndex = 0;
+        if (agent.getX() <= intersection.getX()) {
+            if (agent.getY() <= intersection.getY()) areaIndex = 0;
             else areaIndex = 1;
         }
         else {
-            if (dot.getY() <= intersection.getY()) areaIndex = 2;
+            if (agent.getY() <= intersection.getY()) areaIndex = 2;
             else areaIndex = 3;
         }
 
@@ -218,6 +218,8 @@ public class ResourceGrid {
             }
         }
 
+        agent.setSeenRes(resLeft + resRight + resTop + resBottom);
+
         double shiftX = resRight - resLeft;
         double shiftY = resBottom - resTop;
 
@@ -226,21 +228,21 @@ public class ResourceGrid {
 
         if (shiftX == 0 && shiftY == 0) return -1;
 
-        Dot gradientDot = new Dot(dot.getX() + shiftX, dot.getY() + shiftY);
+        Dot gradientDot = new Dot(agent.getX() + shiftX, agent.getY() + shiftY);
 
-        gradientDirection = Direction.directionFromTo(dot, gradientDot);
+        gradientDirection = Direction.directionFromTo(agent.getCoordinates(), gradientDot);
 
         return gradientDirection;
     }
 
-    double getGradientDirection(Dot dot) {
+    double getGradientDirection(Agent agent) {
         double gradientDirection;
 
         double sideX = this.defX / this.grCtX;
         double sideY = this.defY / this.grCtY;
 
-        double x = dot.getX();
-        double y = dot.getY();
+        double x = agent.getX();
+        double y = agent.getY();
 
         int iDot = (int)(x / sideX);
         int jDot = (int)(y / sideY);
@@ -287,6 +289,8 @@ public class ResourceGrid {
             }
         }
 
+        agent.setSeenRes(resLeft + resRight + resTop + resBottom);
+
         double shiftX = resRight - resLeft;
         double shiftY = resBottom - resTop;
 
@@ -295,9 +299,9 @@ public class ResourceGrid {
 
         if (shiftX == 0 && shiftY == 0) return -1;
 
-        Dot gradientDot = new Dot(dot.getX() + shiftX, dot.getY() + shiftY);
+        Dot gradientDot = new Dot(agent.getX() + shiftX, agent.getY() + shiftY);
 
-        gradientDirection = Direction.directionFromTo(dot, gradientDot);
+        gradientDirection = Direction.directionFromTo(agent.getCoordinates(), gradientDot);
 
         return gradientDirection;
     }
@@ -347,6 +351,85 @@ public class ResourceGrid {
 
         Resource resource = getResourceAtCell(iDot, jDot);
         return resource.lowerRes(amount);
+    }
+
+    double resourceWithdraw(Dot dot, Dot intersection, double amount, int extent) {
+
+        if (extent == 0) {
+            return resourceWithdraw(dot, amount);
+        }
+
+        double sideX = this.defX / this.grCtX;
+        double sideY = this.defY / this.grCtY;
+
+        double x = dot.getX();
+        double y = dot.getY();
+
+        int iDot = (int)((x - x % sideX) / sideX);
+        int jDot = (int)((y - y % sideY) / sideY);
+
+        int iIntersection = (int)(intersection.getX() / sideX);
+        int jIntersection = (int)(intersection.getY() / sideY);
+
+        int areaIndex;
+
+        if (dot.getX() <= intersection.getX()) {
+            if (dot.getY() <= intersection.getY()) areaIndex = 0;
+            else areaIndex = 1;
+        }
+        else {
+            if (dot.getY() <= intersection.getY()) areaIndex = 2;
+            else areaIndex = 3;
+        }
+
+        int iOrigin = 0,
+                jOrigin = 0,
+                iTarget = 0,
+                jTarget = 0;
+
+        switch (areaIndex) {
+            case 0 -> {
+                iOrigin = Math.max(0, iDot - extent);
+                jOrigin = Math.max(0, jDot - extent);
+
+                iTarget = Math.min(iDot + extent, iIntersection - 1);
+                jTarget = Math.min(jDot + extent, jIntersection - 1);
+            }
+            case 1 -> {
+                iOrigin = Math.max(0, iDot - extent);
+                jOrigin = Math.max(jIntersection + 1, jDot - extent);
+
+                iTarget = Math.min(iDot + extent, iIntersection - 1);
+                jTarget = Math.min(jDot + extent, this.grCtY - 1);
+            }
+            case 2 -> {
+                iOrigin = Math.max(iIntersection + 1, iDot - extent);
+                jOrigin = Math.max(0, jDot - extent);
+
+                iTarget = Math.min(iDot + extent, this.grCtX - 1);
+                jTarget = Math.min(jDot + extent, jIntersection - 1);
+            }
+            case 3 -> {
+                iOrigin = Math.max(iIntersection + 1, iDot - extent);
+                jOrigin = Math.max(jIntersection + 1, jDot - extent);
+
+                iTarget = Math.min(iDot + extent, this.grCtX - 1);
+                jTarget = Math.min(jDot + extent, this.grCtY - 1);
+            }
+        }
+
+        double resourceWithdrawn = 0;
+        int areaSideX = iTarget - iOrigin + 1;
+        int areaSideY = jTarget - jOrigin + 1;
+        int divider = areaSideX * areaSideY;
+
+        for (int i = iOrigin; i <= iTarget; i++) {
+            for (int j = jOrigin; j <= jTarget; j++) {
+                resourceWithdrawn += getResourceAtCell(i, j).lowerRes(amount / divider);
+            }
+        }
+
+        return resourceWithdrawn;
     }
 
     //---------------------------------

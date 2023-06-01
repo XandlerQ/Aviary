@@ -61,6 +61,7 @@ public class Observer {
 
     String dataReportFileName;
     String parameterReportFileName;
+    String startTimeStamp;
     File reportFile;
     FileWriter fw;
     BufferedWriter bw;
@@ -82,6 +83,7 @@ public class Observer {
         this.reportDataHeaders = null;
         this.dataReportFileName = null;
         this.parameterReportFileName = null;
+        this.startTimeStamp = null;
         this.reportFile = null;
         this.fw = null;
         this.bw = null;
@@ -151,7 +153,7 @@ public class Observer {
     void fillTimeGraphs() {
         int graphDimX = 495;
         int graphDimY = 200;
-        int graphCapacity = 198;
+        int graphCapacity = 5;
 
         TimeGraph populationGraph = new TimeGraph(graphDimX, graphDimY, graphCapacity);
         populationGraph.setTitle("Population");
@@ -482,7 +484,9 @@ public class Observer {
     String formTimeStampParametersFileName(){
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
         Date currentTimeStamp = new Date();
-        String timeStampFileName = "parameters_" + sdfDate.format(currentTimeStamp);
+        String timeStamp = sdfDate.format(currentTimeStamp);
+        String timeStampFileName = "parameters_" + timeStamp;
+        this.startTimeStamp = timeStamp;
 
         return timeStampFileName;
     }
@@ -672,6 +676,54 @@ public class Observer {
 
             resetReportCtr();
             this.reportRowCtr++;
+        }
+    }
+
+    String formFinalReportString() {
+        String finalReportString;
+        StringBuilder stringBuilder = new StringBuilder();
+        observeAviaryData();
+        stringBuilder.append(startTimeStamp).append("  ");
+        stringBuilder.append("Base resource ").append(App.BASERES).append("  ");
+        stringBuilder.append("Resource replenishment speed multiplier ").append(App.RESREPSPEEDMULTIPLIER).append("\n");
+        stringBuilder.append(aviaryData[0][0]).append(", ");
+        stringBuilder.append(aviaryData[0][1]).append(", ");
+        stringBuilder.append(aviaryData[0][2]).append(", ");
+        stringBuilder.append(aviaryData[0][3]).append("\n\n\n");
+
+        finalReportString = stringBuilder.toString();
+        return finalReportString;
+    }
+
+    void finalReport() {
+        observeAviaryData();
+        String finalReportString = formFinalReportString();
+
+        File finalReportFile = new File("reports\\" + "FinalReports.txt");
+
+        if (!finalReportFile.exists()) {
+            try {
+                finalReportFile.createNewFile();
+            }
+            catch (IOException e) {
+                System.out.println(e);
+            }
+        }
+
+
+        try {
+            this.fw = new FileWriter(finalReportFile, true);
+            this.bw = new BufferedWriter(this.fw);
+            this.pw = new PrintWriter(this.bw);
+
+            pw.write(finalReportString);
+
+            this.pw.close();
+            this.bw.close();
+            this.fw.close();
+        }
+        catch (IOException e) {
+            System.out.println(e.toString());
         }
     }
 

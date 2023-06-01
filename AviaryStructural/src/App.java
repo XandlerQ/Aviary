@@ -14,7 +14,7 @@ public class App extends PApplet {
 
     boolean pause = false;
     boolean firstRun = true;
-    boolean autoRun = false;
+    boolean autoRun = true;
 
     int screenshotNum = 1;
     int scrShCounter = 0;
@@ -25,6 +25,7 @@ public class App extends PApplet {
     }
 
     public void setup() {
+        frameRate(1000);
         processingRef = this;
         background(0);
         ellipseMode(CENTER);
@@ -116,7 +117,22 @@ public class App extends PApplet {
 
         if(finished){
             if(autoRun){
-                BgStart();
+                App.BASERES += 0.05;
+                App.RESREPSPEED = App.BASERES / App.RESREPSPEEDMULTIPLIER;
+                if (App.BASERES > 1.001) {
+                    App.BASERES = 0.1;
+                    App.RESREPSPEEDMULTIPLIER += 30;
+                    App.RESREPSPEED = App.BASERES / App.RESREPSPEEDMULTIPLIER;
+                    if (App.RESREPSPEEDMULTIPLIER > 241) {
+                        BgPause();
+                    }
+                    else {
+                        BgStart();
+                    }
+                }
+                else {
+                    BgStart();
+                }
             }
             else {
                 BgPause();
@@ -205,13 +221,13 @@ public class App extends PApplet {
     public static int QUADX = 5;
     public static int QUADY = 5;
 
-    public static int PLAINX = 100;
-    public static int PLAINY = 100;
+    public static int PLAINX = 80;
+    public static int PLAINY = 80;
 
     public enum SHIFTINTERSECTIONMODES { ////////////////////////////////////////////////////////////////////
         STATIC, POPULATION, ENERGY, ENERGYDENSITY
     }
-    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.STATIC;
+    public static SHIFTINTERSECTIONMODES SHIFTINTERSECTION = SHIFTINTERSECTIONMODES.ENERGY;
     public static Color[] PROPERTY_AREA_COLORS = {
             new Color(255, 134, 125),
             new Color(250, 236, 127),
@@ -220,17 +236,18 @@ public class App extends PApplet {
     };
 
     public static Integer[] PROPERTY_AREA_VALUES = {
-            30, 20, 10, 2
+            6, 4, 2, 0
     };
 
     public static boolean LOCKEDAREAS = true; ///////////////////////////////////////////////////////////////////
     public static boolean PAYMENT = true;
     public static double PAYMENTRATIO = 0.33;
 
-    public static int INITAGENTAMOUNT1 = 100;
+    public static int INITAGENTAMOUNT1 = 200;
     public static int INITAGENTAMOUNT2 = 0;
 
     public static boolean SYSSPAWN = false;
+    public static boolean REGIONSPECIFIC = true;
 
     public enum RESOURCETYPES {
         DISCRETE, PLAIN
@@ -238,10 +255,11 @@ public class App extends PApplet {
 
     public static RESOURCETYPES RESTYPE = RESOURCETYPES.PLAIN;
 
-    public static double BASERES = 8.0;
-    public static double RESREPSPEED = BASERES/360;
+    public static double BASERES = 0.1;
+    public static double RESREPSPEEDMULTIPLIER = 30.;
+    public static double RESREPSPEED = BASERES / RESREPSPEEDMULTIPLIER;
     public static int RESPERQUAD = 4;
-    public static int RESREPCTRPEAK = 240;
+    public static int RESREPCTRPEAK = 0;
 
     //  Agent settings
     public static double BASESPEED1 = 1.6;
@@ -273,10 +291,10 @@ public class App extends PApplet {
     public static double NRGPERFIGHT = 1.0;
 
     //  Pack energy depletion settings
-    public static double NRGFORCONPERSTEP = 0.003;
+    public static double NRGFORCONPERSTEP = 0.25 * NRGPERSTEP1 / PROPERTY_AREA_VALUES[0];
 
     //  Action counter
-    public static int ACTCTRPEAK = 15;
+    public static int ACTCTRPEAK = 30;
 
     // Distances settings
     public static double SCRHEARDIST = 200;

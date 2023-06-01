@@ -138,14 +138,14 @@ public class Pack {
         }
 
         int connectionsFound = 0;
-        ArrayList<Agent> agToConnect = new ArrayList<Agent>();
-        for (Iterator<Connection> iter = this.connections.iterator(); iter.hasNext();){
-            Connection con = iter.next();
+        ArrayList<Agent> agToConnect = new ArrayList<>();
+        for (Iterator<Connection> iterator = this.connections.iterator(); iterator.hasNext();){
+            Connection con = iterator.next();
             if(con.contains(argAg)){
                 //println("found a connection to delete");
                 agToConnect.add(con.pairOf(argAg));
                 con.pairOf(argAg).removeCon();
-                iter.remove();
+                iterator.remove();
                 connectionsFound++;
                 if(connectionsFound == argAg.getConCount())
                     break;
@@ -204,9 +204,30 @@ public class Pack {
             resToDistr += ag.getCollectedRes();
         }
 
+        double deal = resToDistr/agCount;
+
         for(Iterator<Agent> iter = this.agents.iterator(); iter.hasNext();){
             Agent ag = iter.next();
-            ag.eat(resToDistr/agCount);
+            double eaten = Math.min(ag.getHunger(), deal);
+            ag.eat(eaten);
+            resToDistr -= eaten;
+        }
+
+        if(resToDistr == 0) return;
+        else {
+            for(Iterator<Agent> iter = this.agents.iterator(); iter.hasNext();) {
+                Agent ag = iter.next();
+                if (ag.getHunger() != 0) {
+                    if (ag.getHunger() < resToDistr) {
+                        ag.eat(ag.getHunger());
+                        resToDistr -= ag.getHunger();
+                    }
+                    else {
+                        ag.eat(resToDistr);
+                        break;
+                    }
+                }
+            }
         }
     }
 

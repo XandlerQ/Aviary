@@ -33,6 +33,44 @@ public class Dot {
                         + (dot1.getY() - dot2.getY()) * (dot1.getY() - dot2.getY())
         );
     }
+    public Dot vectorTo (Dot dot) {
+        return new Dot(dot.getX() - this.x, dot.getY() - this.y);
+    }
+
+    public Dot addToThis (Dot dot) {
+        this.x = this.x + dot.getX();
+        this.y = this.y + dot.getY();
+        return this;
+    }
+
+    public Dot add (Dot dot) {
+        return new Dot(this.x + dot.getX(), this.y + dot.getY());
+    }
+
+    public Dot normalizeThis () {
+        double length = Math.sqrt(this.x * this.x + this.y * this.y);
+        if(length != 0) {
+            this.x /= length;
+            this.y /= length;
+        }
+        return this;
+    }
+
+    public Dot normalize() {
+        double length = Math.sqrt(this.x * this.x + this.y * this.y);
+        if (length != 0) return new Dot(this.x / length, this.y / length);
+        return new Dot();
+    }
+
+    public Dot multiplyThis (double value) {
+        this.x *= value;
+        this.y += value;
+        return this;
+    }
+
+    public Dot multiply (double value) {
+        return new Dot(this.x * value, this.y * value);
+    }
 
 
     @Override
