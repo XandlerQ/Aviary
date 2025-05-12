@@ -24,7 +24,7 @@ The simulation helps visualize how local agent interactions can lead to efficien
 
 
 ## Screenshots
-Information exchange:
+Information exchange (visual branch):
 ![image](https://github.com/user-attachments/assets/e4ae73fa-b02f-42ca-9e69-2b7beb0fd6fb)
-Path formation:
+Path formation (visual branch):
 ![image](https://github.com/user-attachments/assets/36a1f037-1a90-4d76-9842-ccff6877ccda)
